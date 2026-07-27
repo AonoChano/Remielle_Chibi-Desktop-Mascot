@@ -1,9 +1,23 @@
-class PetApp {
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; }
+html, body { width: 400px; height: 400px; overflow: hidden; background: #00000000; }
+#canvas { display: block; width: 400px; height: 400px; }
+</style>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script src="./node_modules/@esotericsoftware/spine-webgl/dist/iife/spine-webgl.js"></script>
+<script>
+const { ipcRenderer } = require('electron');
+
+class CaptureApp {
   constructor() {
     this.skeleton = null;
     this.animationState = null;
-    this.canvas = null;
-    this.pendingAnim = null;
   }
 
   loadAssets(canvas) {
@@ -22,37 +36,16 @@ class PetApp {
 
     var animationStateData = new spine.AnimationStateData(skeletonData);
     this.animationState = new spine.AnimationState(animationStateData);
-    this.animationState.setAnimation(0, "a", true);
 
-    this.canvas = canvas;
-    this.setupIPC();
-    this.setupDrag();
-    this.centerSkeleton();
-  }
+    // Set outfit D and play animation d (drawing)
+    this.applyOutfit('D');
+    this.animationState.setAnimation(0, "d", true);
 
-  centerSkeleton() {
-    if (!this.skeleton) return;
-    // 获取骨骼包围盒并大致居中
     this.skeleton.setToSetupPose();
     this.skeleton.updateWorldTransform(spine.Physics.update);
-  }
 
-  setupIPC() {
-    if (!window.electronAPI) return;
-
-    window.electronAPI.on('play-animation', (animName) => {
-      if (this.animationState) {
-        this.animationState.setAnimation(0, animName, true);
-      }
-    });
-
-    window.electronAPI.on('set-outfit', (prefix) => {
-      this.applyOutfit(prefix);
-    });
-
-    window.electronAPI.on('set-expression', (expression) => {
-      this.applyExpression(expression);
-    });
+    console.log('CAPTURE: ready, outfit=D, anim=d');
+    ipcRenderer.send('capture-ready');
   }
 
   applyOutfit(prefix) {
@@ -72,47 +65,6 @@ class PetApp {
       }
     }
     this.skeleton.updateWorldTransform(spine.Physics.update);
-  }
-
-  applyExpression(expression) {
-    // 预留：表情微调（如眨眼、脸红）
-    console.log('expression', expression);
-  }
-
-  setupDrag() {
-    let isDragging = false;
-    let startX = 0, startY = 0;
-    const canvasEl = document.getElementById('canvas');
-
-    canvasEl.addEventListener('mousedown', (e) => {
-      if (e.button === 0) {
-        isDragging = true;
-        startX = e.screenX;
-        startY = e.screenY;
-      }
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const dx = e.screenX - startX;
-      const dy = e.screenY - startY;
-      if (window.electronAPI) {
-        window.electronAPI.send('drag-pet', dx, dy);
-      }
-      startX = e.screenX;
-      startY = e.screenY;
-    });
-
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    canvasEl.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      if (window.electronAPI) {
-        window.electronAPI.send('open-panel');
-      }
-    });
   }
 
   update(canvas, delta) {
@@ -137,7 +89,11 @@ class PetApp {
   }
 }
 
+// Use non-premultiplied alpha to match the official custom implementation
 new spine.SpineCanvas(document.getElementById("canvas"), {
-  webglConfig: { alpha: true, premultipliedAlpha: false },
-  app: new PetApp()
+  app: new CaptureApp(),
+  backgroundColor: new spine.Color(0, 0, 0, 0)
 });
+</script>
+</body>
+</html>

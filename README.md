@@ -40,7 +40,8 @@
 > See [`ASSET_LICENSE.md`](ASSET_LICENSE.md) for full asset usage terms.
 
 > [!NOTE]
-> **Spine JSON 太大无法直接托管** (~488 KB)。请从原始 `.spine` 项目文件通过 Spine Editor 导出。
+> **Spine 资产文件未纳入版本控制**（`remi.json` ~488 KB、`leimi.png` 贴图文件）。
+> 请从原始 `.spine` 项目文件通过 Spine Editor 导出后放入 `mascots/electron/assets/`。
 > 详见下方 [Quick Start](#-quick-start) 章节。
 
 ---
@@ -131,7 +132,11 @@ cd mascots/electron
 npm install
 
 # 3. Place Spine assets (see note below)
-#    Copy remeille-chibi.json + remeille-chibi.png into spine/remeille-chibi/
+#    Export from the original .spine project via Spine Editor,
+#    then copy into mascots/electron/assets/:
+#    - remi.json  (skeleton JSON export)
+#    - leimi.png  (texture image, rename from original if needed)
+#    (leimi.atlas is already included)
 
 # 4. Launch!
 npm start
@@ -142,14 +147,16 @@ npm start
 <details>
 <summary><b>📦 Spine Assets Setup</b></summary>
 
-Copy the skeleton JSON and texture image into `spine/remeille-chibi/`:
+The Electron pet loads Spine assets from `mascots/electron/assets/`:
 
-- `remeille-chibi.json` — Export from the original `.spine` project via **Spine Editor**
-- `remeille-chibi.png` — The texture image (rename from `leimi.png` if needed)
+- `remi.json` — Skeleton JSON, export from the original `.spine` project via **Spine Editor** (JSON export)
+- `leimi.png` — Texture image referenced by the atlas (rename from the original export if needed)
+- `leimi.atlas` — Already included in the repository
 
 > [!CAUTION]
-> The `remeille-chibi.json` file (~488 KB) is too large for direct Git hosting.
-> You **must** export it from the original `.spine` binary project file using Spine Editor's JSON export.
+> `remi.json` (~488 KB) and `leimi.png` are not included in version control due to file size.
+> You **must** export `remi.json` from the original `.spine` binary project file using Spine Editor's JSON export,
+> and copy the corresponding texture image as `leimi.png`.
 
 </details>
 
@@ -215,17 +222,25 @@ Remielle_Chibi-Desktop-Mascot/
 │
 ├── spine/
 │   └── remeille-chibi/
-│       ├── remeille-chibi.atlas ← Texture atlas
-│       ├── remeille-chibi.json  ← Skeleton JSON (export from .spine)
-│       └── remeille-chibi.png   ← Texture image
+│       └── remeille-chibi.atlas ← Texture atlas (reference copy)
+│
+├── assets/                      ← README showcase assets
+│   ├── remi_drawing.gif        ← Animation preview GIF
+│   ├── BannerLogo.png          ← Project banner logo
+│   └── leimi.png               ← Clean chibi portrait (logo source)
 │
 └── mascots/
     ├── electron/                  ← Electron desktop pet (working)
     │   ├── package.json
-    │   ├── main.js               ← Electron main process
+    │   ├── main.js               ← Electron main process (tray + windows)
     │   ├── preload.js            ← Context bridge
     │   ├── pet.html / pet.js     ← Transparent pet renderer + Spine engine
     │   ├── panel.html / panel.css / panel.js ← Control panel
+    │   ├── assets/
+    │   │   ├── remi.json        ← Skeleton JSON (not in git, export from .spine)
+    │   │   ├── leimi.atlas      ← Texture atlas
+    │   │   ├── leimi.png        ← Texture image (not in git)
+    │   │   └── logo.png         ← Clean portrait for tray/panel icon
     │
     ├── bongo-cat/                ← Bongo Cat integration (planned)
     ├── codex-cli-pet/            ← Codex CLI pet hook (planned)
@@ -239,17 +254,17 @@ Remielle_Chibi-Desktop-Mascot/
 
 ## 🔨 Building for Distribution
 
+> [!NOTE]
+> Build scripts (`build:win`, `build:mac`, `build:linux`) are not yet configured.
+> To create distributable packages, integrate [electron-builder](https://www.electron.build/) into `package.json`.
+
 ```bash
 cd mascots/electron
 
-# Windows (NSIS installer + portable)
-npm run build:win
-
-# macOS (DMG)
-npm run build:mac
-
-# Linux (AppImage)
-npm run build:linux
+# Example with electron-builder (after setup):
+npx electron-builder --win    # NSIS installer + portable
+npx electron-builder --mac    # DMG
+npx electron-builder --linux  # AppImage
 ```
 
 See [`docs/getting-started.md`](docs/getting-started.md) for detailed instructions.

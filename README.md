@@ -196,11 +196,11 @@ All files are included in the repository. To modify, re-export from the original
 | Platform | Directory | Status |
 |:---------|:----------|:-------|
 | <img src="https://img.shields.io/badge/Electron-Desktop%20Pet-2ecc71?style=flat-square" alt=""/> | `mascots/electron/` | ✅ Working |
-| <img src="https://img.shields.io/badge-Bongo_Cat-Overlay-9b59b6?style=flat-square" alt=""/> | `mascots/bongo-cat/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Bongo_Cat-Overlay-9b59b6?style=flat-square" alt=""/> | `mascots/bongo-cat/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Codex_CLI-Pet%20Hook-3498db?style=flat-square" alt=""/> | `mascots/codex-cli-pet/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Claude_Code-Pet%20Hook-f1c40f?style=flat-square" alt=""/> | `mascots/claude-code-pet/` | 📋 Planned |
-| <img src="https://img.shields.io/badge-Web-Component-1abc9c?style=flat-square" alt=""/> | `mascots/web/` | 📋 Planned |
-| <img src="https://img.shields.io/badge-Wallpaper_Engine-Live%20WP-e74c3c?style=flat-square" alt=""/> | `mascots/wallpaper-engine/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Web-Component-1abc9c?style=flat-square" alt=""/> | `mascots/web/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Wallpaper_Engine-Live%20WP-e74c3c?style=flat-square" alt=""/> | `mascots/wallpaper-engine/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Unity-Runtime-7393c3?style=flat-square" alt=""/> | `mascots/unity/` | 📋 Planned |
 
 </details>

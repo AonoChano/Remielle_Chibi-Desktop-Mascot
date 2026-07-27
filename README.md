@@ -41,97 +41,58 @@
 
 ---
 
-<div align="center">
-
-### ✨ Preview — Animation Showcase
-
 <details>
 <summary><b>✨ Preview — Animation Showcase</b></summary>
-<br>
 
 <details>
-<summary><b>a</b> — 待机 Idle</summary>
+<summary>待机 Idle & 思考 Thinking</summary>
 <table>
 <tr>
-<td><img src="assets/anims/anim_a.gif" width="200" alt="Idle"/></td>
+<td><img src="assets/anims/anim_a.gif" width="160" alt="Idle"/></td>
 <td>盯着画本看，安静地端详着即将创作的画作</td>
-</tr>
-</table>
-</details>
-
-<details>
-<summary><b>b</b> — 思考 Thinking</summary>
-<table>
-<tr>
-<td><img src="assets/anims/anim_b.gif" width="200" alt="Thinking"/></td>
+<td><img src="assets/anims/anim_b.gif" width="160" alt="Thinking"/></td>
 <td>右手拿画笔，左手托下巴：「画什么好呢？」</td>
 </tr>
 </table>
 </details>
 
 <details>
-<summary><b>d</b> — 疯狂画画 Drawing</summary>
+<summary>疯狂画画 Drawing & 画完炫耀 Finished</summary>
 <table>
 <tr>
-<td><img src="assets/anims/anim_d.gif" width="200" alt="Drawing"/></td>
+<td><img src="assets/anims/anim_d.gif" width="160" alt="Drawing"/></td>
 <td>全速运转！手持画笔疯狂作画中</td>
-</tr>
-</table>
-</details>
-
-<details>
-<summary><b>c</b> — 画完炫耀 Finished</summary>
-<table>
-<tr>
-<td><img src="assets/anims/anim_c.gif" width="200" alt="Finished"/></td>
+<td><img src="assets/anims/anim_c.gif" width="160" alt="Finished"/></td>
 <td>扭头向左，比出 V 字手势：「天才画家就是我」</td>
 </tr>
 </table>
 </details>
 
 <details>
-<summary><b>d_win</b> — 画完收笔 Done</summary>
+<summary>画完收笔 Done & 委屈 Tearing Up</summary>
 <table>
 <tr>
-<td><img src="assets/anims/anim_d_win.gif" width="200" alt="Done"/></td>
+<td><img src="assets/anims/anim_d_win.gif" width="160" alt="Done"/></td>
 <td>从疯狂画画状态自然过渡到收笔，回归待机</td>
-</tr>
-</table>
-</details>
-
-<details>
-<summary><b>e</b> — 委屈 Tearing Up</summary>
-<table>
-<tr>
-<td><img src="assets/anims/anim_e.gif" width="200" alt="Tearing Up"/></td>
+<td><img src="assets/anims/anim_e.gif" width="160" alt="Tearing Up"/></td>
 <td>眼泪哗哗流，八字眉三角嘴，好像受了天大委屈</td>
 </tr>
 </table>
 </details>
 
 <details>
-<summary><b>a_win</b> — 拿起画笔 Ready</summary>
+<summary>拿起画笔 Ready & 金色光芒 Golden Light</summary>
 <table>
 <tr>
-<td><img src="assets/anims/anim_a_win.gif" width="200" alt="Ready"/></td>
+<td><img src="assets/anims/anim_a_win.gif" width="160" alt="Ready"/></td>
 <td>在待机基础上拿出了画笔，蓄势待发</td>
-</tr>
-</table>
-</details>
-
-<details>
-<summary><b>light</b> — 金色光芒 Golden Light</summary>
-<table>
-<tr>
-<td><img src="assets/anims/anim_light.gif" width="200" alt="Golden Light"/></td>
+<td><img src="assets/anims/anim_light.gif" width="160" alt="Golden Light"/></td>
 <td>画本发出耀眼的金色光芒——旷世神作诞生！</td>
 </tr>
 </table>
 </details>
 
 </details>
-
-</div>
 
 ---
 

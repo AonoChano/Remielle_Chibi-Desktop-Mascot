@@ -4,7 +4,7 @@
 
 The character "Remielle" and related original intellectual properties,
 including character design, illustrations, animations, and other official
-materials, are owned by miHoUo/HoYoverse and their respective rights holders.
+materials, are owned by miHoYo/HoYoverse and their respective rights holders.
 
 This repository contains fan-made derivative works and extracted/processed
 assets created for personal learning, technical research, and non-commercial
@@ -35,7 +35,7 @@ assets or other third-party materials.
 
 ## Disclaimer
 
-This is an unofficial fan-made project and is not affiliated with miHoUo/HoYoverse.
+This is an unofficial fan-made project and is not affiliated with miHoYo/HoYoverse.
 
-All rights to Remielle and related intellectual property remain with miHoUo/HoYoverse
+All rights to Remielle and related intellectual property remain with miHoYo/HoYoverse
 and their respective owners.

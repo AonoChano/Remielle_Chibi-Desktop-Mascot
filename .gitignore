@@ -1,11 +1,25 @@
+# Node.js
 node_modules/
+package-lock.json
+
+# Build outputs
 dist/
+build/
+*.exe
+*.dmg
+*.AppImage
+
+# Capture temp files (GIF generation)
+capture-frames/
+capture-frames-transparent/
+capture-done.flag
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
-*.log
-
-.trae/
-.claude/
-.codex/
-
-.env

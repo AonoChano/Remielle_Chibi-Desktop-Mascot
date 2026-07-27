@@ -42,10 +42,10 @@
 ---
 
 <details>
-<summary><b>✨ Preview — Animation Showcase</b></summary>
+<summary><h3>✨ Preview — Animation Showcase</h3></summary>
 
 <details>
-<summary>待机 Idle & 思考 Thinking</summary>
+<summary><b>待机 Idle & 思考 Thinking</b></summary>
 <table>
 <tr>
 <td><img src="assets/anims/anim_a.gif" width="160" alt="Idle"/></td>
@@ -57,7 +57,7 @@
 </details>
 
 <details>
-<summary>疯狂画画 Drawing & 画完炫耀 Finished</summary>
+<summary><b>疯狂画画 Drawing & 画完炫耀 Finished</b></summary>
 <table>
 <tr>
 <td><img src="assets/anims/anim_d.gif" width="160" alt="Drawing"/></td>
@@ -69,7 +69,7 @@
 </details>
 
 <details>
-<summary>画完收笔 Done & 委屈 Tearing Up</summary>
+<summary><b>画完收笔 Done & 委屈 Tearing Up</b></summary>
 <table>
 <tr>
 <td><img src="assets/anims/anim_d_win.gif" width="160" alt="Done"/></td>
@@ -81,7 +81,7 @@
 </details>
 
 <details>
-<summary>拿起画笔 Ready & 金色光芒 Golden Light</summary>
+<summary><b>拿起画笔 Ready & 金色光芒 Golden Light</b></summary>
 <table>
 <tr>
 <td><img src="assets/anims/anim_a_win.gif" width="160" alt="Ready"/></td>
@@ -98,17 +98,23 @@
 
 ## 🎭 About Remielle | 关于蕾米埃尔
 
-<div align="center">
+<table>
+<tr valign="top">
+<td width="200"><img src="assets/Remielle_Poster.png" width="200" alt="Remielle Poster"/></td>
+<td>
 
-| Property | Detail |
-|:---------|:-------|
-| **Agent Name** | Remielle Dan (蕾米埃尔·丹) |
-| **Rank** | <span style="color:#ff69b4">★ S-Rank Limited ★</span> |
-| **Faction** | Void Hunters (虚狩) |
-| **Attribute** | Lumiflux (流明) |
-| **Debut** | ZZZ Version 3.1 |
+<table>
+<tr><th>Property</th><th>Detail</th></tr>
+<tr><td><b>Agent Name</b></td><td>Remielle Dan (蕾米埃尔·丹)</td></tr>
+<tr><td><b>Rank</b></td><td><span style="color:#ff69b4">★ S-Rank Limited ★</span></td></tr>
+<tr><td><b>Faction</b></td><td>Void Hunters (虚狩)</td></tr>
+<tr><td><b>Attribute</b></td><td>Lumiflux (流明)</td></tr>
+<tr><td><b>Debut</b></td><td>ZZZ Version 3.1</td></tr>
+</table>
 
-</div>
+</td>
+</tr>
+</table>
 
 Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters**, she wields the **Lumiflux** attribute with angelic wings and a gentle yet determined personality.
 

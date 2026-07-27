@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Remielle Mascot Control Panel</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">Remielle</div>
+      <nav>
+        <a href="#" class="nav-item active" data-tab="expressions">Expressions</a>
+        <a href="#" class="nav-item" data-tab="settings">Settings</a>
+      </nav>
+    </aside>
+    <main class="content">
+      <section id="tab-expressions" class="tab active">
+        <h2>Animation Playback</h2>
+        <div class="button-grid">
+          <button class="btn-anim" data-anim="a">Idle (a)</button>
+          <button class="btn-anim" data-anim="a_win">Victory A (a_win)</button>
+          <button class="btn-anim" data-anim="b">Talking/Shy (b)</button>
+          <button class="btn-anim" data-anim="c">Light Idle (c)</button>
+          <button class="btn-anim" data-anim="d">Nervous (d)</button>
+          <button class="btn-anim" data-anim="d_win">Victory D (d_win)</button>
+          <button class="btn-anim" data-anim="e">Expression E (e)</button>
+          <button class="btn-anim" data-anim="light">Light FX (light)</button>
+        </div>
+
+        <h2>Outfit Switch</h2>
+        <div class="button-grid">
+          <button class="btn-outfit" data-outfit="A">Outfit A</button>
+          <button class="btn-outfit" data-outfit="B">Outfit B</button>
+          <button class="btn-outfit" data-outfit="C">Outfit C</button>
+          <button class="btn-outfit" data-outfit="D">Outfit D</button>
+          <button class="btn-outfit" data-outfit="E">Outfit E</button>
+        </div>
+
+        <h2>Status</h2>
+        <p id="status-text">Ready. Click the buttons above to preview in the pet window.</p>
+      </section>
+
+      <section id="tab-settings" class="tab">
+        <h2>Settings</h2>
+        <div class="setting-row">
+          <label>Always on Top</label>
+          <span class="hint">Pet window stays above all other windows</span>
+        </div>
+        <div class="setting-row">
+          <label>Launch on Startup</label>
+          <span class="hint">Not yet implemented</span>
+        </div>
+        <div class="setting-row">
+          <label>Render Scale</label>
+          <span class="hint">Not yet implemented</span>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="panel.js"></script>
+</body>
+</html>

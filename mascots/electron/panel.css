@@ -1,0 +1,131 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  background: #f5f6fa;
+  color: #2c3e50;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 200px;
+  background: #2c3e50;
+  color: #ecf0f1;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.logo {
+  padding: 24px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #34495e;
+  letter-spacing: 2px;
+}
+
+nav {
+  padding: 12px 0;
+}
+
+.nav-item {
+  display: block;
+  padding: 12px 24px;
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: #34495e;
+  color: #fff;
+  border-left-color: #3498db;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.button-grid button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #3498db;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.button-grid button:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.button-grid button:active {
+  transform: translateY(0);
+}
+
+.btn-outfit {
+  background: #9b59b6 !important;
+}
+
+.btn-outfit:hover {
+  background: #8e44ad !important;
+}
+
+#status-text {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.setting-row {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.setting-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.setting-row .hint {
+  color: #95a5a6;
+  font-size: 13px;
+}

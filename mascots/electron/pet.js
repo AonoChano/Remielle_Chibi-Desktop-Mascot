@@ -7,17 +7,17 @@ class PetApp {
   }
 
   loadAssets(canvas) {
-    canvas.assetManager.loadText("../../spine/remeille-chibi/remeille-chibi.json");
-    canvas.assetManager.loadTextureAtlas("../../spine/remeille-chibi/remeille-chibi.atlas");
+    canvas.assetManager.loadText("assets/remi.json");
+    canvas.assetManager.loadTextureAtlas("assets/leimi.atlas");
   }
 
   initialize(canvas) {
     let assetManager = canvas.assetManager;
-    var atlas = assetManager.require("../../spine/remeille-chibi/remeille-chibi.atlas");
+    var atlas = assetManager.require("assets/leimi.atlas");
     var atlasLoader = new spine.AtlasAttachmentLoader(atlas);
     var skeletonJson = new spine.SkeletonJson(atlasLoader);
     skeletonJson.scale = 1;
-    var skeletonData = skeletonJson.readSkeletonData(assetManager.require("../../spine/remeille-chibi/remeille-chibi.json"));
+    var skeletonData = skeletonJson.readSkeletonData(assetManager.require("assets/remi.json"));
     this.skeleton = new spine.Skeleton(skeletonData);
 
     var animationStateData = new spine.AnimationStateData(skeletonData);
@@ -32,6 +32,7 @@ class PetApp {
 
   centerSkeleton() {
     if (!this.skeleton) return;
+    // 获取骨骼包围盒并大致居中
     this.skeleton.setToSetupPose();
     this.skeleton.updateWorldTransform(spine.Physics.update);
   }
@@ -74,6 +75,7 @@ class PetApp {
   }
 
   applyExpression(expression) {
+    // 预留：表情微调（如眨眼、脸红）
     console.log('expression', expression);
   }
 

@@ -1,8 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage } = require('electron');
 const path = require('path');
 
-app.setAppUserModelId('com.aonochano.remielle-mascot');
-
 let petWindow = null;
 let panelWindow = null;
 let tray = null;
@@ -21,8 +19,7 @@ function createPetWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
-      nodeIntegration: false,
-      webSecurity: false
+      nodeIntegration: false
     }
   });
 
@@ -42,8 +39,8 @@ function createPanelWindow() {
   panelWindow = new BrowserWindow({
     width: 860,
     height: 640,
-    title: 'Remielle Mascot Control Panel',
-    icon: path.join(__dirname, '..', '..', 'spine', 'remeille-chibi', 'leimi.png'),
+    title: '小蕾米管理面板',
+    icon: path.join(__dirname, 'assets', 'leimi.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -58,7 +55,7 @@ function createPanelWindow() {
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, '..', '..', 'spine', 'remeille-chibi', 'leimi.png');
+  const iconPath = path.join(__dirname, 'assets', 'leimi.png');
   let icon;
   try {
     icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
@@ -67,12 +64,12 @@ function createTray() {
   }
 
   tray = new Tray(icon);
-  tray.setToolTip('Remielle Desktop Mascot');
+  tray.setToolTip('小蕾米桌宠');
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Open Control Panel', click: () => createPanelWindow() },
+    { label: '打开管理面板', click: () => createPanelWindow() },
     { type: 'separator' },
-    { label: 'Quit', click: () => app.quit() }
+    { label: '退出', click: () => app.quit() }
   ]);
   tray.setContextMenu(contextMenu);
   tray.on('click', () => createPanelWindow());
@@ -84,7 +81,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  // Keep tray running
+  // 保留托盘运行，不退出
 });
 
 app.on('activate', () => {

@@ -20,7 +20,7 @@ document.querySelectorAll('.btn-anim').forEach(btn => {
     const anim = btn.dataset.anim;
     if (window.electronAPI) {
       window.electronAPI.send('play-animation', anim);
-      setStatus('Sent animation command: ' + anim);
+      setStatus('已发送动画指令: ' + anim);
     }
   });
 });
@@ -30,7 +30,7 @@ document.querySelectorAll('.btn-outfit').forEach(btn => {
     const outfit = btn.dataset.outfit;
     if (window.electronAPI) {
       window.electronAPI.send('set-outfit', outfit);
-      setStatus('Sent outfit command: Outfit ' + outfit);
+      setStatus('已发送换装指令: 套装 ' + outfit);
     }
   });
 });

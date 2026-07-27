@@ -10,18 +10,23 @@ A high-quality chibi (Q-version) Spine animation asset pack of **Remielle (蕾�
 
 ---
 
+> [!WARNING]
+> This repository contains fan-made derivative assets.
+> Remielle and related intellectual property belong to HoYoverse.
+> See ASSET_LICENSE.md for asset usage terms.
+
 ## About Remielle / 关于蕾米埃尔
 
 Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters (虚狩)**, she wields the **Lumiflux (光)** attribute with angelic wings and a gentle yet determined personality.
 
-蕾米埃尔是《绝区零》3.1 版本的限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员，拥有 **光 (Lumiflux)** 属性和天使般的翅膀。
+蕾米埃尔是《绝区零》3.1 版本**流明 (Lumiflux)** 属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员，拥有 ~~大雷~~美丽动人的脸庞，强大的战斗力和天使般的翅膀。
 
 | Property | Detail |
 |----------|--------|
 | Agent Name | Remielle Dan (蕾米埃尔·丹) |
 | Rank | S-Rank (限定) |
 | Faction | Void Hunters (虚狩) |
-| Attribute | Lumiflux (光) |
+| Attribute | Lumiflux (流明) |
 | Version | 3.1 |
 
 ---
@@ -44,37 +49,38 @@ Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As 
 ```
 Remielle_Chibi-Desktop-Mascot/
 ├── .gitignore
-├── README.md                          # This file / 本文件
+├── README.md							# This file / 本文件
+├── ASSET_LICENSE.md					# Assets Copyright Announcement / 资源版权说明
 ├── LICENSE
 ├── docs/
-│   ├── getting-started.md             # Electron quick start guide / Electron 快速开始
-│   └── spine-animation-guide.md       # Spine asset documentation / Spine 资产说明
+│   ├── getting-started.md				# Electron quick start guide / Electron 快速开始
+│   └── spine-animation-guide.md		# Spine asset documentation / Spine 资产说明
 ├── spine/
 │   └── remeille-chibi/
-│       ├── remeille-chibi.atlas       # Texture atlas / 贴图图集
-│       ├── remeille-chibi.json        # Skeleton JSON (see note below)
-│       └── remeille-chibi.png        # Texture image (to be added)
+│       ├── remeille-chibi.atlas		# Texture atlas / 贴图图集
+│       ├── remeille-chibi.json			# Skeleton JSON (see note below)
+│       └── remeille-chibi.png			# Texture image (to be added)
 └── mascots/
-    ├── electron/                      # Electron desktop pet / Electron 桌宠
+    ├── electron/						# Electron desktop pet / Electron 桌宠
     │   ├── package.json
-    │   ├── main.js                    # Electron main process
-    │   ├── preload.js                 # Context bridge
-    │   ├── pet.html                   # Transparent pet renderer
-    │   ├── pet.js                     # Spine animation engine
-    │   ├── panel.html                 # Control panel UI
-    │   ├── panel.css                  # Control panel styles
-    │   └── panel.js                   # Control panel logic
-    ├── bongo-cat/                     # Bongo Cat integration (planned)
+    │   ├── main.js						# Electron main process
+    │   ├── preload.js					# Context bridge
+    │   ├── pet.html					# Transparent pet renderer
+    │   ├── pet.js						# Spine animation engine
+    │   ├── panel.html					# Control panel UI
+    │   ├── panel.css					# Control panel styles
+    │   └── panel.js					# Control panel logic
+    ├── bongo-cat/						# Bongo Cat integration (planned)
     │   └── README.md
-    ├── codex-cli-pet/                 # Codex CLI pet hook (planned)
+    ├── codex-cli-pet/					# Codex CLI pet hook (planned)
     │   └── README.md
-    ├── claude-code-pet/               # Claude Code pet hook (planned)
+    ├── claude-code-pet/				# Claude Code pet hook (planned)
     │   └── README.md
-    ├── web/                           # Web component (planned)
+    ├── web/							# Web component (planned)
     │   └── README.md
-    ├── wallpaper-engine/              # Wallpaper Engine (planned)
+    ├── wallpaper-engine/				# Wallpaper Engine (planned)
     │   └── README.md
-    └── unity/                         # Unity runtime (planned)
+    └── unity/							# Unity runtime (planned)
         └── README.md
 ```
 

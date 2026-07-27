@@ -1,153 +1,239 @@
-# Remielle Chibi Desktop Mascot
+<div align="center">
 
-**Character Asset Pack & Multi-Platform Desktop Mascot Framework**
+<img src="assets/drawing-animation.gif" width="120" alt="Remielle Drawing Animation"/>
 
-> Q版蕾米埃尔桌宠 — 角色资产包 & 多平台桌宠框架
+# ✦ Remielle Chibi Desktop Mascot ✦
 
-A high-quality chibi (Q-version) Spine animation asset pack of **Remielle (蕾米埃尔)** from miHoYo's *Zenless Zone Zero (绝区零)*, bundled with a ready-to-use multi-platform desktop mascot framework.
+### **Character Asset Pack & Multi-Platform Desktop Mascot Framework**
 
-本项目包含米哈游《绝区零》角色 **蕾米埃尔 (Remielle Dan)** 的高质量 Q 版 Spine 动画资产，附带可开箱即用的多平台桌宠框架。
+**Q 版蕾米埃尔桌宠 — 角色数字资产 & 多平台桌宠框架**
+
+<p>
+  <img src="https://img.shields.io/badge/Animation-9%20Spine%20Clips-ff69b4?style=for-the-badge&logo=spine&logoColor=white" alt="Animations"/>
+  <img src="https://img.shields.io/badge/Outfits-5%20Skins-9b59b6?style=for-the-badge" alt="Outfits"/>
+  <img src="https://img.shields.io/badge/Bones-257-3498db?style=for-the-badge" alt="Bones"/>
+  <img src="https://img.shields.io/badge/Physics-80%20Constraints-e67e22?style=for-the-badge" alt="Physics"/>
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-2ecc71?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/Framework-Electron-47848f?style=flat-square&logo=electron&logoColor=white" alt="Electron"/>
+  <img src="https://img.shields.io/badge/Runtime-Spine%204.2-7393c3?style=flat-square&logo=esotericsoftware" alt="Spine"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License"/>
+</p>
+
+<p>
+  <b>English</b> · <a href="#关于蕾米埃尔">中文</a>
+</p>
+
+</div>
 
 ---
 
 > [!WARNING]
-> This repository contains fan-made derivative assets.
-> Remielle and related intellectual property belong to HoYoverse.
-> See ASSET_LICENSE.md for asset usage terms.
+> **Fan-made derivative assets.** Remielle and all related intellectual property belong to **HoYoverse / miHoYo**.
+> This project is intended for **personal and educational use only**.
+> See [`ASSET_LICENSE.md`](ASSET_LICENSE.md) for full asset usage terms.
 
-## About Remielle / 关于蕾米埃尔
+> [!NOTE]
+> **Spine JSON 太大无法直接托管** (~488 KB)。请从原始 `.spine` 项目文件通过 Spine Editor 导出。
+> 详见下方 [Quick Start](#-quick-start) 章节。
 
-Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters (虚狩)**, she wields the **Lumiflux (光)** attribute with angelic wings and a gentle yet determined personality.
+---
 
-蕾米埃尔是《绝区零》3.1 版本**流明 (Lumiflux)** 属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员，拥有 ~~大雷~~美丽动人的脸庞，强大的战斗力和天使般的翅膀。
+<div align="center">
+
+### ✨ Preview — Animation Showcase
+
+<table>
+<tr>
+<td><b>a</b> — 待机 Idle</td>
+<td><b>b</b> — 思考 Thinking</td>
+</tr>
+<tr>
+<td>盯着画本看，安静地端详着即将创作的画作</td>
+<td>右手拿画笔，左手托下巴：「画什么好呢？」</td>
+</tr>
+<tr>
+<td><b>d</b> — 疯狂画画 Drawing</td>
+<td><b>c</b> — 画完炫耀 Finished</td>
+</tr>
+<tr>
+<td>全速运转！手持画笔疯狂作画中 🎨💨</td>
+<td>扭头向左，比出 V 字手势：「天才画家就是我」</td>
+</tr>
+<tr>
+<td><b>d_win</b> — 画完收笔 Done</td>
+<td><b>e</b> — 委屈 Tearing Up</td>
+</tr>
+<tr>
+<td>从疯狂画画状态自然过渡到收笔，回归待机</td>
+<td>眼泪哗哗流，八字眉三角嘴，好像受了天大委屈</td>
+</tr>
+<tr>
+<td><b>a_win</b> — 拿起画笔 Ready</td>
+<td><b>light</b> — 金色光芒 Golden Light</td>
+</tr>
+<tr>
+<td>在待机基础上拿出了画笔，蓄势待发</td>
+<td>画本发出耀眼的金色光芒——旷世神作诞生！✨</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 🎭 About Remielle | 关于蕾米埃尔
+
+<div align="center">
 
 | Property | Detail |
-|----------|--------|
-| Agent Name | Remielle Dan (蕾米埃尔·丹) |
-| Rank | S-Rank (限定) |
-| Faction | Void Hunters (虚狩) |
-| Attribute | Lumiflux (流明) |
-| Version | 3.1 |
+|:---------|:-------|
+| **Agent Name** | Remielle Dan (蕾米埃尔·丹) |
+| **Rank** | <span style="color:#ff69b4">★ S-Rank Limited ★</span> |
+| **Faction** | Void Hunters (虚狩) |
+| **Attribute** | Lumiflux (流明) |
+| **Debut** | ZZZ Version 3.1 |
+
+</div>
+
+Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters**, she wields the **Lumiflux** attribute with angelic wings and a gentle yet determined personality.
+
+蕾米埃尔是《绝区零》3.1 版本**流明**属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员，拥有美丽动人的面容、强大的战斗力和天使般的翅膀。在桌宠中她化身为一位热爱画画的 Q 版小画家！
 
 ---
 
-## Features / 功能特性
+## 🚀 Quick Start
 
-- **9 Spine Animations** — Idle, victory, talking, shy, nervous, light effects, and more / 9 种 Spine 动画：待机、胜利、说话、害羞、紧张、光效等
-- **5 Outfit Skins** — Switchable chibi outfits (A through E) / 5 套可切换 Q 版换装
-- **257 Bones & 80 Physics Constraints** — Rich skeletal structure with hair, ribbon, wing, and cloth physics / 257 骨骼 + 80 物理约束，含头发、飘带、翅膀、布料物理
-- **Pseudo-3D Head Tracking** — Constraint-driven interactive head follow / 伪 3D 头部跟随
-- **Electron Desktop Pet** — Transparent always-on-top window with drag support / Electron 桌宠：透明置顶窗口，支持拖拽
-- **Control Panel** — Real-time animation and outfit switching / 实时控制面板
-- **Multi-Platform Build** — Windows (NSIS), macOS (DMG), Linux (AppImage) / 多平台打包
-- **Extensible Framework** — Bongo Cat, Web Component, Wallpaper Engine, Unity, and AI pet hooks planned / 可扩展框架
+<details>
+<summary><b>📌 Prerequisites</b></summary>
+
+- **Node.js** >= 18.x
+- **npm** >= 9.x
+
+</details>
+
+<details open>
+<summary><b>🔧 Installation & Run</b></summary>
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/AonoChano/Remielle_Chibi-Desktop-Mascot.git
+cd Remielle_Chibi-Desktop-Mascot
+
+# 2. Install Electron dependencies
+cd mascots/electron
+npm install
+
+# 3. Place Spine assets (see note below)
+#    Copy remeille-chibi.json + remeille-chibi.png into spine/remeille-chibi/
+
+# 4. Launch!
+npm start
+```
+
+</details>
+
+<details>
+<summary><b>📦 Spine Assets Setup</b></summary>
+
+Copy the skeleton JSON and texture image into `spine/remeille-chibi/`:
+
+- `remeille-chibi.json` — Export from the original `.spine` project via **Spine Editor**
+- `remeille-chibi.png` — The texture image (rename from `leimi.png` if needed)
+
+> [!CAUTION]
+> The `remeille-chibi.json` file (~488 KB) is too large for direct Git hosting.
+> You **must** export it from the original `.spine` binary project file using Spine Editor's JSON export.
+
+</details>
 
 ---
 
-## Directory Structure / 目录结构
+## 📐 Features
+
+<details>
+<summary><b>骨骼动画 Spine Animations</b></summary>
+
+| Feature | Detail |
+|:--------|:-------|
+| Animations | 9 (idle, victory, talking, thinking, drawing, crying, light effects, etc.) |
+| Bones | 257 |
+| Slots | 199 |
+| IK Constraints | 6 |
+| Physics Constraints | 80 (hair, ribbon, wing, cloth physics) |
+| Outfit Skins | 5 (A through E) |
+| Head Tracking | Pseudo-3D constraint-driven head follow |
+
+</details>
+
+<details>
+<summary><b>桌宠应用 Desktop Pet</b></summary>
+
+- **Transparent always-on-top window** — 透明置顶悬浮窗
+- **Drag to reposition** — 支持鼠标拖拽移动
+- **System tray integration** — 系统托盘图标，右键菜单
+- **Control Panel** — 侧边栏控制面板，实时切换动画和换装
+- **Multi-platform builds** — Windows (NSIS), macOS (DMG), Linux (AppImage)
+
+</details>
+
+<details>
+<summary><b>可扩展框架 Extensible Framework</b></summary>
+
+| Platform | Directory | Status |
+|:---------|:----------|:-------|
+| <img src="https://img.shields.io/badge/Electron-Desktop%20Pet-2ecc71?style=flat-square" alt=""/> | `mascots/electron/` | ✅ Working |
+| <img src="https://img.shields.io/badge-Bongo_Cat-Overlay-9b59b6?style=flat-square" alt=""/> | `mascots/bongo-cat/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Codex_CLI-Pet%20Hook-3498db?style=flat-square" alt=""/> | `mascots/codex-cli-pet/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Claude_Code-Pet%20Hook-f1c40f?style=flat-square" alt=""/> | `mascots/claude-code-pet/` | 📋 Planned |
+| <img src="https://img.shields.io/badge-Web-Component-1abc9c?style=flat-square" alt=""/> | `mascots/web/` | 📋 Planned |
+| <img src="https://img.shields.io/badge-Wallpaper_Engine-Live%20WP-e74c3c?style=flat-square" alt=""/> | `mascots/wallpaper-engine/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Unity-Runtime-7393c3?style=flat-square" alt=""/> | `mascots/unity/` | 📋 Planned |
+
+</details>
+
+---
+
+## 📁 Directory Structure
 
 ```
 Remielle_Chibi-Desktop-Mascot/
 ├── .gitignore
-├── README.md							# This file / 本文件
-├── ASSET_LICENSE.md					# Assets Copyright Announcement / 资源版权说明
-├── LICENSE
+├── README.md                    ← You are here
+├── ASSET_LICENSE.md             ← Assets Copyright
+├── LICENSE                      ← MIT License
+│
 ├── docs/
-│   ├── getting-started.md				# Electron quick start guide / Electron 快速开始
-│   └── spine-animation-guide.md		# Spine asset documentation / Spine 资产说明
+│   ├── getting-started.md       ← Electron quick start guide
+│   └── spine-animation-guide.md ← Spine asset documentation
+│
 ├── spine/
 │   └── remeille-chibi/
-│       ├── remeille-chibi.atlas		# Texture atlas / 贴图图集
-│       ├── remeille-chibi.json			# Skeleton JSON (see note below)
-│       └── remeille-chibi.png			# Texture image (to be added)
+│       ├── remeille-chibi.atlas ← Texture atlas
+│       ├── remeille-chibi.json  ← Skeleton JSON (export from .spine)
+│       └── remeille-chibi.png   ← Texture image
+│
 └── mascots/
-    ├── electron/						# Electron desktop pet / Electron 桌宠
+    ├── electron/                  ← Electron desktop pet (working)
     │   ├── package.json
-    │   ├── main.js						# Electron main process
-    │   ├── preload.js					# Context bridge
-    │   ├── pet.html					# Transparent pet renderer
-    │   ├── pet.js						# Spine animation engine
-    │   ├── panel.html					# Control panel UI
-    │   ├── panel.css					# Control panel styles
-    │   └── panel.js					# Control panel logic
-    ├── bongo-cat/						# Bongo Cat integration (planned)
-    │   └── README.md
-    ├── codex-cli-pet/					# Codex CLI pet hook (planned)
-    │   └── README.md
-    ├── claude-code-pet/				# Claude Code pet hook (planned)
-    │   └── README.md
-    ├── web/							# Web component (planned)
-    │   └── README.md
-    ├── wallpaper-engine/				# Wallpaper Engine (planned)
-    │   └── README.md
-    └── unity/							# Unity runtime (planned)
-        └── README.md
+    │   ├── main.js               ← Electron main process
+    │   ├── preload.js            ← Context bridge
+    │   ├── pet.html / pet.js     ← Transparent pet renderer + Spine engine
+    │   ├── panel.html / panel.css / panel.js ← Control panel
+    │
+    ├── bongo-cat/                ← Bongo Cat integration (planned)
+    ├── codex-cli-pet/            ← Codex CLI pet hook (planned)
+    ├── claude-code-pet/          ← Claude Code pet hook (planned)
+    ├── web/                      ← Web component (planned)
+    ├── wallpaper-engine/         ← Wallpaper Engine (planned)
+    └── unity/                    ← Unity runtime (planned)
 ```
 
 ---
 
-## Quick Start (Electron) / 快速开始
-
-### Prerequisites / 前置要求
-
-- Node.js >= 18.x
-- npm >= 9.x
-
-### Setup / 安装
-
-```bash
-# Clone the repository / 克隆仓库
-git clone https://github.com/AonoChano/Remielle_Chibi-Desktop-Mascot.git
-cd Remielle_Chibi-Desktop-Mascot
-
-# Install Electron dependencies / 安装 Electron 依赖
-cd mascots/electron
-npm install
-```
-
-### Place Spine Assets / 放置 Spine 资产
-
-Copy the skeleton JSON and texture image into `spine/remeille-chibi/`:
-
-- `remeille-chibi.json` — Export from the original `.spine` project via Spine Editor
-- `remeille-chibi.png` — The texture image (rename from `leimi.png` if needed)
-
-> **Note:** The `remeille-chibi.json` file (~488 KB) is too large for direct Git hosting. Please export it from the original `.spine` binary project file using Spine Editor's JSON export.
->
-> **注意：** `remeille-chibi.json` 文件 (~488 KB) 因体积限制未直接托管于 Git，请从原始 `.spine` 项目文件通过 Spine Editor 导出。
-
-### Run / 运行
-
-```bash
-npm start
-```
-
-The pet window will appear on your desktop. Right-click to open the Control Panel.
-
-桌宠窗口将出现在桌面。右键点击可打开控制面板。
-
-See [Getting Started Guide](docs/getting-started.md) for detailed instructions. / 详见 [快速开始指南](docs/getting-started.md)。
-
----
-
-## Spine Asset Integration / Spine 资产接入
-
-The Spine assets in `spine/remeille-chibi/` can be used with any Spine 4.2 compatible runtime:
-
-`spine/remeille-chibi/` 中的 Spine 资产可用于任何 Spine 4.2 兼容的运行时：
-
-| Runtime | File | Description |
-|---------|------|-------------|
-| spine-webgl | `pet.js` | WebGL renderer for Electron / Web |
-| spine-unity | — | Unity SkeletonAnimation component |
-| spine-csharp | — | Generic C# runtime |
-| spine-ts | — | TypeScript/JavaScript runtime |
-
-See the [Spine Animation Guide](docs/spine-animation-guide.md) for detailed integration instructions. / 详见 [Spine 动画资产说明](docs/spine-animation-guide.md)。
-
----
-
-## Building for Distribution / 打包分发
+## 🔨 Building for Distribution
 
 ```bash
 cd mascots/electron
@@ -162,37 +248,55 @@ npm run build:mac
 npm run build:linux
 ```
 
----
-
-## Planned Integrations / 计划中的集成
-
-| Platform | Directory | Status |
-|----------|-----------|--------|
-| Electron Desktop Pet | `mascots/electron/` | Working / 可用 |
-| Bongo Cat | `mascots/bongo-cat/` | Planned |
-| Codex CLI Pet Hook | `mascots/codex-cli-pet/` | Planned |
-| Claude Code Pet Hook | `mascots/claude-code-pet/` | Planned |
-| Web Component | `mascots/web/` | Planned |
-| Wallpaper Engine | `mascots/wallpaper-engine/` | Planned |
-| Unity Runtime | `mascots/unity/` | Planned |
-
-Contributions to any of these integrations are welcome! / 欢迎贡献任何平台的实现！
+See [`docs/getting-started.md`](docs/getting-started.md) for detailed instructions.
 
 ---
 
-## License / 许可证
+## 🎮 Animation Controls
+
+<details>
+<summary><b>Keyboard Shortcuts (Electron)</b></summary>
+
+| Shortcut | Action |
+|:---------|:-------|
+| `1` | Idle (a) — 待机 |
+| `2` | Victory (a_win) — 胜利 |
+| `3` | Thinking (b) — 思考 |
+| `4` | Finished (c) — 画完炫耀 |
+| `5` | Drawing (d) — 疯狂画画 |
+| `6` | Done (d_win) — 画完收笔 |
+| `7` | Tearing Up (e) — 委屈 |
+| `8` | Golden Light (light) — 金色光芒 |
+
+Outfit switch: `Q` / `W` / `E` / `R` / `T` for skins A through E.
+
+</details>
+
+---
+
+## 📜 License
 
 This project is licensed under the **MIT License**.
 
-Character design and original art are property of miHoYo / HoYoverse. These assets are intended for **personal and educational use only**. Please respect the original intellectual property rights.
+Character design and original art are property of **miHoYo / HoYoverse**. These assets are intended for **personal and educational use only**. Please respect the original intellectual property rights.
 
-本项目采用 **MIT 许可证**。角色设计和原始美术素材归米哈游 / HoYoverse 所有，仅供**个人和教育用途**。请尊重原始知识产权。
+本项目采用 **MIT 许可证**。角色设计和原始美术素材归米哈游 / HoYoverse 所有，仅供**个人和教育用途**。
 
 ---
 
-## Acknowledgments / 致谢
+## 🙏 Acknowledgments
 
-- **miHoYo / HoYoverse** — Original character design and Zenless Zone Zero / 原始角色设计与《绝区零》
-- **EsotericSoftware** — Spine 2D Animation Runtime / Spine 2D 动画运行时
-- **Electron** — Cross-platform desktop application framework / 跨平台桌面应用框架
-- **Bongo Cat** — Desktop pet framework inspiration / 桌宠框架灵感来源
+- **miHoYo / HoYoverse** — Original character design and Zenless Zone Zero
+- **EsotericSoftware** — [Spine 2D Animation Runtime](https://esotericsoftware.com)
+- **Electron** — Cross-platform desktop application framework
+- **Bongo Cat** — Desktop pet framework inspiration
+
+---
+
+<div align="center">
+
+<b>Made with 🎨 and ❤️ by </b> [<b>AonoChano</b>](https://github.com/AonoChano)
+
+<i>"Even a chibi Remielle can create masterpieces."</i>
+
+</div>

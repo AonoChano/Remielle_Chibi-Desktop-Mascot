@@ -40,7 +40,7 @@ function createPanelWindow() {
     width: 860,
     height: 640,
     title: '小蕾米管理面板',
-    icon: path.join(__dirname, 'assets', 'leimi.png'),
+    icon: path.join(__dirname, 'assets', 'logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -55,7 +55,7 @@ function createPanelWindow() {
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, 'assets', 'leimi.png');
+  const iconPath = path.join(__dirname, 'assets', 'logo.png');
   let icon;
   try {
     icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });

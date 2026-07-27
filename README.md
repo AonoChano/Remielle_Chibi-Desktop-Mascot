@@ -1,11 +1,10 @@
 <div align="center">
 
-<table>
-<tr>
-<td><img src="assets/remi_drawing.gif" width="160" alt="Remielle Drawing Animation"/></td>
-<td><img src="assets/BannerLogo.png" width="400" alt="Remielle Banner Logo"/></td>
-</tr>
-</table>
+<p>
+<img src="assets/remi_drawing.gif" width="220" alt="Remielle Drawing Animation"/>
+&nbsp;&nbsp;&nbsp;
+<img src="assets/BannerLogo.png" width="520" alt="Remielle Banner Logo"/>
+</p>
 
 # ✦ Remielle Chibi Desktop Mascot ✦
 

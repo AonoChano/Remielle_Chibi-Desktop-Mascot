@@ -40,9 +40,8 @@
 > See [`ASSET_LICENSE.md`](ASSET_LICENSE.md) for full asset usage terms.
 
 > [!NOTE]
-> **Spine 资产文件未纳入版本控制**（`remi.json` ~488 KB、`leimi.png` 贴图文件）。
-> 请从原始 `.spine` 项目文件通过 Spine Editor 导出后放入 `mascots/electron/assets/`。
-> 详见下方 [Quick Start](#-quick-start) 章节。
+> **Spine 资产文件**（`remi.json`、`leimi.png`）已包含在 `mascots/electron/assets/` 中。
+> 如果需要修改，可从原始 `.spine` 项目文件通过 Spine Editor 重新导出。
 
 ---
 
@@ -131,12 +130,8 @@ cd Remielle_Chibi-Desktop-Mascot
 cd mascots/electron
 npm install
 
-# 3. Place Spine assets (see note below)
-#    Export from the original .spine project via Spine Editor,
-#    then copy into mascots/electron/assets/:
-#    - remi.json  (skeleton JSON export)
-#    - leimi.png  (texture image, rename from original if needed)
-#    (leimi.atlas is already included)
+# 3. Spine assets are already included in mascots/electron/assets/
+#    If needed, re-export from the original .spine project via Spine Editor
 
 # 4. Launch!
 npm start
@@ -145,18 +140,15 @@ npm start
 </details>
 
 <details>
-<summary><b>📦 Spine Assets Setup</b></summary>
+<summary><b>📦 Spine Assets</b></summary>
 
-The Electron pet loads Spine assets from `mascots/electron/assets/`:
+Spine runtime assets are located in `mascots/electron/assets/`:
 
-- `remi.json` — Skeleton JSON, export from the original `.spine` project via **Spine Editor** (JSON export)
-- `leimi.png` — Texture image referenced by the atlas (rename from the original export if needed)
-- `leimi.atlas` — Already included in the repository
+- `remi.json` — Skeleton JSON
+- `leimi.png` — Texture image
+- `leimi.atlas` — Texture atlas descriptor
 
-> [!CAUTION]
-> `remi.json` (~488 KB) and `leimi.png` are not included in version control due to file size.
-> You **must** export `remi.json` from the original `.spine` binary project file using Spine Editor's JSON export,
-> and copy the corresponding texture image as `leimi.png`.
+All files are included in the repository. To modify, re-export from the original `.spine` project via **Spine Editor**.
 
 </details>
 
@@ -237,9 +229,9 @@ Remielle_Chibi-Desktop-Mascot/
     │   ├── pet.html / pet.js     ← Transparent pet renderer + Spine engine
     │   ├── panel.html / panel.css / panel.js ← Control panel
     │   ├── assets/
-    │   │   ├── remi.json        ← Skeleton JSON (not in git, export from .spine)
-    │   │   ├── leimi.atlas      ← Texture atlas
-    │   │   ├── leimi.png        ← Texture image (not in git)
+    │   │   ├── remi.json        ← Skeleton JSON
+    │   │   ├── leimi.atlas      ← Texture atlas descriptor
+    │   │   ├── leimi.png        ← Texture image
     │   │   └── logo.png         ← Clean portrait for tray/panel icon
     │
     ├── bongo-cat/                ← Bongo Cat integration (planned)

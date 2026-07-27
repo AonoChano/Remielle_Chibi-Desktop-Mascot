@@ -289,7 +289,7 @@ Character design and original art are property of **miHoYo / HoYoverse**. These 
 
 ---
 
-## 🙏 Acknowledgments
+## 🔍 Acknowledgments
 
 - **miHoYo / HoYoverse** — Original character design and Zenless Zone Zero
 - **EsotericSoftware** — [Spine 2D Animation Runtime](https://esotericsoftware.com)
@@ -302,6 +302,6 @@ Character design and original art are property of **miHoYo / HoYoverse**. These 
 
 <b>Made with 🎨 and ❤️ by </b> [<b>AonoChano</b>](https://github.com/AonoChano)
 
-<i>"Even a chibi Remielle can create masterpieces."</i>
+<i>"What a shame, here's where today's little Q&A game ends~"</i>
 
 </div>

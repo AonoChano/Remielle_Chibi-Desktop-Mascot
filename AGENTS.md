@@ -1,7 +1,5 @@
 # Agent Initialization — Remielle Chibi Desktop Mascot
 
-> `/init` — This file has been initialized for AI-assisted development.
-
 ## Project Overview
 
 This is a **character digital asset pack + multi-platform desktop mascot framework** for Remielle Dan, an S-Rank agent from Zenless Zone Zero.

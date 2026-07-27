@@ -39,15 +39,18 @@
 > This project is intended for **personal and educational use only**.
 > See [`ASSET_LICENSE.md`](ASSET_LICENSE.md) for full asset usage terms.
 
-> [!NOTE]
-> **Spine 资产文件**（`remi.json`、`leimi.png`）已包含在 `mascots/electron/assets/` 中。
-> 如果需要修改，可从原始 `.spine` 项目文件通过 Spine Editor 重新导出。
-
 ---
 
 <div align="center">
 
 ### ✨ Preview — Animation Showcase
+
+<details>
+<summary><b>▶ 点击展开查看全部动画演示 GIF</b></summary>
+
+<img src="assets/all_animations.gif" width="320" alt="All Spine Animations Showcase"/>
+
+</details>
 
 <table>
 <tr>
@@ -63,7 +66,7 @@
 <td><b>c</b> — 画完炫耀 Finished</td>
 </tr>
 <tr>
-<td>全速运转！手持画笔疯狂作画中 🎨💨</td>
+<td>全速运转！手持画笔疯狂作画中</td>
 <td>扭头向左，比出 V 字手势：「天才画家就是我」</td>
 </tr>
 <tr>
@@ -80,7 +83,7 @@
 </tr>
 <tr>
 <td>在待机基础上拿出了画笔，蓄势待发</td>
-<td>画本发出耀眼的金色光芒——旷世神作诞生！✨</td>
+<td>画本发出耀眼的金色光芒——旷世神作诞生！</td>
 </tr>
 </table>
 

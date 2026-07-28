@@ -85,37 +85,41 @@
       </section>
 
       <section id="tab-about" class="tab">
-        <h2 data-i18n="about.title">关于</h2>
-
-        <div class="about-card author-card">
-          <div class="about-header">
-            <img class="about-avatar" src="https://avatars.githubusercontent.com/u/81866991?v=4" alt="AonoChano" crossorigin="anonymous">
-            <div class="about-info">
-              <h3 data-i18n="about.authorName">Watanabe Satoru</h3>
-              <p class="about-handle">@AonoChano</p>
-              <p class="about-location" data-i18n="about.locationValue">中国</p>
+        <div class="about-panel">
+          <!-- Top bar: identity left, social right -->
+          <div class="about-topbar">
+            <div class="about-identity">
+              <img class="about-avatar" src="https://avatars.githubusercontent.com/u/81866991?v=4" alt="AonoChano" crossorigin="anonymous">
+              <div class="about-info">
+                <h3 data-i18n="about.authorName">Watanabe Satoru</h3>
+                <p class="about-handle">@AonoChano</p>
+                <p class="about-location" data-i18n="about.locationValue">中国</p>
+              </div>
+            </div>
+            <div class="about-social">
+              <a href="https://github.com/AonoChano" target="_blank" class="social-link">
+                <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>github.com/AonoChano</span>
+              </a>
             </div>
           </div>
-          <div class="about-links">
-            <a href="https://github.com/AonoChano" target="_blank" class="about-link" data-i18n="about.github">GitHub 主页</a>
-          </div>
-        </div>
 
-        <div class="about-card">
-          <h3 data-i18n="about.appName">Remielle Desktop Mascot</h3>
-          <div class="about-meta">
-            <span><span data-i18n="about.version">版本</span>: <strong data-i18n="about.versionValue">v0.1.0</strong></span>
-          </div>
-          <p class="about-desc" data-i18n="about.description">基于 Spine 2D 骨骼动画的桌面桌宠应用框架。</p>
-        </div>
+          <div class="about-divider"></div>
 
-        <div class="about-card">
-          <h3 data-i18n="about.credits">致谢</h3>
-          <ul class="about-credits">
-            <li data-i18n="about.creditHoyoverse">miHoYo / HoYoverse — 角色设计与《绝区零》</li>
-            <li data-i18n="about.creditSpine">Esoteric Software — Spine 2D 动画引擎</li>
-            <li data-i18n="about.creditElectron">Electron — 跨平台桌面应用框架</li>
-          </ul>
+          <div class="about-section">
+            <h4 data-i18n="about.appName">Remielle Desktop Mascot</h4>
+            <p class="about-version" data-i18n="about.versionValue">v0.1.0</p>
+            <p class="about-desc" data-i18n="about.description">基于 Spine 2D 骨骼动画的桌面桌宠应用框架。</p>
+          </div>
+
+          <div class="about-section">
+            <h4 data-i18n="about.credits">致谢</h4>
+            <ul class="about-credits">
+              <li data-i18n="about.creditHoyoverse">miHoYo / HoYoverse — 角色设计与《绝区零》</li>
+              <li data-i18n="about.creditSpine">Esoteric Software — Spine 2D 动画引擎</li>
+              <li data-i18n="about.creditElectron">Electron — 跨平台桌面应用框架</li>
+            </ul>
+          </div>
         </div>
       </section>
     </main>

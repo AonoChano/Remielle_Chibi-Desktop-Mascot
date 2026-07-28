@@ -39,6 +39,9 @@
 > This project is intended for **personal and educational use only**.
 > See [`ASSET_LICENSE.md`](ASSET_LICENSE.md) for full asset usage terms.
 
+
+
+
 ---
 
 <details>
@@ -89,6 +92,11 @@
 
 ## 🎭 About Remielle | 关于蕾米埃尔
 
+> [!TIP]
+> ✦ 祝各位绳匠十连十金，限定不歪，心仪代理人顺利来到身边！
+>
+> ✦ Good luck, Proxies! May your pulls be golden and your favorite Agents come home!
+
 <table>
 <tr valign="top">
 <td width="200"><img src="assets/Remielle_Poster.png" width="200" alt="Remielle Poster"/></td>
@@ -109,7 +117,7 @@
 
 Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters**, she wields the **Lumiflux** attribute with angelic wings and a gentle yet determined personality.
 
-蕾米埃尔是《绝区零》3.1 版本**流明**属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员，~大雷，~ 拥有美丽动人的面容、强大的战斗力和天使般的翅膀。
+蕾米埃尔是《绝区零》3.1 版本**流明**属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员， 拥有美丽动人的面容~、大雷~、强大的战斗力和天使般的翅膀。
 
 ---
 
@@ -271,17 +279,19 @@ See [`docs/getting-started.md`](docs/getting-started.md) for detailed instructio
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
+The source code of this project is licensed under the MIT License.
 
-Character design and original art are property of **miHoYo / HoYoverse**. These assets are intended for **personal and educational use only**. Please respect the original intellectual property rights.
+Character assets, illustrations, and related materials are not covered by this license.
+They remain the property of their respective copyright holders.
 
-本项目采用 **MIT 许可证**。角色设计和原始美术素材归米哈游 / HoYoverse 所有，仅供**个人和教育用途**。
+
+本项目采用 **MIT 许可证**。角色设计和原始美术素材，以及任何其他相关素材，版权均归米哈游 / miHoYo / HoYoverse 所有，仅供**个人和教育用途**。
 
 ---
 
-## 🔍 Acknowledgments
+## 🔍 Acknowledgments / Copyright
 
-- **miHoYo / HoYoverse** — Original character design and Zenless Zone Zero
+- **miHoYo / HoYoverse** — Original character design and Zenless Zone Zero, assets copyright owned.
 - **EsotericSoftware** — [Spine 2D Animation Runtime](https://esotericsoftware.com)
 - **Electron** — Cross-platform desktop application framework
 - **Bongo Cat** — Desktop pet framework inspiration

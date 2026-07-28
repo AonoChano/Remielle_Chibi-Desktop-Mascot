@@ -277,27 +277,6 @@ See [`docs/getting-started.md`](docs/getting-started.md) for detailed instructio
 
 ---
 
-## 🎮 Animation Controls
-
-<details>
-<summary><b>Keyboard Shortcuts (Electron)</b></summary>
-
-| Shortcut | Action |
-|:---------|:-------|
-| `1` | Idle (a) — 待机 |
-| `2` | Ready (a_win) — 拿起画笔 |
-| `3` | Thinking (b) — 思考 |
-| `4` | Finished (c) — 画完炫耀 |
-| `5` | Drawing (d) — 疯狂画画 |
-| `6` | Done (d_win) — 画完收笔 |
-| `7` | Tearing Up (e) — 委屈 |
-| `8` | Golden Light (light) — 金色光芒 |
-
-Outfit switch: `Q` / `W` / `E` / `R` / `T` for skins A through E.
-
-</details>
-
----
 
 ## 📜 License
 

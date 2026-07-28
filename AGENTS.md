@@ -1,4 +1,4 @@
-# Agent Initialization — Remielle Chibi Desktop Mascot
+# AGENTS.md
 
 ## Project Overview
 
@@ -8,12 +8,20 @@ This is a **character digital asset pack + multi-platform desktop mascot framewo
 - **Working implementation**: Electron desktop pet (`mascots/electron/`)
 - **Planned platforms**: Bongo Cat, Codex CLI, Claude Code, Web, Wallpaper Engine, Unity
 
+## Harness Workflow
+
+- Read HARNESS.md to check if it is updated and follow it.
+- Take a look of `CHANGELOG.md` if you just took this mission.
+- If you don't know about software version control rule, MUST read `VER_CTRL.md` to MAKE SURE you know it.
+
+
 ## Directory Structure
 
 ```
 Remielle_Chibi-Desktop-Mascot/
-├── AGENTS.md                    ← You are here
+├── AGENTS.md/CLAUDE.md                    ← You are here
 ├── README.md
+├── HARNESS.md
 ├── ASSET_LICENSE.md
 ├── LICENSE
 │
@@ -73,7 +81,3 @@ npm start              # Launch desktop pet
 
 `spine/remeille-chibi/remeille-chibi.json` is **not tracked in Git** (~488KB). Export it from the original `.spine` project using Spine Editor's JSON export. The atlas and PNG are tracked.
 
-## License
-
-- Code: MIT
-- Character art & design: Property of miHoYo / HoYoverse (personal/educational use only)

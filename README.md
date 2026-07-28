@@ -117,7 +117,7 @@
 
 Remielle Dan is an S-Rank Agent introduced in Zenless Zone Zero Version 3.1. As a founding member of the first-generation **Void Hunters**, she wields the **Lumiflux** attribute with angelic wings and a gentle yet determined personality.
 
-蕾米埃尔是《绝区零》3.1 版本**流明**属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员， 拥有美丽动人的面容~、大雷~、强大的战斗力和天使般的翅膀。
+蕾米埃尔是《绝区零》3.1 版本**流明**属性限定 S 级代理人，初代 **虚狩 (Void Hunter)** 核心成员， 拥有美丽动人的面容 ~大雷~ 、强大的战斗力和天使般的翅膀。
 
 ---
 

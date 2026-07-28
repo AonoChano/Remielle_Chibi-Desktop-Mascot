@@ -285,7 +285,7 @@ See [`docs/getting-started.md`](docs/getting-started.md) for detailed instructio
 | Shortcut | Action |
 |:---------|:-------|
 | `1` | Idle (a) — 待机 |
-| `2` | Victory (a_win) — 胜利 |
+| `2` | Ready (a_win) — 拿起画笔 |
 | `3` | Thinking (b) — 思考 |
 | `4` | Finished (c) — 画完炫耀 |
 | `5` | Drawing (d) — 疯狂画画 |

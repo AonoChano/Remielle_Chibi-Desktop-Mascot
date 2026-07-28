@@ -8,7 +8,12 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="logo" data-i18n="app.title">小蕾米</div>
+      <div class="logo">
+        <img class="logo-img" src="assets/BannerLogo.png" alt="Remielle"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='none';this.parentElement.querySelector('.logo-fallback').style.display='block';">
+        <span class="logo-label" data-i18n="app.controlPanel">控制面板</span>
+        <span class="logo-fallback" style="display:none;" data-i18n="app.fallbackTitle">小蕾米管理面板</span>
+      </div>
       <nav>
         <a href="#" class="nav-item active" data-tab="main" data-i18n="nav.main">主面板</a>
         <a href="#" class="nav-item" data-tab="settings" data-i18n="nav.settings">设置</a>

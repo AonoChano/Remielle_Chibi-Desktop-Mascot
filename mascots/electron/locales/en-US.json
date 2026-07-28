@@ -4,7 +4,9 @@
     "display_name": "English (United States)"
   },
   "app": {
-    "title": "Remielle Control Panel"
+    "title": "Remielle Control Panel",
+    "controlPanel": "Control Panel",
+    "fallbackTitle": "Remielle Control Panel"
   },
   "nav": {
     "main": "Main Panel",

@@ -14,7 +14,7 @@ body {
 
 .sidebar {
   width: 200px;
-  background: linear-gradient(180deg, #2d1b4e 0%, #1a1033 100%);
+  background: linear-gradient(180deg, #1a0a2e 0%, #2d1050 50%, #1a0a2e 100%);
   color: #e8e0ff;
   display: flex;
   flex-direction: column;
@@ -22,10 +22,32 @@ body {
 }
 
 .logo {
-  padding: 24px;
-  font-size: 20px;
+  padding: 20px 16px 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(194, 24, 91, 0.25);
+}
+
+.logo-img {
+  display: block;
+  width: 100%;
+  max-width: 168px;
+  margin: 0 auto 8px;
+  image-rendering: auto;
+}
+
+.logo-label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #80DEEA;
+  font-weight: 500;
+}
+
+.logo-fallback {
+  display: block;
+  font-size: 18px;
   font-weight: bold;
-  border-bottom: 1px solid #4a3576;
   letter-spacing: 2px;
   color: #ffd97a;
 }
@@ -46,9 +68,9 @@ nav {
 
 .nav-item:hover,
 .nav-item.active {
-  background: rgba(255, 217, 122, 0.1);
-  color: #ffd97a;
-  border-left-color: #ffd97a;
+  background: rgba(255, 64, 129, 0.12);
+  color: #FF80AB;
+  border-left-color: #FF4081;
 }
 
 .content {

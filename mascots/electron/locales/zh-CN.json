@@ -4,7 +4,9 @@
     "display_name": "简体中文 (中国)"
   },
   "app": {
-    "title": "小蕾米管理面板"
+    "title": "小蕾米管理面板",
+    "controlPanel": "控制面板",
+    "fallbackTitle": "小蕾米管理面板"
   },
   "nav": {
     "main": "主面板",

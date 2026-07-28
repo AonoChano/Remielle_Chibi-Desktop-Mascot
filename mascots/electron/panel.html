@@ -12,6 +12,7 @@
       <nav>
         <a href="#" class="nav-item active" data-tab="main" data-i18n="nav.main">主面板</a>
         <a href="#" class="nav-item" data-tab="settings" data-i18n="nav.settings">设置</a>
+        <a href="#" class="nav-item" data-tab="about" data-i18n="nav.about">关于</a>
       </nav>
     </aside>
     <main class="content">
@@ -80,6 +81,42 @@
         <div class="setting-row">
           <label data-i18n="settings.autoStart">开机自启</label>
           <span class="hint" data-i18n="settings.autoStartHint">暂未实现</span>
+        </div>
+      </section>
+
+      <section id="tab-about" class="tab">
+        <h2 data-i18n="about.title">关于</h2>
+
+        <div class="about-card author-card">
+          <div class="about-header">
+            <img class="about-avatar" src="https://avatars.githubusercontent.com/u/81866991?v=4" alt="AonoChano" crossorigin="anonymous">
+            <div class="about-info">
+              <h3 data-i18n="about.authorName">Watanabe Satoru</h3>
+              <p class="about-handle">@AonoChano</p>
+              <p class="about-location" data-i18n="about.locationValue">中国</p>
+            </div>
+          </div>
+          <div class="about-links">
+            <a href="https://github.com/AonoChano" target="_blank" class="about-link" data-i18n="about.github">GitHub 主页</a>
+          </div>
+        </div>
+
+        <div class="about-card">
+          <h3 data-i18n="about.appName">Remielle Desktop Mascot</h3>
+          <div class="about-meta">
+            <span><span data-i18n="about.version">版本</span>: <strong data-i18n="about.versionValue">v0.1.0</strong></span>
+            <span class="version-lock" data-i18n="about.versionLock">开发版本已锁定 — 未经许可禁止升级</span>
+          </div>
+          <p class="about-desc" data-i18n="about.description">基于 Spine 2D 骨骼动画的桌面桌宠应用框架。</p>
+        </div>
+
+        <div class="about-card">
+          <h3 data-i18n="about.credits">致谢</h3>
+          <ul class="about-credits">
+            <li data-i18n="about.creditHoyoverse">miHoYo / HoYoverse — 角色设计与《绝区零》</li>
+            <li data-i18n="about.creditSpine">Esoteric Software — Spine 2D 动画引擎</li>
+            <li data-i18n="about.creditElectron">Electron — 跨平台桌面应用框架</li>
+          </ul>
         </div>
       </section>
     </main>

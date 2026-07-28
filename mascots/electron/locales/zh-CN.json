@@ -8,7 +8,8 @@
   },
   "nav": {
     "main": "主面板",
-    "settings": "设置"
+    "settings": "设置",
+    "about": "关于"
   },
   "testMode": {
     "label": "进行动画控制测试"
@@ -45,5 +46,20 @@
     "autoStart": "开机自启",
     "autoStartHint": "暂未实现",
     "language": "界面语言"
+  },
+  "about": {
+    "title": "关于",
+    "authorName": "Watanabe Satoru",
+    "locationValue": "中国",
+    "github": "GitHub 主页",
+    "appName": "Remielle Desktop Mascot",
+    "version": "版本",
+    "versionValue": "v0.1.0",
+    "versionLock": "开发版本已锁定 — 未经许可禁止升级",
+    "description": "基于 Spine 2D 骨骼动画的桌面桌宠应用框架。",
+    "credits": "致谢",
+    "creditHoyoverse": "miHoYo / HoYoverse — 角色设计与《绝区零》",
+    "creditSpine": "Esoteric Software — Spine 2D 动画引擎",
+    "creditElectron": "Electron — 跨平台桌面应用框架"
   }
 }

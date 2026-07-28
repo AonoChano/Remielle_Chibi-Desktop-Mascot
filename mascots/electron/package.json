@@ -1,6 +1,6 @@
 {
   "name": "remi-pet",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "小蕾米桌面悬浮桌宠",
   "main": "main.js",
   "scripts": {
@@ -11,8 +11,8 @@
     "pet",
     "desktop"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Watanabe Satoru (AonoChano)",
+  "license": "MIT",
   "devDependencies": {
     "@esotericsoftware/spine-webgl": "~4.2.0",
     "electron": "^43.2.0"

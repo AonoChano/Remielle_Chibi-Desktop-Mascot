@@ -8,7 +8,8 @@
   },
   "nav": {
     "main": "Main Panel",
-    "settings": "Settings"
+    "settings": "Settings",
+    "about": "About"
   },
   "testMode": {
     "label": "Animation Test Mode"
@@ -45,5 +46,20 @@
     "autoStart": "Start with System",
     "autoStartHint": "Coming soon",
     "language": "Language"
+  },
+  "about": {
+    "title": "About",
+    "authorName": "Watanabe Satoru",
+    "locationValue": "China",
+    "github": "GitHub Profile",
+    "appName": "Remielle Desktop Mascot",
+    "version": "Version",
+    "versionValue": "v0.1.0",
+    "versionLock": "Development version locked — do not upgrade without permission",
+    "description": "A desktop pet framework powered by Spine 2D skeletal animation.",
+    "credits": "Acknowledgments",
+    "creditHoyoverse": "miHoYo / HoYoverse — Character design & Zenless Zone Zero",
+    "creditSpine": "Esoteric Software — Spine 2D Animation Engine",
+    "creditElectron": "Electron — Cross-platform Desktop Framework"
   }
 }

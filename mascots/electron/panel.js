@@ -4,6 +4,7 @@ const AppState = {
   currentAnimation: 'a',
   lightEnabled: false,
   eyeTrackingEnabled: true,
+  alwaysOnTop: true,
   animationQueue: [],
   triggerHandlers: {},
 };
@@ -84,6 +85,34 @@ if (window.electronAPI) {
   });
 }
 
+// --- Always-on-top toggle ---
+const alwaysOnTopToggle = document.getElementById('always-on-top-toggle');
+
+alwaysOnTopToggle.addEventListener('change', async () => {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+  const previous = AppState.alwaysOnTop;
+  const enabled = alwaysOnTopToggle.checked;
+  alwaysOnTopToggle.disabled = true;
+  try {
+    const effective = await window.electronAPI.invoke('set-always-on-top', enabled);
+    AppState.alwaysOnTop = effective === true;
+    alwaysOnTopToggle.checked = AppState.alwaysOnTop;
+  } catch (error) {
+    AppState.alwaysOnTop = previous;
+    alwaysOnTopToggle.checked = previous;
+    console.warn('[always-on-top] Failed to update setting:', error.message);
+  } finally {
+    alwaysOnTopToggle.disabled = false;
+  }
+});
+
+if (window.electronAPI) {
+  window.electronAPI.on('always-on-top-changed', enabled => {
+    AppState.alwaysOnTop = enabled === true;
+    alwaysOnTopToggle.checked = AppState.alwaysOnTop;
+  });
+}
+
 // --- Test mode toggle ---
 const testToggle = document.getElementById('test-mode-toggle');
 const testControls = document.getElementById('test-controls');
@@ -156,14 +185,17 @@ document.querySelectorAll('[data-external]').forEach(el => {
 async function loadAndApplySettings() {
   if (!window.electronAPI || !window.electronAPI.invoke) return;
 
-  const [settings, eyeTrackingEnabled] = await Promise.all([
+  const [settings, eyeTrackingEnabled, alwaysOnTop] = await Promise.all([
     window.electronAPI.invoke('load-settings'),
     window.electronAPI.invoke('get-eye-tracking-enabled'),
+    window.electronAPI.invoke('get-always-on-top'),
   ]);
   if (!settings) return;
 
   AppState.eyeTrackingEnabled = eyeTrackingEnabled === true;
   eyeTrackingToggle.checked = AppState.eyeTrackingEnabled;
+  AppState.alwaysOnTop = alwaysOnTop === true;
+  alwaysOnTopToggle.checked = AppState.alwaysOnTop;
 
   // Restore size
   if (settings.size) {

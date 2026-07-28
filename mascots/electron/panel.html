@@ -15,7 +15,7 @@
         <span class="logo-fallback" style="display:none;" data-i18n="app.fallbackTitle">小蕾米管理面板</span>
       </div>
       <nav>
-        <a href="#" class="nav-item active" data-tab="main" data-i18n="nav.main">主面板</a>
+        <a href="#" class="nav-item active" data-tab="main" data-i18n="nav.main">桌宠</a>
         <a href="#" class="nav-item" data-tab="settings" data-i18n="nav.settings">设置</a>
         <a href="#" class="nav-item" data-tab="about" data-i18n="nav.about">关于</a>
       </nav>
@@ -31,10 +31,12 @@
           </label>
         </div>
 
-        <div class="setting-row">
-          <label class="checkbox-label">
-            <input type="checkbox" id="test-mode-toggle">
-            <span data-i18n="testMode.label">进行动画控制测试</span>
+        <div class="feature-row test-mode-row">
+          <span id="test-mode-label" class="feature-label" data-i18n="testMode.label">进行动画控制测试</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="test-mode-toggle" role="switch"
+                   aria-labelledby="test-mode-label">
+            <span class="toggle-track" aria-hidden="true"></span>
           </label>
         </div>
 
@@ -61,29 +63,55 @@
 
       <section id="tab-settings" class="tab">
         <h2 data-i18n="settings.title">设置</h2>
-        <div class="setting-row">
-          <label data-i18n="settings.size">角色尺寸</label>
-          <select id="size-select">
-            <option value="240" data-i18n="settings.sizeSmall">小 — 240px</option>
-            <option value="320" data-i18n="settings.sizeMedium">中 — 320px</option>
-            <option value="420" selected data-i18n="settings.sizeDefault">默认 — 420px</option>
-            <option value="560" data-i18n="settings.sizeLarge">大 — 560px</option>
-            <option value="640" data-i18n="settings.sizeXLarge">特大 — 640px</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <label data-i18n="settings.language">界面语言</label>
-          <select id="locale-select">
-            <!-- 动态填充 -->
-          </select>
-        </div>
-        <div class="setting-row">
-          <label data-i18n="settings.alwaysOnTop">窗口置顶</label>
-          <span class="hint" data-i18n="settings.alwaysOnTopHint">桌宠窗口始终保持在最上层</span>
-        </div>
-        <div class="setting-row">
-          <label data-i18n="settings.autoStart">开机自启</label>
-          <span class="hint" data-i18n="settings.autoStartHint">暂未实现</span>
+        <div class="settings-list">
+          <div class="settings-control-row">
+            <div class="setting-copy">
+              <label class="setting-name" for="size-select" data-i18n="settings.size">角色尺寸</label>
+            </div>
+            <div class="setting-control">
+              <select id="size-select">
+                <option value="240" data-i18n="settings.sizeSmall">小 — 240px</option>
+                <option value="320" data-i18n="settings.sizeMedium">中 — 320px</option>
+                <option value="420" selected data-i18n="settings.sizeDefault">默认 — 420px</option>
+                <option value="560" data-i18n="settings.sizeLarge">大 — 560px</option>
+                <option value="640" data-i18n="settings.sizeXLarge">特大 — 640px</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-control-row">
+            <div class="setting-copy">
+              <label class="setting-name" for="locale-select" data-i18n="settings.language">界面语言</label>
+            </div>
+            <div class="setting-control">
+              <select id="locale-select">
+                <!-- 动态填充 -->
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-control-row">
+            <div class="setting-copy">
+              <span id="always-on-top-label" class="setting-name" data-i18n="settings.alwaysOnTop">窗口置顶</span>
+              <span class="hint" data-i18n="settings.alwaysOnTopHint">桌宠窗口始终保持在最上层</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input type="checkbox" id="always-on-top-toggle" role="switch"
+                       aria-labelledby="always-on-top-label" checked>
+                <span class="toggle-track" aria-hidden="true"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-control-row is-disabled">
+            <div class="setting-copy">
+              <span class="setting-name" data-i18n="settings.autoStart">开机自启</span>
+            </div>
+            <div class="setting-control">
+              <span class="setting-status" data-i18n="settings.autoStartHint">暂未实现</span>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -134,10 +134,14 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 44px;
-  padding: 6px 0 18px;
+  min-height: 52px;
+  padding: 8px 0;
   background: transparent;
   box-shadow: none;
+}
+
+.feature-row + .feature-row {
+  border-top: 1px solid rgba(123, 107, 94, 0.12);
 }
 
 .feature-label {
@@ -197,6 +201,11 @@ h2 {
   outline-offset: 3px;
 }
 
+.toggle-switch input:disabled + .toggle-track {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 .setting-row {
   background: #fff;
   padding: 16px;
@@ -231,17 +240,75 @@ h2 {
   accent-color: #E91E63;
 }
 
-#size-select,
-#locale-select {
+.settings-list {
   width: 100%;
+}
+
+.settings-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 64px;
+  border-bottom: 1px solid rgba(123, 107, 94, 0.12);
+}
+
+.settings-control-row:last-child {
+  border-bottom: none;
+}
+
+.setting-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-name {
+  color: #5a3e68;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.setting-copy .hint {
+  color: #a996b3;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.setting-control {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.setting-control select {
+  width: clamp(140px, 30vw, 220px);
   padding: 8px;
   border: 1px solid #d8c8e8;
   border-radius: 6px;
   font-size: 14px;
   background: #fff;
   cursor: pointer;
-  margin-top: 6px;
   color: #5a4568;
+}
+
+.settings-control-row.is-disabled {
+  opacity: 0.55;
+}
+
+.setting-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(123, 107, 94, 0.08);
+  color: #9A8A7A;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 /* Outfit toggle — locked vs unlocked — REMOVED */

@@ -64,6 +64,9 @@ testToggle.addEventListener('change', () => {
   AppState.testMode = enabled;
   testControls.style.display = enabled ? 'block' : 'none';
   document.body.classList.toggle('test-mode-active', enabled);
+  if (window.electronAPI) {
+    window.electronAPI.send('set-test-mode', enabled);
+  }
   saveSettings();
 });
 

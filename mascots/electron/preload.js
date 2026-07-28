@@ -10,7 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'set-mouse-events',
       'set-size',
       'set-locale',
-      'toggle-light'
+      'toggle-light',
+      'set-test-mode'
     ];
     if (validSendChannels.includes(channel)) {
       ipcRenderer.send(channel, ...args);

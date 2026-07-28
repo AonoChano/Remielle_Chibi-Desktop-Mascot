@@ -237,6 +237,11 @@ ipcMain.on('toggle-light', (event, enabled) => {
   }
 });
 
+ipcMain.on('set-test-mode', (event, enabled) => {
+  if (typeof enabled !== 'boolean') return;
+  sendToWindow(petWindow, 'test-mode-changed', enabled);
+});
+
 ipcMain.handle('get-eye-tracking-enabled', () => {
   return eyeTrackingService
     ? eyeTrackingService.getEnabled()

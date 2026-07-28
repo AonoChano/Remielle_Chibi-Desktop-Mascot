@@ -10,6 +10,14 @@ class PetApp {
     this.mouseOnCharacter = true;
     this.gl = null;
     this.pixelReadBuffer = new Uint8Array(4);
+    this.behavior = null;
+    this.playbackIds = new WeakMap();
+    this.testMode = false;
+    this.eyeTrackingEnabled = true;
+    this.cursorSample = null;
+    this.eyeOffset = { x: 0, y: 0 };
+    this.eyeBones = [];
+    this.warnedMissingEyeBones = false;
   }
 
   loadAssets(canvas) {
@@ -28,12 +36,17 @@ class PetApp {
 
     var animationStateData = new spine.AnimationStateData(skeletonData);
     this.animationState = new spine.AnimationState(animationStateData);
-    this.animationState.setAnimation(0, "a", true);
+    this.animationState.addListener({
+      complete: entry => this.handleAnimationComplete(entry),
+    });
 
     this.canvas = canvas;
+    this.centerSkeleton();
+    this.setupEyeBones();
+    this.behavior = new PetBehavior.PetBehaviorController();
+    this.flushBehaviorCommands();
     this.setupIPC();
     this.setupDrag();
-    this.centerSkeleton();
     this.restoreSavedState();
   }
 
@@ -42,14 +55,16 @@ class PetApp {
     window.electronAPI.invoke('load-settings').then(settings => {
       if (!settings) return;
 
-      // Restore animation
-      if (settings.currentAnimation && this.animationState) {
-        this.animationState.setAnimation(0, settings.currentAnimation, true);
-      }
-
-      // Restore light overlay
-      if (settings.lightEnabled && this.animationState) {
-        this.animationState.setAnimation(1, 'light', true);
+      this.testMode = settings.testMode === true;
+      if (this.testMode && this.behavior) {
+        this.behavior.setTestMode(true);
+        this.flushBehaviorCommands();
+        if (settings.currentAnimation && this.animationState) {
+          this.animationState.setAnimation(0, settings.currentAnimation, true);
+        }
+        if (settings.lightEnabled && this.animationState) {
+          this.animationState.setAnimation(1, 'light', true);
+        }
       }
 
       // Restore skeleton scale (directly, no IPC needed)
@@ -60,6 +75,10 @@ class PetApp {
         this.skeleton.scaleX = scale;
         this.skeleton.scaleY = scale;
       }
+    });
+
+    window.electronAPI.invoke('get-eye-tracking-enabled').then(enabled => {
+      this.eyeTrackingEnabled = enabled === true;
     });
   }
 
@@ -73,7 +92,7 @@ class PetApp {
     if (!window.electronAPI) return;
 
     window.electronAPI.on('play-animation', (animName) => {
-      if (this.animationState) {
+      if (this.testMode && this.animationState) {
         this.animationState.setAnimation(0, animName, true);
       }
     });
@@ -90,25 +109,109 @@ class PetApp {
     });
 
     window.electronAPI.on('toggle-light', (enabled) => {
-      if (!this.animationState) return;
+      if (!this.testMode || !this.animationState) return;
       if (enabled) {
-        // Play light on track 1 as an overlay — does not interrupt track 0
         this.animationState.setAnimation(1, 'light', true);
       } else {
-        // Clear track 1 — removes the light overlay
-        this.animationState.clearTrack(1);
-        // Reset light slots to invisible (setup pose color)
-        if (this.skeleton) {
-          var lightSlots = ['light_a', 'light_b'];
-          for (var i = 0; i < lightSlots.length; i++) {
-            var slot = this.skeleton.findSlot(lightSlots[i]);
-            if (slot) {
-              slot.color.set(1, 1, 1, 0);
-            }
-          }
-        }
+        this.clearLightTrack();
       }
     });
+
+    window.electronAPI.on('test-mode-changed', (enabled) => {
+      this.testMode = enabled === true;
+      if (!this.behavior) return;
+      this.behavior.setTestMode(this.testMode);
+      this.flushBehaviorCommands();
+    });
+
+    window.electronAPI.on('cursor-position', sample => {
+      if (sample && typeof sample === 'object') {
+        this.cursorSample = sample;
+      }
+    });
+
+    window.electronAPI.on('eye-tracking-changed', enabled => {
+      this.eyeTrackingEnabled = enabled === true;
+    });
+  }
+
+  handleAnimationComplete(entry) {
+    if (!this.behavior || !entry || !entry.animation) return;
+    const playbackId = this.playbackIds.get(entry);
+    if (playbackId === undefined) return;
+    this.behavior.animationCompleted({
+      animationName: entry.animation.name,
+      trackIndex: entry.trackIndex,
+      playbackId,
+    });
+    this.flushBehaviorCommands();
+  }
+
+  flushBehaviorCommands() {
+    if (!this.behavior || !this.animationState) return;
+    for (const command of this.behavior.takeCommands()) {
+      if (command.type === 'play') {
+        const entry = this.animationState.setAnimation(
+          command.trackIndex,
+          command.animationName,
+          command.loop
+        );
+        this.playbackIds.set(entry, command.playbackId);
+      } else if (command.type === 'clear-track') {
+        this.animationState.clearTrack(command.trackIndex);
+        if (command.trackIndex === 1) this.resetLightSlots();
+      } else if (command.type === 'clear-tracks') {
+        this.animationState.clearTracks();
+        this.resetLightSlots();
+      }
+    }
+  }
+
+  clearLightTrack() {
+    if (this.animationState) this.animationState.clearTrack(1);
+    this.resetLightSlots();
+  }
+
+  resetLightSlots() {
+    if (!this.skeleton) return;
+    for (const slotName of ['light_a', 'light_b']) {
+      const slot = this.skeleton.findSlot(slotName);
+      if (slot) slot.color.set(1, 1, 1, 0);
+    }
+  }
+
+  setupEyeBones() {
+    if (!this.skeleton) return;
+    const names = ['眼_瞳孔_微动', '眼_瞳孔L_微动'];
+    this.eyeBones = names.map(name => {
+      const bone = this.skeleton.findBone(name);
+      if (!bone) return null;
+      return {
+        bone,
+        setupX: bone.data.x,
+        setupY: bone.data.y,
+      };
+    }).filter(Boolean);
+
+    if (this.eyeBones.length !== names.length && !this.warnedMissingEyeBones) {
+      this.warnedMissingEyeBones = true;
+      console.warn('[eye-tracking] Required pupil bones are missing; tracking disabled.');
+      this.eyeBones = [];
+    }
+  }
+
+  updateEyeTracking(delta) {
+    if (this.eyeBones.length === 0) return;
+    const target = EyeTracking.computeEyeTarget({
+      ...(this.cursorSample || {}),
+      enabled: this.eyeTrackingEnabled,
+      hasSample: this.cursorSample !== null,
+    });
+    this.eyeOffset = EyeTracking.smoothEyeOffset(this.eyeOffset, target, delta);
+    for (const tracked of this.eyeBones) {
+      tracked.bone.x = tracked.setupX + this.eyeOffset.x;
+      tracked.bone.y = tracked.setupY + this.eyeOffset.y;
+    }
   }
 
   applyExpression(expression) {
@@ -201,6 +304,13 @@ class PetApp {
       isDragging = false;
     });
 
+    canvasEl.addEventListener('dblclick', e => {
+      e.preventDefault();
+      if (!this.behavior) return;
+      this.behavior.doubleClick();
+      this.flushBehaviorCommands();
+    });
+
     canvasEl.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       if (window.electronAPI) {
@@ -210,11 +320,16 @@ class PetApp {
   }
 
   update(canvas, delta) {
+    if (this.behavior) {
+      this.behavior.tick(delta);
+      this.flushBehaviorCommands();
+    }
     if (this.animationState) {
       this.animationState.update(delta);
       this.animationState.apply(this.skeleton);
     }
     if (this.skeleton) {
+      this.updateEyeTracking(delta);
       this.skeleton.updateWorldTransform(spine.Physics.update);
     }
   }

@@ -153,6 +153,18 @@ h2 {
   color: #4a3f6b;
 }
 
+#locale-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #c9b8e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  margin-top: 6px;
+  color: #4a3f6b;
+}
+
 /* Outfit toggle — locked vs unlocked */
 .btn-outfit.locked {
   background: #b8941e;

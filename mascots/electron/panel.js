@@ -3,10 +3,45 @@ const AppState = {
   testMode: false,
   currentAnimation: 'a',
   lockedOutfit: 'A',
-  // Reserved for future use
   animationQueue: [],
   triggerHandlers: {},
 };
+
+// --- i18n initialization ---
+async function initI18n() {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+
+  // Get available locales from main process
+  const locales = await window.electronAPI.invoke('get-locales');
+  const currentLocale = await window.electronAPI.invoke('get-current-locale');
+
+  // Load each locale dict into I18n
+  for (const { code } of locales) {
+    const dict = await window.electronAPI.invoke('get-locale-dict', code);
+    if (dict) I18n.register(code, dict);
+  }
+
+  // Set current locale
+  I18n.setLocale(currentLocale);
+
+  // Populate language select
+  const localeSelect = document.getElementById('locale-select');
+  for (const { code, displayName } of locales) {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = displayName;
+    if (code === currentLocale) opt.selected = true;
+    localeSelect.appendChild(opt);
+  }
+
+  // Listen for locale changes from other windows
+  window.electronAPI.on('locale-changed', (localeCode, dict) => {
+    I18n.register(localeCode, dict);
+    I18n.setLocale(localeCode);
+    // Update select to reflect change
+    localeSelect.value = localeCode;
+  });
+}
 
 // --- Tab navigation ---
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -50,7 +85,6 @@ document.querySelectorAll('.btn-outfit').forEach(btn => {
     const outfit = btn.dataset.outfit;
     const wasLocked = btn.classList.contains('locked');
 
-    // Unlock all
     document.querySelectorAll('.btn-outfit').forEach(b => b.classList.remove('locked'));
 
     if (!wasLocked) {
@@ -76,3 +110,14 @@ sizeSelect.addEventListener('change', () => {
     window.electronAPI.send('set-size', size);
   }
 });
+
+// --- Locale select ---
+document.getElementById('locale-select').addEventListener('change', (e) => {
+  const localeCode = e.target.value;
+  if (window.electronAPI) {
+    window.electronAPI.send('set-locale', localeCode);
+  }
+});
+
+// --- Initialize ---
+initI18n();

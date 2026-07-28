@@ -2,16 +2,16 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>小蕾米管理面板</title>
+  <title>Remielle Control Panel</title>
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="logo">小蕾米</div>
+      <div class="logo" data-i18n="app.title">小蕾米</div>
       <nav>
-        <a href="#" class="nav-item active" data-tab="main">主面板</a>
-        <a href="#" class="nav-item" data-tab="settings">设置</a>
+        <a href="#" class="nav-item active" data-tab="main" data-i18n="nav.main">主面板</a>
+        <a href="#" class="nav-item" data-tab="settings" data-i18n="nav.settings">设置</a>
       </nav>
     </aside>
     <main class="content">
@@ -21,57 +21,64 @@
         <div class="setting-row">
           <label class="checkbox-label">
             <input type="checkbox" id="test-mode-toggle">
-            进行动画控制测试
+            <span data-i18n="testMode.label">进行动画控制测试</span>
           </label>
         </div>
 
         <div id="test-controls" style="display:none;">
-          <h2>动画播放</h2>
+          <h2 data-i18n="anim.title">动画播放</h2>
           <div class="button-grid">
-            <button class="btn-anim active" data-anim="a">待机 Idle</button>
-            <button class="btn-anim" data-anim="b">思考 Thinking</button>
-            <button class="btn-anim" data-anim="d">疯狂画画 Drawing</button>
-            <button class="btn-anim" data-anim="c">画完炫耀 Finished</button>
-            <button class="btn-anim" data-anim="d_win">画完收笔 Done</button>
-            <button class="btn-anim" data-anim="e">委屈 Tearing Up</button>
-            <button class="btn-anim" data-anim="a_win">拿起画笔 Ready</button>
-            <button class="btn-anim" data-anim="light">金色光芒 Golden Light</button>
+            <button class="btn-anim active" data-anim="a" data-i18n="anim.idle">待机 Idle</button>
+            <button class="btn-anim" data-anim="b" data-i18n="anim.thinking">思考 Thinking</button>
+            <button class="btn-anim" data-anim="d" data-i18n="anim.drawing">疯狂画画 Drawing</button>
+            <button class="btn-anim" data-anim="c" data-i18n="anim.finished">画完炫耀 Finished</button>
+            <button class="btn-anim" data-anim="d_win" data-i18n="anim.done">画完收笔 Done</button>
+            <button class="btn-anim" data-anim="e" data-i18n="anim.tearingUp">委屈 Tearing Up</button>
+            <button class="btn-anim" data-anim="a_win" data-i18n="anim.ready">拿起画笔 Ready</button>
+            <button class="btn-anim" data-anim="light" data-i18n="anim.goldenLight">金色光芒 Golden Light</button>
           </div>
 
-          <h2>换装</h2>
+          <h2 data-i18n="outfit.title">换装</h2>
           <div class="button-grid">
-            <button class="btn-outfit locked" data-outfit="A">套装 A</button>
-            <button class="btn-outfit" data-outfit="B">套装 B</button>
-            <button class="btn-outfit" data-outfit="C">套装 C</button>
-            <button class="btn-outfit" data-outfit="D">套装 D</button>
-            <button class="btn-outfit" data-outfit="E">套装 E</button>
+            <button class="btn-outfit locked" data-outfit="A" data-i18n="outfit.suitA">套装 A</button>
+            <button class="btn-outfit" data-outfit="B" data-i18n="outfit.suitB">套装 B</button>
+            <button class="btn-outfit" data-outfit="C" data-i18n="outfit.suitC">套装 C</button>
+            <button class="btn-outfit" data-outfit="D" data-i18n="outfit.suitD">套装 D</button>
+            <button class="btn-outfit" data-outfit="E" data-i18n="outfit.suitE">套装 E</button>
           </div>
         </div>
       </section>
 
       <section id="tab-settings" class="tab">
-        <h2>设置</h2>
+        <h2 data-i18n="settings.title">设置</h2>
         <div class="setting-row">
-          <label>角色尺寸</label>
+          <label data-i18n="settings.size">角色尺寸</label>
           <select id="size-select">
-            <option value="240">小 — 240px</option>
-            <option value="320">中 — 320px</option>
-            <option value="420" selected>默认 — 420px</option>
-            <option value="560">大 — 560px</option>
-            <option value="640">特大 — 640px</option>
+            <option value="240" data-i18n="settings.sizeSmall">小 — 240px</option>
+            <option value="320" data-i18n="settings.sizeMedium">中 — 320px</option>
+            <option value="420" selected data-i18n="settings.sizeDefault">默认 — 420px</option>
+            <option value="560" data-i18n="settings.sizeLarge">大 — 560px</option>
+            <option value="640" data-i18n="settings.sizeXLarge">特大 — 640px</option>
           </select>
         </div>
         <div class="setting-row">
-          <label>窗口置顶</label>
-          <span class="hint">桌宠窗口始终保持在最上层</span>
+          <label data-i18n="settings.language">界面语言</label>
+          <select id="locale-select">
+            <!-- 动态填充 -->
+          </select>
         </div>
         <div class="setting-row">
-          <label>开机自启</label>
-          <span class="hint">暂未实现</span>
+          <label data-i18n="settings.alwaysOnTop">窗口置顶</label>
+          <span class="hint" data-i18n="settings.alwaysOnTopHint">桌宠窗口始终保持在最上层</span>
+        </div>
+        <div class="setting-row">
+          <label data-i18n="settings.autoStart">开机自启</label>
+          <span class="hint" data-i18n="settings.autoStartHint">暂未实现</span>
         </div>
       </section>
     </main>
   </div>
+  <script src="i18n.js"></script>
   <script src="panel.js"></script>
 </body>
 </html>

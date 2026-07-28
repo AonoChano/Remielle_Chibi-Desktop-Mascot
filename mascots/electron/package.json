@@ -6,11 +6,15 @@
   "scripts": {
     "start": "electron ."
   },
-  "keywords": ["spine", "pet", "desktop"],
+  "keywords": [
+    "spine",
+    "pet",
+    "desktop"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^43.2.0",
-    "@esotericsoftware/spine-webgl": "~4.2.0"
+    "@esotericsoftware/spine-webgl": "~4.2.0",
+    "electron": "^43.2.0"
   }
 }

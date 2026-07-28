@@ -14,16 +14,18 @@ const ANIMATIONS = [
   { name: 'light', label: 'golden_light' },
 ];
 
-const FRAMES_PER_ANIM = 20;
+const TOTAL_CAPTURE_PER_ANIM = 24;  // capture extra, then trim
+const DISCARD_FIRST = 2;            // discard first N (switching artifact)
+const DISCARD_LAST = 1;             // discard last N (next-anim flash)
+const KEEP_PER_ANIM = TOTAL_CAPTURE_PER_ANIM - DISCARD_FIRST - DISCARD_LAST;
 const FRAME_INTERVAL_MS = 80;
-const SETTLE_MS = 600; // wait for animation to settle after switching
+const SETTLE_MS = 800;
 const CANVAS_SIZE = 400;
 
 let captureWindow = null;
-const FRAME_DIR = path.join(__dirname, 'showcase-frames');
-const doneFile = path.join(__dirname, 'showcase-done.flag');
+const FRAME_DIR = path.join(__dirname, 'showcase-frames-v2');
+const doneFile = path.join(__dirname, 'showcase-done-v2.flag');
 
-// Cleanup
 if (fs.existsSync(FRAME_DIR)) fs.rmSync(FRAME_DIR, { recursive: true });
 fs.mkdirSync(FRAME_DIR, { recursive: true });
 if (fs.existsSync(doneFile)) fs.unlinkSync(doneFile);
@@ -40,6 +42,7 @@ function createCaptureWindow() {
     height: CANVAS_SIZE,
     show: false,
     frame: false,
+    transparent: false,
     backgroundColor: '#ff00ff',
     webPreferences: {
       contextIsolation: false,
@@ -55,8 +58,6 @@ function createCaptureWindow() {
   captureWindow.on('closed', () => { captureWindow = null; });
 }
 
-let currentAnimIdx = 0;
-let frameInAnim = 0;
 let globalFrame = 0;
 
 function sleep(ms) {
@@ -68,11 +69,11 @@ async function captureLoop() {
     const anim = ANIMATIONS[i];
     console.log(`\n[${i + 1}/${ANIMATIONS.length}] Capturing: ${anim.name} (${anim.label})`);
 
-    // Tell renderer to switch animation
     captureWindow.webContents.send('play-animation', anim.name);
     await sleep(SETTLE_MS);
 
-    for (let f = 0; f < FRAMES_PER_ANIM; f++) {
+    let rawFrames = [];
+    for (let f = 0; f < TOTAL_CAPTURE_PER_ANIM; f++) {
       if (!captureWindow) {
         console.error('Window lost!');
         fs.writeFileSync(doneFile, 'failed');
@@ -81,22 +82,39 @@ async function captureLoop() {
       }
       try {
         const image = await captureWindow.webContents.capturePage();
-        const filePath = path.join(FRAME_DIR, `${String(globalFrame).padStart(5, '0')}_${anim.name}_${String(f).padStart(3, '0')}.png`);
+        const filePath = path.join(FRAME_DIR, `tmp_${globalFrame}.png`);
         fs.writeFileSync(filePath, image.toPNG());
+        rawFrames.push(filePath);
         globalFrame++;
-        process.stdout.write(`\r  Frame ${f + 1}/${FRAMES_PER_ANIM}`);
+        process.stdout.write(`\r  Capturing ${f + 1}/${TOTAL_CAPTURE_PER_ANIM}`);
       } catch (e) {
         console.error('\nCapture error:', e.message);
       }
       await sleep(FRAME_INTERVAL_MS);
     }
+
+    // Trim: discard first and last frames
+    const kept = rawFrames.slice(DISCARD_FIRST, rawFrames.length - DISCARD_LAST);
+    // Rename to final names
+    for (let k = 0; k < kept.length; k++) {
+      const finalPath = path.join(FRAME_DIR, `${String(i).padStart(2, '0')}_${anim.name}_${String(k).padStart(3, '0')}.png`);
+      fs.renameSync(kept[k], finalPath);
+    }
+    // Delete discarded frames
+    for (let d = 0; d < DISCARD_FIRST; d++) {
+      fs.unlinkSync(rawFrames[d]);
+    }
+    for (let d = 0; d < DISCARD_LAST; d++) {
+      fs.unlinkSync(rawFrames[rawFrames.length - 1 - d]);
+    }
+
+    console.log(`\r  Kept ${kept.length}/${TOTAL_CAPTURE_PER_ANIM} frames`);
   }
 
-  console.log(`\n\nDone! Total frames: ${globalFrame}`);
+  console.log(`\n\nDone! Total animations: ${ANIMATIONS.length}, frames each: ${KEEP_PER_ANIM}`);
   fs.writeFileSync(doneFile, JSON.stringify({
-    totalFrames: globalFrame,
     animations: ANIMATIONS,
-    framesPerAnim: FRAMES_PER_ANIM
+    framesPerAnim: KEEP_PER_ANIM
   }));
   app.quit();
 }
@@ -108,8 +126,8 @@ ipcMain.on('capture-ready', () => {
 
 setTimeout(() => {
   if (!fs.existsSync(doneFile)) {
-    console.log(`\nTimeout! Got ${globalFrame} frames.`);
-    fs.writeFileSync(doneFile, globalFrame > 0 ? 'partial' : 'failed');
+    console.log(`\nTimeout!`);
+    fs.writeFileSync(doneFile, 'failed');
     app.quit();
   }
 }, 180000);

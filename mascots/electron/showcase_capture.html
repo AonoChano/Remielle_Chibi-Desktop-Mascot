@@ -37,7 +37,6 @@ class ShowcaseCaptureApp {
     var animationStateData = new spine.AnimationStateData(skeletonData);
     this.animationState = new spine.AnimationState(animationStateData);
 
-    // List all available animations
     var animNames = skeletonData.animations.map(a => a.name);
     console.log('ANIMS:' + JSON.stringify(animNames));
 

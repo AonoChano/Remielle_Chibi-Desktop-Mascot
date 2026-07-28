@@ -73,30 +73,40 @@ document.querySelectorAll('.btn-anim').forEach(btn => {
     AppState.currentAnimation = anim;
     document.querySelectorAll('.btn-anim').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+
+    // Release all outfit selections — outfits are for static display only
+    document.querySelectorAll('.btn-outfit').forEach(b => b.classList.remove('locked'));
+    AppState.lockedOutfit = null;
+
     if (window.electronAPI) {
       window.electronAPI.send('play-animation', anim);
+      // Reset pet's outfit to default (clears all attachment overrides)
+      window.electronAPI.send('set-outfit', null);
     }
   });
 });
 
-// --- Outfit toggle buttons (lock/unlock) ---
+// --- Outfit buttons (exclusive selection) ---
 document.querySelectorAll('.btn-outfit').forEach(btn => {
   btn.addEventListener('click', () => {
     const outfit = btn.dataset.outfit;
-    const wasLocked = btn.classList.contains('locked');
+    const wasActive = btn.classList.contains('locked');
 
+    // Clear all outfit buttons — exclusive: only one active at a time
     document.querySelectorAll('.btn-outfit').forEach(b => b.classList.remove('locked'));
 
-    if (!wasLocked) {
+    if (!wasActive) {
+      // Activate this outfit
       btn.classList.add('locked');
       AppState.lockedOutfit = outfit;
       if (window.electronAPI) {
         window.electronAPI.send('set-outfit', outfit);
       }
     } else {
+      // Deactivate — reset to default
       AppState.lockedOutfit = null;
       if (window.electronAPI) {
-        window.electronAPI.send('set-outfit', 'A');
+        window.electronAPI.send('set-outfit', null);
       }
     }
   });

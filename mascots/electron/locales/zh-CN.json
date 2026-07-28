@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "locale": "zh-CN",
+    "display_name": "简体中文 (中国)"
+  },
+  "app": {
+    "title": "小蕾米管理面板"
+  },
+  "nav": {
+    "main": "主面板",
+    "settings": "设置"
+  },
+  "testMode": {
+    "label": "进行动画控制测试"
+  },
+  "anim": {
+    "title": "动画播放",
+    "idle": "待机",
+    "thinking": "思考",
+    "drawing": "疯狂画画",
+    "finished": "画完炫耀",
+    "done": "画完收笔",
+    "tearingUp": "委屈",
+    "ready": "拿起画笔",
+    "goldenLight": "金色光芒"
+  },
+  "outfit": {
+    "title": "换装",
+    "suitA": "套装 A",
+    "suitB": "套装 B",
+    "suitC": "套装 C",
+    "suitD": "套装 D",
+    "suitE": "套装 E"
+  },
+  "settings": {
+    "title": "设置",
+    "size": "角色尺寸",
+    "sizeSmall": "小 — 240px",
+    "sizeMedium": "中 — 320px",
+    "sizeDefault": "默认 — 420px",
+    "sizeLarge": "大 — 560px",
+    "sizeXLarge": "特大 — 640px",
+    "alwaysOnTop": "窗口置顶",
+    "alwaysOnTopHint": "桌宠窗口始终保持在最上层",
+    "autoStart": "开机自启",
+    "autoStartHint": "暂未实现",
+    "language": "界面语言"
+  }
+}

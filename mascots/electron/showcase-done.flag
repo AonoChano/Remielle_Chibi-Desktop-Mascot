@@ -1,0 +1,1 @@
+{"totalFrames":160,"animations":[{"name":"a","label":"idle"},{"name":"b","label":"thinking"},{"name":"d","label":"drawing"},{"name":"c","label":"finished"},{"name":"d_win","label":"done"},{"name":"e","label":"tearing_up"},{"name":"a_win","label":"ready"},{"name":"light","label":"golden_light"}],"framesPerAnim":20}

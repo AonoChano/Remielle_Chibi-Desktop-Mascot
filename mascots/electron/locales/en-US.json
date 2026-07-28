@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "locale": "en-US",
+    "display_name": "English (United States)"
+  },
+  "app": {
+    "title": "Remielle Control Panel"
+  },
+  "nav": {
+    "main": "Main Panel",
+    "settings": "Settings"
+  },
+  "testMode": {
+    "label": "Animation Test Mode"
+  },
+  "anim": {
+    "title": "Animations",
+    "idle": "Idle",
+    "thinking": "Thinking",
+    "drawing": "Sketching",
+    "finished": "Show Off",
+    "done": "Signing Off",
+    "tearingUp": "Crying",
+    "ready": "Brush in Hand",
+    "goldenLight": "Golden Glow"
+  },
+  "outfit": {
+    "title": "Costumes",
+    "suitA": "Costume A",
+    "suitB": "Costume B",
+    "suitC": "Costume C",
+    "suitD": "Costume D",
+    "suitE": "Costume E"
+  },
+  "settings": {
+    "title": "Settings",
+    "size": "Mascot Size",
+    "sizeSmall": "Small — 240px",
+    "sizeMedium": "Medium — 320px",
+    "sizeDefault": "Default — 420px",
+    "sizeLarge": "Large — 560px",
+    "sizeXLarge": "XL — 640px",
+    "alwaysOnTop": "Always on Top",
+    "alwaysOnTopHint": "Keep the mascot window above all others",
+    "autoStart": "Start with System",
+    "autoStartHint": "Coming soon",
+    "language": "Language"
+  }
+}

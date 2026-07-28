@@ -4,8 +4,12 @@ class PetApp {
     this.animationState = null;
     this.canvas = null;
     this.pendingAnim = null;
-    this.boundsRect = { x: 0, y: 0, width: 0, height: 0 };
     this.currentlyIgnoringMouse = false;
+    this.lastMouseX = -1;
+    this.lastMouseY = -1;
+    this.mouseOnCharacter = true;
+    this.gl = null;
+    this.pixelReadBuffer = new Uint8Array(4);
   }
 
   loadAssets(canvas) {
@@ -65,6 +69,15 @@ class PetApp {
 
   applyOutfit(prefix) {
     if (!this.skeleton) return;
+    // Reset to setup pose first — clears ALL attachments from any previous outfit
+    this.skeleton.setToSetupPose();
+
+    if (!prefix) {
+      // null = reset to default, nothing else to apply
+      this.skeleton.updateWorldTransform(spine.Physics.update);
+      return;
+    }
+
     var slots = this.skeleton.slots;
     var skin = this.skeleton.data.defaultSkin;
     if (!skin) return;
@@ -86,6 +99,58 @@ class PetApp {
     console.log('expression', expression);
   }
 
+  // --- Pixel-based click-through detection ---
+
+  getGL() {
+    if (this.gl) return this.gl;
+    const canvasEl = document.getElementById('canvas');
+    if (!canvasEl) return null;
+    this.gl = canvasEl.getContext('webgl2') || canvasEl.getContext('webgl');
+    return this.gl;
+  }
+
+  checkPixelAlpha(cssX, cssY) {
+    const canvasEl = document.getElementById('canvas');
+    const gl = this.getGL();
+    if (!gl || !canvasEl) return true; // fallback: assume clickable
+
+    const rect = canvasEl.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return true;
+
+    // Convert CSS coordinates to drawing buffer coordinates
+    const px = Math.round((cssX / rect.width) * canvasEl.width);
+    const py = Math.round((cssY / rect.height) * canvasEl.height);
+
+    if (px < 0 || px >= canvasEl.width || py < 0 || py >= canvasEl.height) {
+      return false;
+    }
+
+    try {
+      gl.readPixels(px, canvasEl.height - py - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this.pixelReadBuffer);
+      return this.pixelReadBuffer[3] > 10;
+    } catch (e) {
+      return true; // fallback: assume clickable
+    }
+  }
+
+  updateClickThrough() {
+    if (this.lastMouseX < 0 || this.lastMouseY < 0) {
+      this.mouseOnCharacter = false;
+    } else {
+      this.mouseOnCharacter = this.checkPixelAlpha(this.lastMouseX, this.lastMouseY);
+    }
+
+    const shouldIgnore = !this.mouseOnCharacter;
+    if (shouldIgnore !== this.currentlyIgnoringMouse) {
+      this.currentlyIgnoringMouse = shouldIgnore;
+      if (window.electronAPI) {
+        window.electronAPI.send('set-mouse-events', shouldIgnore);
+      }
+    }
+  }
+
+  // --- Drag ---
+
   setupDrag() {
     let isDragging = false;
     let startX = 0, startY = 0;
@@ -101,23 +166,12 @@ class PetApp {
     });
 
     window.addEventListener('mousemove', (e) => {
-      // Click-through detection: check if mouse is inside character bounding box
-      if (!isDragging) {
-        const rect = canvasEl.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        const b = self.boundsRect;
-        const inside = mx >= b.x && mx <= b.x + b.width &&
-                       my >= b.y && my <= b.y + b.height;
-        if (inside && self.currentlyIgnoringMouse) {
-          self.currentlyIgnoringMouse = false;
-          if (window.electronAPI) window.electronAPI.send('set-mouse-events', false);
-        } else if (!inside && !self.currentlyIgnoringMouse) {
-          self.currentlyIgnoringMouse = true;
-          if (window.electronAPI) window.electronAPI.send('set-mouse-events', true);
-        }
-        return;
-      }
+      const rect = canvasEl.getBoundingClientRect();
+      self.lastMouseX = e.clientX - rect.left;
+      self.lastMouseY = e.clientY - rect.top;
+
+      if (!isDragging) return;
+
       const dx = e.screenX - startX;
       const dy = e.screenY - startY;
       if (window.electronAPI) {
@@ -158,13 +212,13 @@ class PetApp {
       renderer.drawSkeleton(this.skeleton, false);
     }
     renderer.end();
-    if (this.skeleton) {
-      this.boundsRect = this.skeleton.getBoundsRect();
-    }
+
+    // Pixel-based click-through: check alpha at mouse position after render
+    this.updateClickThrough();
   }
 }
 
 new spine.SpineCanvas(document.getElementById("canvas"), {
-  webglConfig: { alpha: true, premultipliedAlpha: false },
+  webglConfig: { alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true },
   app: new PetApp()
 });

@@ -7,7 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'open-panel',
       'play-animation',
       'set-outfit',
-      'set-expression'
+      'set-expression',
+      'set-mouse-events',
+      'set-size'
     ];
     if (validSendChannels.includes(channel)) {
       ipcRenderer.send(channel, ...args);
@@ -17,7 +19,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const validReceiveChannels = [
       'play-animation',
       'set-outfit',
-      'set-expression'
+      'set-expression',
+      'apply-scale'
     ];
     if (validReceiveChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => callback(...args));

@@ -52,6 +52,12 @@ class PetApp {
     });
 
     window.electronAPI.on('set-outfit', (prefix) => {
+      if (prefix) {
+        // Entering outfit mode: stop all animation tracks for static display
+        if (this.animationState) {
+          this.animationState.clearTracks();
+        }
+      }
       this.applyOutfit(prefix);
     });
 

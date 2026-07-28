@@ -45,52 +45,43 @@
 <summary><h3>✨ Preview — Animation Showcase</h3></summary>
 
 <details>
-<summary><b>待机 Idle & 思考 Thinking</b></summary>
+<summary><b>GROUP A</b></summary>
 <table>
 <tr>
 <td><img src="assets/anims/anim_a.gif" width="160" alt="Idle"/></td>
-<td>盯着画本看，安静地端详着即将创作的画作</td>
+<td><b>Idle 待机</b><br>安静地端详着画本</td>
 <td><img src="assets/anims/anim_b.gif" width="160" alt="Thinking"/></td>
-<td>右手拿画笔，左手托下巴：「画什么好呢？」</td>
+<td><b>Thinking 思考</b><br>右手拿画笔，左手托下巴：「画什么好呢？」</td>
 </tr>
-</table>
-</details>
-
-<details>
-<summary><b>疯狂画画 Drawing & 画完炫耀 Finished</b></summary>
-<table>
 <tr>
 <td><img src="assets/anims/anim_d.gif" width="160" alt="Drawing"/></td>
-<td>全速运转！手持画笔疯狂作画中</td>
-<td><img src="assets/anims/anim_c.gif" width="160" alt="Finished"/></td>
-<td>扭头向左，比出 V 字手势：「天才画家就是我」</td>
+<td><b>Drawing 作画</b><br>全速运转！手持画笔疯狂作画中</td>
+
+<td><img src="assets/anims/anim_d_win.gif" width="160" alt="Done"/></td>
+<td><b>Finished 完成</b><br>从疯狂画画状态自然过渡到收笔，回归待机</td>
 </tr>
 </table>
 </details>
 
+
 <details>
-<summary><b>画完收笔 Done & 委屈 Tearing Up</b></summary>
+<summary><b>GROUP B</b></summary>
 <table>
 <tr>
-<td><img src="assets/anims/anim_d_win.gif" width="160" alt="Done"/></td>
-<td>从疯狂画画状态自然过渡到收笔，回归待机</td>
+<td><img src="assets/anims/anim_c.gif" width="160" alt="Finished"/></td>
+<td><b>Appreciation 欣赏</b><br>沾沾自喜欣赏自己的得意作品。</td>
 <td><img src="assets/anims/anim_e.gif" width="160" alt="Tearing Up"/></td>
-<td>眼泪哗哗流，八字眉三角嘴，好像受了天大委屈</td>
+<td><b>ActingCute 卖萌</b><br>卖萌或是恳求的表情 🥺</td>
 </tr>
-</table>
-</details>
-
-<details>
-<summary><b>拿起画笔 Ready & 金色光芒 Golden Light</b></summary>
-<table>
 <tr>
 <td><img src="assets/anims/anim_a_win.gif" width="160" alt="Ready"/></td>
-<td>在待机基础上拿出了画笔，蓄势待发</td>
+<td><b>Ready 准备</b><br>在待机基础上拿出了画笔，蓄势待发</td>
 <td><img src="assets/anims/anim_light.gif" width="160" alt="Golden Light"/></td>
-<td>画本发出耀眼的金色光芒——旷世神作诞生！</td>
+<td><b>Golden Light 金色光芒</b><br>神作诞生 —— 哇~金色传说！</td>
 </tr>
 </table>
 </details>
+
 
 </details>
 

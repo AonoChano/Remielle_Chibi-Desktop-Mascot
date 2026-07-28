@@ -15,8 +15,8 @@ body {
 /* --- Sidebar --- */
 .sidebar {
   width: 200px;
-  background: linear-gradient(180deg, #1a0a2e 0%, #2d1050 50%, #1a0a2e 100%);
-  color: #d8cce8;
+  background: linear-gradient(180deg, #F5F2EE 0%, #EDE8E2 50%, #F5F2EE 100%);
+  color: #7B6B5E;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -25,7 +25,7 @@ body {
 .logo {
   padding: 20px 16px 16px;
   text-align: center;
-  border-bottom: 1px solid rgba(194, 24, 91, 0.2);
+  border-bottom: 1px solid rgba(123, 107, 94, 0.15);
 }
 
 .logo-img {
@@ -42,8 +42,8 @@ body {
   letter-spacing: 3px;
   text-transform: uppercase;
   font-weight: 600;
-  /* BannerLogo pink gradient */
-  background: linear-gradient(135deg, #C2185B, #FF4081, #F48FB1);
+  /* BannerLogo pink gradient — exact logo color stops */
+  background: linear-gradient(135deg, #8B1C3F 0%, #C2185B 30%, #E91E63 55%, #F48FB1 80%, #FCE4EC 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -64,7 +64,7 @@ nav {
 .nav-item {
   display: block;
   padding: 12px 24px;
-  color: #a898c8;
+  color: #9A8A7A;
   text-decoration: none;
   font-size: 14px;
   transition: all 0.2s;
@@ -73,7 +73,7 @@ nav {
 
 .nav-item:hover,
 .nav-item.active {
-  background: rgba(255, 64, 129, 0.1);
+  background: rgba(233, 30, 99, 0.08);
   color: #F48FB1;
   border-left-color: #E91E63;
 }

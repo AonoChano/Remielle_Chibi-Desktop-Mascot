@@ -108,6 +108,9 @@ class PetApp {
     var slots = this.skeleton.slots;
     var skin = this.skeleton.data.defaultSkin;
     if (!skin) return;
+
+    var outfitPrefixes = ['A_', 'B_', 'C_', 'D_', 'E_'];
+
     for (var i = 0; i < slots.length; i++) {
       var slot = slots[i];
       var data = slot.data;
@@ -115,8 +118,18 @@ class PetApp {
       if (!attachmentsForSlot) continue;
       var names = Object.keys(attachmentsForSlot);
       var target = names.find(n => n.startsWith(prefix + '_'));
+
       if (target) {
+        // This slot has the target outfit variant — apply it
         this.skeleton.setAttachment(data.name, target);
+      } else {
+        // No target variant — check if this is an outfit-specific slot
+        var isOutfitSlot = names.some(n => outfitPrefixes.some(p => n.startsWith(p)));
+        if (isOutfitSlot) {
+          // Outfit-specific slot without the target variant — hide it
+          this.skeleton.setAttachment(data.name, null);
+        }
+        // else: shared slot (legs, feet, etc.) — leave visible
       }
     }
     this.skeleton.updateWorldTransform(spine.Physics.update);

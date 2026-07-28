@@ -129,3 +129,50 @@ h2 {
   color: #95a5a6;
   font-size: 13px;
 }
+
+/* Checkbox label */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.checkbox-label input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* Size select */
+#size-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #bdc3c7;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* Outfit toggle — locked vs unlocked */
+.btn-outfit.locked {
+  background: #8e44ad;
+  opacity: 1;
+}
+
+.btn-outfit:not(.locked) {
+  opacity: 0.6;
+}
+
+/* Animation button active state */
+.btn-anim.active {
+  background: #2980b9;
+}
+
+/* Test mode: formal features grayed out */
+body.test-mode-active .formal-feature {
+  opacity: 0.4;
+  pointer-events: none;
+}

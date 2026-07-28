@@ -57,6 +57,10 @@ Remielle_Chibi-Desktop-Mascot/
   - The atlas does NOT have `pma` tag → always use `drawSkeleton(skeleton, false)`
   - Using `true` causes bright edge artifacts on overlapping meshes
 
+- **UI literalism trap**: See `.harness/pitfalls/ui-literalism.md`
+  - Do not convert user's illustrative descriptions into overstated visual designs
+  - Default to subtle, market-standard affordances; whitespace is not a bug
+
 ## Development Commands
 
 ```bash

@@ -24,3 +24,6 @@ capture-done.flag
 # OS
 .DS_Store
 Thumbs.db
+
+# Brainstorming visual companion
+.superpowers/

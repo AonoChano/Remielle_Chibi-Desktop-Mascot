@@ -22,7 +22,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'set-expression',
       'apply-scale',
       'locale-changed',
-      'toggle-light'
+      'toggle-light',
+      'cursor-position',
+      'eye-tracking-changed',
+      'test-mode-changed'
     ];
     if (validReceiveChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => callback(...args));
@@ -35,7 +38,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'get-current-locale',
       'open-external',
       'load-settings',
-      'save-settings'
+      'save-settings',
+      'get-eye-tracking-enabled',
+      'set-eye-tracking-enabled'
     ];
     if (validInvokeChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, ...args);

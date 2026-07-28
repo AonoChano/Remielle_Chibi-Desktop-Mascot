@@ -1,10 +1,12 @@
-const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { EyeTrackingService } = require('./eye-tracking-service');
 
 let petWindow = null;
 let panelWindow = null;
 let tray = null;
+let eyeTrackingService = null;
 
 // --- Settings persistence ---
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
@@ -38,6 +40,35 @@ function debounce(fn, ms) {
   };
 }
 
+function readEyeTrackingSetting() {
+  const saved = loadSettings();
+  return typeof saved.eyeTrackingEnabled === 'boolean'
+    ? saved.eyeTrackingEnabled
+    : true;
+}
+
+function sendToWindow(window, channel, ...args) {
+  if (!window || window.isDestroyed() || window.webContents.isDestroyed()) return;
+  window.webContents.send(channel, ...args);
+}
+
+function createEyeTrackingService() {
+  return new EyeTrackingService({
+    initialEnabled: readEyeTrackingSetting(),
+    getCursorPoint: () => screen.getCursorScreenPoint(),
+    getPetBounds: () => {
+      if (!petWindow || petWindow.isDestroyed()) return null;
+      return petWindow.getBounds();
+    },
+    sendCursor: sample => sendToWindow(petWindow, 'cursor-position', sample),
+    saveSetting: enabled => saveSettings({ eyeTrackingEnabled: enabled }),
+    broadcastSetting: enabled => {
+      sendToWindow(petWindow, 'eye-tracking-changed', enabled);
+      sendToWindow(panelWindow, 'eye-tracking-changed', enabled);
+    },
+  });
+}
+
 function createPetWindow() {
   const saved = loadSettings();
 
@@ -62,6 +93,9 @@ function createPetWindow() {
 
   petWindow.loadFile('pet.html');
   petWindow.setIgnoreMouseEvents(false);
+  petWindow.webContents.once('did-finish-load', () => {
+    if (eyeTrackingService) eyeTrackingService.setPetAvailable(true);
+  });
 
   const savePetPos = debounce(() => {
     if (petWindow && !petWindow.isDestroyed()) {
@@ -81,6 +115,7 @@ function createPetWindow() {
   petWindow.on('resize', savePetSize);
 
   petWindow.on('closed', () => {
+    if (eyeTrackingService) eyeTrackingService.setPetAvailable(false);
     petWindow = null;
   });
 }
@@ -147,8 +182,13 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
+  eyeTrackingService = createEyeTrackingService();
   createPetWindow();
   createTray();
+});
+
+app.on('before-quit', () => {
+  if (eyeTrackingService) eyeTrackingService.destroy();
 });
 
 app.on('window-all-closed', () => {
@@ -195,6 +235,19 @@ ipcMain.on('toggle-light', (event, enabled) => {
   if (petWindow) {
     petWindow.webContents.send('toggle-light', enabled);
   }
+});
+
+ipcMain.handle('get-eye-tracking-enabled', () => {
+  return eyeTrackingService
+    ? eyeTrackingService.getEnabled()
+    : readEyeTrackingSetting();
+});
+
+ipcMain.handle('set-eye-tracking-enabled', (event, enabled) => {
+  if (!eyeTrackingService) {
+    throw new Error('Eye tracking service is not ready');
+  }
+  return eyeTrackingService.setEnabled(enabled);
 });
 
 ipcMain.on('set-size', (event, size) => {

@@ -3,6 +3,7 @@ const AppState = {
   testMode: false,
   currentAnimation: 'a',
   lightEnabled: false,
+  eyeTrackingEnabled: true,
   animationQueue: [],
   triggerHandlers: {},
 };
@@ -54,6 +55,34 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.getElementById(tabId).classList.add('active');
   });
 });
+
+// --- Eye tracking toggle ---
+const eyeTrackingToggle = document.getElementById('eye-tracking-toggle');
+
+eyeTrackingToggle.addEventListener('change', async () => {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+  const previous = AppState.eyeTrackingEnabled;
+  const enabled = eyeTrackingToggle.checked;
+  eyeTrackingToggle.disabled = true;
+  try {
+    const effective = await window.electronAPI.invoke('set-eye-tracking-enabled', enabled);
+    AppState.eyeTrackingEnabled = effective === true;
+    eyeTrackingToggle.checked = AppState.eyeTrackingEnabled;
+  } catch (error) {
+    AppState.eyeTrackingEnabled = previous;
+    eyeTrackingToggle.checked = previous;
+    console.warn('[eye-tracking] Failed to update setting:', error.message);
+  } finally {
+    eyeTrackingToggle.disabled = false;
+  }
+});
+
+if (window.electronAPI) {
+  window.electronAPI.on('eye-tracking-changed', enabled => {
+    AppState.eyeTrackingEnabled = enabled === true;
+    eyeTrackingToggle.checked = AppState.eyeTrackingEnabled;
+  });
+}
 
 // --- Test mode toggle ---
 const testToggle = document.getElementById('test-mode-toggle');
@@ -127,8 +156,14 @@ document.querySelectorAll('[data-external]').forEach(el => {
 async function loadAndApplySettings() {
   if (!window.electronAPI || !window.electronAPI.invoke) return;
 
-  const settings = await window.electronAPI.invoke('load-settings');
+  const [settings, eyeTrackingEnabled] = await Promise.all([
+    window.electronAPI.invoke('load-settings'),
+    window.electronAPI.invoke('get-eye-tracking-enabled'),
+  ]);
   if (!settings) return;
+
+  AppState.eyeTrackingEnabled = eyeTrackingEnabled === true;
+  eyeTrackingToggle.checked = AppState.eyeTrackingEnabled;
 
   // Restore size
   if (settings.size) {

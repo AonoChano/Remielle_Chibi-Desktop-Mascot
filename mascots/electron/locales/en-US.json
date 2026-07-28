@@ -9,9 +9,12 @@
     "fallbackTitle": "Remielle Control Panel"
   },
   "nav": {
-    "main": "Main Panel",
+    "main": "Mascot",
     "settings": "Settings",
     "about": "About"
+  },
+  "features": {
+    "eyeTracking": "Eye Tracking"
   },
   "testMode": {
     "label": "Animation Test Mode"
@@ -21,7 +24,7 @@
     "idle": "Idle",
     "thinking": "Thinking",
     "drawing": "Sketching",
-    "finished": "Show Off",
+    "finished": "Admire Drawing",
     "done": "Signing Off",
     "tearingUp": "Crying",
     "ready": "Brush in Hand",

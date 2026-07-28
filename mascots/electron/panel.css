@@ -129,6 +129,74 @@ h2 {
 }
 
 /* --- Settings --- */
+.feature-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 6px 0 18px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.feature-label {
+  color: #5a3e68;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #cfc4cc;
+  transition: background 160ms ease;
+}
+
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(90, 69, 104, 0.24);
+  transition: transform 160ms ease;
+}
+
+.toggle-switch input:checked + .toggle-track {
+  background: #E91E63;
+}
+
+.toggle-switch input:checked + .toggle-track::after {
+  transform: translateX(20px);
+}
+
+.toggle-switch input:focus-visible + .toggle-track {
+  outline: 3px solid rgba(233, 30, 99, 0.24);
+  outline-offset: 3px;
+}
+
 .setting-row {
   background: #fff;
   padding: 16px;

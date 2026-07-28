@@ -22,7 +22,14 @@
     </aside>
     <main class="content">
       <section id="tab-main" class="tab active">
-        <!-- 未来正式功能加在这里（复选框上方），当前留白 -->
+        <div class="feature-row eye-tracking-row">
+          <span id="eye-tracking-label" class="feature-label" data-i18n="features.eyeTracking">眼神鼠标追踪</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="eye-tracking-toggle" role="switch"
+                   aria-labelledby="eye-tracking-label" checked>
+            <span class="toggle-track" aria-hidden="true"></span>
+          </label>
+        </div>
 
         <div class="setting-row">
           <label class="checkbox-label">
@@ -37,7 +44,7 @@
             <button class="btn-anim active" data-anim="a" data-i18n="anim.idle">待机 Idle</button>
             <button class="btn-anim" data-anim="b" data-i18n="anim.thinking">思考 Thinking</button>
             <button class="btn-anim" data-anim="d" data-i18n="anim.drawing">疯狂画画 Drawing</button>
-            <button class="btn-anim" data-anim="c" data-i18n="anim.finished">画完炫耀 Finished</button>
+            <button class="btn-anim" data-anim="c" data-i18n="anim.finished">画完欣赏 Finished</button>
             <button class="btn-anim" data-anim="d_win" data-i18n="anim.done">画完收笔 Done</button>
             <button class="btn-anim" data-anim="e" data-i18n="anim.tearingUp">委屈 Tearing Up</button>
             <button class="btn-anim" data-anim="a_win" data-i18n="anim.ready">拿起画笔 Ready</button>

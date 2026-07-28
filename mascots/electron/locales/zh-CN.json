@@ -9,9 +9,12 @@
     "fallbackTitle": "小蕾米管理面板"
   },
   "nav": {
-    "main": "主面板",
+    "main": "桌宠",
     "settings": "设置",
     "about": "关于"
+  },
+  "features": {
+    "eyeTracking": "眼神鼠标追踪"
   },
   "testMode": {
     "label": "进行动画控制测试"
@@ -21,7 +24,7 @@
     "idle": "待机",
     "thinking": "思考",
     "drawing": "疯狂画画",
-    "finished": "画完炫耀",
+    "finished": "画完欣赏",
     "done": "画完收笔",
     "tearingUp": "委屈",
     "ready": "拿起画笔",

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -6,10 +6,46 @@ let petWindow = null;
 let panelWindow = null;
 let tray = null;
 
+// --- Settings persistence ---
+const settingsPath = path.join(app.getPath('userData'), 'settings.json');
+
+function loadSettings() {
+  try {
+    if (fs.existsSync(settingsPath)) {
+      return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    }
+  } catch (e) {
+    console.warn('[settings] Failed to load:', e.message);
+  }
+  return {};
+}
+
+function saveSettings(partial) {
+  try {
+    const existing = loadSettings();
+    const merged = { ...existing, ...partial };
+    fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('[settings] Failed to save:', e.message);
+  }
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
 function createPetWindow() {
+  const saved = loadSettings();
+
   petWindow = new BrowserWindow({
-    width: 420,
-    height: 420,
+    x: saved.petX,
+    y: saved.petY,
+    width: saved.petSize || 420,
+    height: saved.petSize || 420,
     transparent: true,
     frame: false,
     hasShadow: false,
@@ -27,6 +63,31 @@ function createPetWindow() {
   petWindow.loadFile('pet.html');
   petWindow.setIgnoreMouseEvents(false);
 
+  // Restore pet scale on load
+  petWindow.webContents.on('did-finish-load', () => {
+    const s = loadSettings();
+    if (s.petSize && s.petSize !== 420) {
+      petWindow.webContents.send('apply-scale', s.petSize / 420);
+    }
+  });
+
+  const savePetPos = debounce(() => {
+    if (petWindow && !petWindow.isDestroyed()) {
+      const [x, y] = petWindow.getPosition();
+      saveSettings({ petX: x, petY: y });
+    }
+  }, 500);
+
+  const savePetSize = debounce(() => {
+    if (petWindow && !petWindow.isDestroyed()) {
+      const [w] = petWindow.getBounds();
+      saveSettings({ petSize: w });
+    }
+  }, 500);
+
+  petWindow.on('move', savePetPos);
+  petWindow.on('resize', savePetSize);
+
   petWindow.on('closed', () => {
     petWindow = null;
   });
@@ -37,7 +98,12 @@ function createPanelWindow() {
     panelWindow.focus();
     return;
   }
+
+  const saved = loadSettings();
+
   panelWindow = new BrowserWindow({
+    x: saved.panelX,
+    y: saved.panelY,
     width: 860,
     height: 640,
     title: '小蕾米管理面板',
@@ -50,6 +116,16 @@ function createPanelWindow() {
   });
 
   panelWindow.loadFile('panel.html');
+
+  const savePanelPos = debounce(() => {
+    if (panelWindow && !panelWindow.isDestroyed()) {
+      const [x, y] = panelWindow.getPosition();
+      saveSettings({ panelX: x, panelY: y });
+    }
+  }, 500);
+
+  panelWindow.on('move', savePanelPos);
+
   panelWindow.on('closed', () => {
     panelWindow = null;
   });
@@ -189,6 +265,7 @@ ipcMain.handle('get-locale-dict', (event, localeCode) => {
 ipcMain.on('set-locale', (event, localeCode) => {
   if (localeCache[localeCode]) {
     currentLocale = localeCode;
+    saveSettings({ locale: localeCode });
     const dict = localeCache[localeCode];
     if (petWindow) petWindow.webContents.send('locale-changed', localeCode, dict);
     if (panelWindow) panelWindow.webContents.send('locale-changed', localeCode, dict);
@@ -197,4 +274,17 @@ ipcMain.on('set-locale', (event, localeCode) => {
 
 ipcMain.handle('get-current-locale', () => {
   return currentLocale;
+});
+
+// --- External links & settings IPC ---
+ipcMain.handle('open-external', async (event, url) => {
+  await shell.openExternal(url);
+});
+
+ipcMain.handle('load-settings', () => {
+  return loadSettings();
+});
+
+ipcMain.handle('save-settings', (event, partial) => {
+  saveSettings(partial);
 });

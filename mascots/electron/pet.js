@@ -34,6 +34,21 @@ class PetApp {
     this.setupIPC();
     this.setupDrag();
     this.centerSkeleton();
+    this.restoreSavedState();
+  }
+
+  restoreSavedState() {
+    if (!window.electronAPI || !window.electronAPI.invoke) return;
+    window.electronAPI.invoke('load-settings').then(settings => {
+      if (!settings) return;
+      if (settings.lockedOutfit) {
+        if (this.animationState) this.animationState.clearTracks();
+        this.applyOutfit(settings.lockedOutfit);
+      }
+      if (settings.lightEnabled && this.animationState) {
+        this.animationState.setAnimation(1, 'light', true);
+      }
+    });
   }
 
   centerSkeleton() {

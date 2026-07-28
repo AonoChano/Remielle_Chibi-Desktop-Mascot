@@ -34,7 +34,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const validInvokeChannels = [
       'get-locales',
       'get-locale-dict',
-      'get-current-locale'
+      'get-current-locale',
+      'open-external',
+      'load-settings',
+      'save-settings'
     ];
     if (validInvokeChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, ...args);

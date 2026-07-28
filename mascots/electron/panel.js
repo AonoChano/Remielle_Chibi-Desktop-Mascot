@@ -65,6 +65,7 @@ testToggle.addEventListener('change', () => {
   AppState.testMode = enabled;
   testControls.style.display = enabled ? 'block' : 'none';
   document.body.classList.toggle('test-mode-active', enabled);
+  saveSettings();
 });
 
 // --- Animation buttons ---
@@ -84,6 +85,7 @@ document.querySelectorAll('.btn-anim').forEach(btn => {
       // Reset pet's outfit to default (clears all attachment overrides)
       window.electronAPI.send('set-outfit', null);
     }
+    saveSettings();
   });
 });
 
@@ -94,6 +96,7 @@ lightToggle.addEventListener('change', () => {
   if (window.electronAPI) {
     window.electronAPI.send('toggle-light', lightToggle.checked);
   }
+  saveSettings();
 });
 
 // --- Outfit buttons (exclusive selection, stops animation + light) ---
@@ -122,6 +125,7 @@ document.querySelectorAll('.btn-outfit').forEach(btn => {
         window.electronAPI.send('toggle-light', false);
         window.electronAPI.send('set-outfit', outfit);
       }
+      saveSettings();
     } else {
       // Deactivate — resume idle animation
       AppState.lockedOutfit = null;
@@ -132,6 +136,7 @@ document.querySelectorAll('.btn-outfit').forEach(btn => {
         window.electronAPI.send('set-outfit', null);
         window.electronAPI.send('play-animation', 'a');
       }
+      saveSettings();
     }
   });
 });
@@ -143,6 +148,7 @@ sizeSelect.addEventListener('change', () => {
   if (window.electronAPI) {
     window.electronAPI.send('set-size', size);
   }
+  saveSettings();
 });
 
 // --- Locale select ---
@@ -153,5 +159,65 @@ document.getElementById('locale-select').addEventListener('change', (e) => {
   }
 });
 
+// --- External links (open in default browser) ---
+document.querySelectorAll('[data-external]').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (window.electronAPI) {
+      window.electronAPI.invoke('open-external', el.dataset.external);
+    }
+  });
+});
+
+// --- Settings persistence ---
+async function loadAndApplySettings() {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+
+  const settings = await window.electronAPI.invoke('load-settings');
+  if (!settings) return;
+
+  // Restore size
+  if (settings.size) {
+    const sel = document.getElementById('size-select');
+    if (sel && sel.querySelector(`option[value="${settings.size}"]`)) {
+      sel.value = settings.size;
+    }
+  }
+
+  // Restore test mode
+  if (settings.testMode) {
+    document.getElementById('test-mode-toggle').checked = true;
+    document.getElementById('test-mode-toggle').dispatchEvent(new Event('change'));
+  }
+
+  // Restore light
+  if (settings.lightEnabled) {
+    document.getElementById('light-toggle').checked = true;
+    document.getElementById('light-toggle').dispatchEvent(new Event('change'));
+  }
+
+  // Restore outfit (higher priority — if outfit is set, don't play animation)
+  if (settings.lockedOutfit) {
+    const btn = document.querySelector(`.btn-outfit[data-outfit="${settings.lockedOutfit}"]`);
+    if (btn) btn.click();
+  } else if (settings.currentAnimation) {
+    const btn = document.querySelector(`.btn-anim[data-anim="${settings.currentAnimation}"]`);
+    if (btn) btn.click();
+  }
+}
+
+function saveSettings() {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+
+  window.electronAPI.invoke('save-settings', {
+    size: parseInt(document.getElementById('size-select').value, 10),
+    locale: document.getElementById('locale-select').value,
+    testMode: AppState.testMode,
+    lightEnabled: AppState.lightEnabled,
+    lockedOutfit: AppState.lockedOutfit,
+    currentAnimation: AppState.currentAnimation,
+  });
+}
+
 // --- Initialize ---
-initI18n();
+initI18n().then(() => loadAndApplySettings());

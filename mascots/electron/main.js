@@ -44,8 +44,8 @@ function createPetWindow() {
   petWindow = new BrowserWindow({
     x: saved.petX,
     y: saved.petY,
-    width: saved.petSize || 420,
-    height: saved.petSize || 420,
+    width: saved.size || saved.petSize || 420,
+    height: saved.size || saved.petSize || 420,
     transparent: true,
     frame: false,
     hasShadow: false,
@@ -209,6 +209,7 @@ ipcMain.on('set-size', (event, size) => {
       Math.round(centerY - size / 2)
     );
     petWindow.webContents.send('apply-scale', size / 420);
+    saveSettings({ petSize: size });
   }
 });
 

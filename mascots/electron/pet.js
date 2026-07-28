@@ -53,8 +53,10 @@ class PetApp {
       }
 
       // Restore skeleton scale (directly, no IPC needed)
-      if (settings.petSize && this.skeleton) {
-        var scale = settings.petSize / 420;
+      // Panel saves `size`, main process saves `petSize` — use whichever is available
+      var savedSize = settings.size || settings.petSize;
+      if (savedSize && this.skeleton) {
+        var scale = savedSize / 420;
         this.skeleton.scaleX = scale;
         this.skeleton.scaleY = scale;
       }

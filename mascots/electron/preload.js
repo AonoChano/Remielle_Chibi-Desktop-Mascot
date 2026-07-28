@@ -26,7 +26,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'toggle-light',
       'cursor-position',
       'eye-tracking-changed',
-      'test-mode-changed'
+      'test-mode-changed',
+      'always-on-top-changed'
     ];
     if (validReceiveChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => callback(...args));
@@ -41,7 +42,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'load-settings',
       'save-settings',
       'get-eye-tracking-enabled',
-      'set-eye-tracking-enabled'
+      'set-eye-tracking-enabled',
+      'get-always-on-top',
+      'set-always-on-top'
     ];
     if (validInvokeChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, ...args);

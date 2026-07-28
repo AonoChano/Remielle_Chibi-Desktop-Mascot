@@ -2,11 +2,16 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell, screen } = 
 const path = require('path');
 const fs = require('fs');
 const { EyeTrackingService } = require('./eye-tracking-service');
+const {
+  AlwaysOnTopService,
+  readAlwaysOnTopSetting,
+} = require('./always-on-top-service');
 
 let petWindow = null;
 let panelWindow = null;
 let tray = null;
 let eyeTrackingService = null;
+let alwaysOnTopService = null;
 
 // --- Settings persistence ---
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
@@ -22,13 +27,16 @@ function loadSettings() {
   return {};
 }
 
-function saveSettings(partial) {
+function saveSettings(partial, options = {}) {
   try {
     const existing = loadSettings();
     const merged = { ...existing, ...partial };
     fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf8');
+    return true;
   } catch (e) {
     console.warn('[settings] Failed to save:', e.message);
+    if (options.throwOnError) throw e;
+    return false;
   }
 }
 
@@ -69,6 +77,19 @@ function createEyeTrackingService() {
   });
 }
 
+function createAlwaysOnTopService() {
+  return new AlwaysOnTopService({
+    initialEnabled: readAlwaysOnTopSetting(loadSettings()),
+    persistSetting: enabled => saveSettings(
+      { alwaysOnTop: enabled },
+      { throwOnError: true }
+    ),
+    broadcastSetting: enabled => {
+      sendToWindow(panelWindow, 'always-on-top-changed', enabled);
+    },
+  });
+}
+
 function createPetWindow() {
   const saved = loadSettings();
 
@@ -80,7 +101,9 @@ function createPetWindow() {
     transparent: true,
     frame: false,
     hasShadow: false,
-    alwaysOnTop: true,
+    alwaysOnTop: alwaysOnTopService
+      ? alwaysOnTopService.getEnabled()
+      : readAlwaysOnTopSetting(saved),
     skipTaskbar: true,
     resizable: false,
     backgroundColor: '#00000000',
@@ -93,6 +116,7 @@ function createPetWindow() {
 
   petWindow.loadFile('pet.html');
   petWindow.setIgnoreMouseEvents(false);
+  if (alwaysOnTopService) alwaysOnTopService.attachWindow(petWindow);
   petWindow.webContents.once('did-finish-load', () => {
     if (eyeTrackingService) eyeTrackingService.setPetAvailable(true);
   });
@@ -116,6 +140,7 @@ function createPetWindow() {
 
   petWindow.on('closed', () => {
     if (eyeTrackingService) eyeTrackingService.setPetAvailable(false);
+    if (alwaysOnTopService) alwaysOnTopService.detachWindow(petWindow);
     petWindow = null;
   });
 }
@@ -183,6 +208,7 @@ function createTray() {
 
 app.whenReady().then(() => {
   eyeTrackingService = createEyeTrackingService();
+  alwaysOnTopService = createAlwaysOnTopService();
   createPetWindow();
   createTray();
 });
@@ -253,6 +279,19 @@ ipcMain.handle('set-eye-tracking-enabled', (event, enabled) => {
     throw new Error('Eye tracking service is not ready');
   }
   return eyeTrackingService.setEnabled(enabled);
+});
+
+ipcMain.handle('get-always-on-top', () => {
+  return alwaysOnTopService
+    ? alwaysOnTopService.getEnabled()
+    : readAlwaysOnTopSetting(loadSettings());
+});
+
+ipcMain.handle('set-always-on-top', (event, enabled) => {
+  if (!alwaysOnTopService) {
+    throw new Error('Always-on-top service is not ready');
+  }
+  return alwaysOnTopService.setEnabled(enabled);
 });
 
 ipcMain.on('set-size', (event, size) => {

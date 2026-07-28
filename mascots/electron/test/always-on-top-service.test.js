@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const {
   AlwaysOnTopService,
@@ -132,4 +134,14 @@ test('detached or destroyed windows are not mutated', () => {
 
   assert.deepEqual(fixture.windowCalls, []);
   assert.deepEqual(fixture.persisted, [false]);
+});
+
+test('main process wires the acknowledged IPC and strict persistence contract', () => {
+  const main = fs.readFileSync(path.resolve(__dirname, '..', 'main.js'), 'utf8');
+
+  assert.match(main, /ipcMain\.handle\('get-always-on-top'/);
+  assert.match(main, /ipcMain\.handle\('set-always-on-top'/);
+  assert.match(main, /alwaysOnTopService\.setEnabled\(enabled\)/);
+  assert.match(main, /alwaysOnTop:\s*alwaysOnTopService/);
+  assert.match(main, /\{ throwOnError: true \}/);
 });

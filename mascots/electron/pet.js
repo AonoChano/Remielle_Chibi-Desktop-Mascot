@@ -4,6 +4,8 @@ class PetApp {
     this.animationState = null;
     this.canvas = null;
     this.pendingAnim = null;
+    this.boundsRect = { x: 0, y: 0, width: 0, height: 0 };
+    this.currentlyIgnoringMouse = false;
   }
 
   loadAssets(canvas) {
@@ -32,7 +34,6 @@ class PetApp {
 
   centerSkeleton() {
     if (!this.skeleton) return;
-    // 获取骨骼包围盒并大致居中
     this.skeleton.setToSetupPose();
     this.skeleton.updateWorldTransform(spine.Physics.update);
   }
@@ -52,6 +53,13 @@ class PetApp {
 
     window.electronAPI.on('set-expression', (expression) => {
       this.applyExpression(expression);
+    });
+
+    window.electronAPI.on('apply-scale', (scale) => {
+      if (this.skeleton) {
+        this.skeleton.scaleX = scale;
+        this.skeleton.scaleY = scale;
+      }
     });
   }
 
@@ -75,7 +83,6 @@ class PetApp {
   }
 
   applyExpression(expression) {
-    // 预留：表情微调（如眨眼、脸红）
     console.log('expression', expression);
   }
 
@@ -83,6 +90,7 @@ class PetApp {
     let isDragging = false;
     let startX = 0, startY = 0;
     const canvasEl = document.getElementById('canvas');
+    const self = this;
 
     canvasEl.addEventListener('mousedown', (e) => {
       if (e.button === 0) {
@@ -93,7 +101,23 @@ class PetApp {
     });
 
     window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
+      // Click-through detection: check if mouse is inside character bounding box
+      if (!isDragging) {
+        const rect = canvasEl.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const b = self.boundsRect;
+        const inside = mx >= b.x && mx <= b.x + b.width &&
+                       my >= b.y && my <= b.y + b.height;
+        if (inside && self.currentlyIgnoringMouse) {
+          self.currentlyIgnoringMouse = false;
+          if (window.electronAPI) window.electronAPI.send('set-mouse-events', false);
+        } else if (!inside && !self.currentlyIgnoringMouse) {
+          self.currentlyIgnoringMouse = true;
+          if (window.electronAPI) window.electronAPI.send('set-mouse-events', true);
+        }
+        return;
+      }
       const dx = e.screenX - startX;
       const dy = e.screenY - startY;
       if (window.electronAPI) {
@@ -134,6 +158,9 @@ class PetApp {
       renderer.drawSkeleton(this.skeleton, false);
     }
     renderer.end();
+    if (this.skeleton) {
+      this.boundsRect = this.skeleton.getBoundsRect();
+    }
   }
 }
 

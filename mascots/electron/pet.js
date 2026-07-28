@@ -41,12 +41,22 @@ class PetApp {
     if (!window.electronAPI || !window.electronAPI.invoke) return;
     window.electronAPI.invoke('load-settings').then(settings => {
       if (!settings) return;
-      if (settings.lockedOutfit) {
-        if (this.animationState) this.animationState.clearTracks();
-        this.applyOutfit(settings.lockedOutfit);
+
+      // Restore animation
+      if (settings.currentAnimation && this.animationState) {
+        this.animationState.setAnimation(0, settings.currentAnimation, true);
       }
+
+      // Restore light overlay
       if (settings.lightEnabled && this.animationState) {
         this.animationState.setAnimation(1, 'light', true);
+      }
+
+      // Restore skeleton scale (directly, no IPC needed)
+      if (settings.petSize && this.skeleton) {
+        var scale = settings.petSize / 420;
+        this.skeleton.scaleX = scale;
+        this.skeleton.scaleY = scale;
       }
     });
   }
@@ -64,16 +74,6 @@ class PetApp {
       if (this.animationState) {
         this.animationState.setAnimation(0, animName, true);
       }
-    });
-
-    window.electronAPI.on('set-outfit', (prefix) => {
-      if (prefix) {
-        // Entering outfit mode: stop all animation tracks for static display
-        if (this.animationState) {
-          this.animationState.clearTracks();
-        }
-      }
-      this.applyOutfit(prefix);
     });
 
     window.electronAPI.on('set-expression', (expression) => {
@@ -107,47 +107,6 @@ class PetApp {
         }
       }
     });
-  }
-
-  applyOutfit(prefix) {
-    if (!this.skeleton) return;
-    // Reset to setup pose first — clears ALL attachments from any previous outfit
-    this.skeleton.setToSetupPose();
-
-    if (!prefix) {
-      // null = reset to default, nothing else to apply
-      this.skeleton.updateWorldTransform(spine.Physics.update);
-      return;
-    }
-
-    var slots = this.skeleton.slots;
-    var skin = this.skeleton.data.defaultSkin;
-    if (!skin) return;
-
-    var outfitPrefixes = ['A_', 'B_', 'C_', 'D_', 'E_'];
-
-    for (var i = 0; i < slots.length; i++) {
-      var slot = slots[i];
-      var data = slot.data;
-      var attachmentsForSlot = skin.attachments[data.index];
-      if (!attachmentsForSlot) continue;
-      var names = Object.keys(attachmentsForSlot);
-      var target = names.find(n => n.startsWith(prefix + '_'));
-
-      if (target) {
-        // This slot has the target outfit variant — apply it
-        this.skeleton.setAttachment(data.name, target);
-      } else {
-        // No target variant — check if this is an outfit-specific slot
-        var isOutfitSlot = names.some(n => outfitPrefixes.some(p => n.startsWith(p)));
-        if (isOutfitSlot) {
-          // Outfit-specific slot without the target variant — hide it
-          this.skeleton.setAttachment(data.name, null);
-        }
-        // else: shared slot (legs, feet, etc.) — leave visible
-      }
-    }
-    this.skeleton.updateWorldTransform(spine.Physics.update);
   }
 
   applyExpression(expression) {

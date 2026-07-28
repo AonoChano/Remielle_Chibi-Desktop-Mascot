@@ -27,14 +27,6 @@
     "ready": "Brush in Hand",
     "goldenLight": "Golden Glow"
   },
-  "outfit": {
-    "title": "Costumes",
-    "suitA": "Costume A",
-    "suitB": "Costume B",
-    "suitC": "Costume C",
-    "suitD": "Costume D",
-    "suitE": "Costume E"
-  },
   "settings": {
     "title": "Settings",
     "size": "Mascot Size",

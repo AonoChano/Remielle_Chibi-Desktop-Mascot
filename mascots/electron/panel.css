@@ -128,14 +128,6 @@ h2 {
   transform: translateY(0);
 }
 
-.btn-outfit {
-  background: #c9a96e !important;
-}
-
-.btn-outfit:hover {
-  background: #b8985e !important;
-}
-
 /* --- Settings --- */
 .setting-row {
   background: #fff;
@@ -184,15 +176,7 @@ h2 {
   color: #5a4568;
 }
 
-/* Outfit toggle — locked vs unlocked */
-.btn-outfit.locked {
-  background: #b8941e;
-  opacity: 1;
-}
-
-.btn-outfit:not(.locked) {
-  opacity: 0.6;
-}
+/* Outfit toggle — locked vs unlocked — REMOVED */
 
 /* Animation button active state */
 .btn-anim.active {
@@ -325,4 +309,34 @@ body.test-mode-active .formal-feature {
 
 .about-credits li:last-child {
   border-bottom: none;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 720px) {
+  .sidebar {
+    width: 160px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .button-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .about-panel {
+    padding: 20px;
+  }
+
+  .about-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .about-social {
+    text-align: left;
+  }
 }

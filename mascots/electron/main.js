@@ -63,14 +63,6 @@ function createPetWindow() {
   petWindow.loadFile('pet.html');
   petWindow.setIgnoreMouseEvents(false);
 
-  // Restore pet scale on load
-  petWindow.webContents.on('did-finish-load', () => {
-    const s = loadSettings();
-    if (s.petSize && s.petSize !== 420) {
-      petWindow.webContents.send('apply-scale', s.petSize / 420);
-    }
-  });
-
   const savePetPos = debounce(() => {
     if (petWindow && !petWindow.isDestroyed()) {
       const [x, y] = petWindow.getPosition();
@@ -104,6 +96,8 @@ function createPanelWindow() {
   panelWindow = new BrowserWindow({
     x: saved.panelX,
     y: saved.panelY,
+    minWidth: 640,
+    minHeight: 480,
     width: 860,
     height: 640,
     title: '小蕾米管理面板',
@@ -185,12 +179,6 @@ ipcMain.on('play-animation', (event, animName) => {
   }
 });
 
-ipcMain.on('set-outfit', (event, prefix) => {
-  if (petWindow) {
-    petWindow.webContents.send('set-outfit', prefix);
-  }
-});
-
 ipcMain.on('set-expression', (event, expression) => {
   if (petWindow) {
     petWindow.webContents.send('set-expression', expression);
@@ -225,7 +213,7 @@ ipcMain.on('set-size', (event, size) => {
 });
 
 // --- i18n ---
-let currentLocale = 'zh-CN';
+let currentLocale = loadSettings().locale || 'zh-CN';
 
 function scanLocales() {
   const localesDir = path.join(__dirname, 'locales');

@@ -27,14 +27,6 @@
     "ready": "拿起画笔",
     "goldenLight": "金色光芒"
   },
-  "outfit": {
-    "title": "换装",
-    "suitA": "套装 A",
-    "suitB": "套装 B",
-    "suitC": "套装 C",
-    "suitD": "套装 D",
-    "suitE": "套装 E"
-  },
   "settings": {
     "title": "设置",
     "size": "角色尺寸",

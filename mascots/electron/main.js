@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 let petWindow = null;
 let panelWindow = null;
@@ -139,4 +140,55 @@ ipcMain.on('set-size', (event, size) => {
     );
     petWindow.webContents.send('apply-scale', size / 420);
   }
+});
+
+// --- i18n ---
+let currentLocale = 'zh-CN';
+
+function scanLocales() {
+  const localesDir = path.join(__dirname, 'locales');
+  const locales = {};
+  try {
+    const files = fs.readdirSync(localesDir).filter(f => f.endsWith('.json'));
+    for (const file of files) {
+      try {
+        const content = JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'));
+        if (content._meta && content._meta.locale && content._meta.display_name) {
+          locales[content._meta.locale] = content;
+        }
+      } catch (e) {
+        console.warn(`[i18n] Skipping invalid locale file: ${file} - ${e.message}`);
+      }
+    }
+  } catch (e) {
+    console.warn(`[i18n] Could not scan locales directory: ${e.message}`);
+  }
+  return locales;
+}
+
+const localeCache = scanLocales();
+
+ipcMain.handle('get-locales', () => {
+  const result = [];
+  for (const [code, dict] of Object.entries(localeCache)) {
+    result.push({ code: code, displayName: dict._meta.display_name });
+  }
+  return result;
+});
+
+ipcMain.handle('get-locale-dict', (event, localeCode) => {
+  return localeCache[localeCode] || null;
+});
+
+ipcMain.on('set-locale', (event, localeCode) => {
+  if (localeCache[localeCode]) {
+    currentLocale = localeCode;
+    const dict = localeCache[localeCode];
+    if (petWindow) petWindow.webContents.send('locale-changed', localeCode, dict);
+    if (panelWindow) panelWindow.webContents.send('locale-changed', localeCode, dict);
+  }
+});
+
+ipcMain.handle('get-current-locale', () => {
+  return currentLocale;
 });

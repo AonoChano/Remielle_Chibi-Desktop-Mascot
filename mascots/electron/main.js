@@ -119,3 +119,24 @@ ipcMain.on('set-expression', (event, expression) => {
     petWindow.webContents.send('set-expression', expression);
   }
 });
+
+ipcMain.on('set-mouse-events', (event, ignore) => {
+  if (petWindow) {
+    petWindow.setIgnoreMouseEvents(ignore, { forward: true });
+  }
+});
+
+ipcMain.on('set-size', (event, size) => {
+  if (petWindow) {
+    const [x, y] = petWindow.getPosition();
+    const currentBounds = petWindow.getBounds();
+    const centerX = x + currentBounds.width / 2;
+    const centerY = y + currentBounds.height / 2;
+    petWindow.setSize(size, size);
+    petWindow.setPosition(
+      Math.round(centerX - size / 2),
+      Math.round(centerY - size / 2)
+    );
+    petWindow.webContents.send('apply-scale', size / 420);
+  }
+});

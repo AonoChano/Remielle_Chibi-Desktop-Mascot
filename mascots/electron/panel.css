@@ -265,12 +265,6 @@ body.test-mode-active .formal-feature {
   color: #4a3f6b;
 }
 
-.version-lock {
-  color: #c0392b;
-  font-weight: 600;
-  font-size: 12px;
-}
-
 .about-desc {
   margin: 0;
   font-size: 14px;

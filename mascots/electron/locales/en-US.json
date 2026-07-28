@@ -55,7 +55,6 @@
     "appName": "Remielle Desktop Mascot",
     "version": "Version",
     "versionValue": "v0.1.0",
-    "versionLock": "Development version locked — do not upgrade without permission",
     "description": "A desktop pet framework powered by Spine 2D skeletal animation.",
     "credits": "Acknowledgments",
     "creditHoyoverse": "miHoYo / HoYoverse — Character design & Zenless Zone Zero",

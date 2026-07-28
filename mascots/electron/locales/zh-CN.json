@@ -55,7 +55,6 @@
     "appName": "Remielle Desktop Mascot",
     "version": "版本",
     "versionValue": "v0.1.0",
-    "versionLock": "开发版本已锁定 — 未经许可禁止升级",
     "description": "基于 Spine 2D 骨骼动画的桌面桌宠应用框架。",
     "credits": "致谢",
     "creditHoyoverse": "miHoYo / HoYoverse — 角色设计与《绝区零》",

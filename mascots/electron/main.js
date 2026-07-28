@@ -127,6 +127,12 @@ ipcMain.on('set-mouse-events', (event, ignore) => {
   }
 });
 
+ipcMain.on('toggle-light', (event, enabled) => {
+  if (petWindow) {
+    petWindow.webContents.send('toggle-light', enabled);
+  }
+});
+
 ipcMain.on('set-size', (event, size) => {
   if (petWindow) {
     const [x, y] = petWindow.getPosition();

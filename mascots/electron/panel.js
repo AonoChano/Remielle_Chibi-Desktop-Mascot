@@ -2,7 +2,8 @@
 const AppState = {
   testMode: false,
   currentAnimation: 'a',
-  lockedOutfit: 'A',
+  lockedOutfit: null,
+  lightEnabled: false,
   animationQueue: [],
   triggerHandlers: {},
 };
@@ -71,12 +72,12 @@ document.querySelectorAll('.btn-anim').forEach(btn => {
   btn.addEventListener('click', () => {
     const anim = btn.dataset.anim;
     AppState.currentAnimation = anim;
+    AppState.lockedOutfit = null;
     document.querySelectorAll('.btn-anim').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
     // Release all outfit selections — outfits are for static display only
     document.querySelectorAll('.btn-outfit').forEach(b => b.classList.remove('locked'));
-    AppState.lockedOutfit = null;
 
     if (window.electronAPI) {
       window.electronAPI.send('play-animation', anim);
@@ -86,7 +87,16 @@ document.querySelectorAll('.btn-anim').forEach(btn => {
   });
 });
 
-// --- Outfit buttons (exclusive selection) ---
+// --- Golden Light toggle (independent overlay, not an animation) ---
+const lightToggle = document.getElementById('light-toggle');
+lightToggle.addEventListener('change', () => {
+  AppState.lightEnabled = lightToggle.checked;
+  if (window.electronAPI) {
+    window.electronAPI.send('toggle-light', lightToggle.checked);
+  }
+});
+
+// --- Outfit buttons (exclusive selection, stops animation + light) ---
 document.querySelectorAll('.btn-outfit').forEach(btn => {
   btn.addEventListener('click', () => {
     const outfit = btn.dataset.outfit;
@@ -96,17 +106,31 @@ document.querySelectorAll('.btn-outfit').forEach(btn => {
     document.querySelectorAll('.btn-outfit').forEach(b => b.classList.remove('locked'));
 
     if (!wasActive) {
-      // Activate this outfit
+      // Activate this outfit — stop animation and light for static display
       btn.classList.add('locked');
       AppState.lockedOutfit = outfit;
+
+      // Clear animation button states
+      document.querySelectorAll('.btn-anim').forEach(b => b.classList.remove('active'));
+      AppState.currentAnimation = null;
+
+      // Clear light toggle
+      lightToggle.checked = false;
+      AppState.lightEnabled = false;
+
       if (window.electronAPI) {
+        window.electronAPI.send('toggle-light', false);
         window.electronAPI.send('set-outfit', outfit);
       }
     } else {
-      // Deactivate — reset to default
+      // Deactivate — resume idle animation
       AppState.lockedOutfit = null;
+      document.querySelector('.btn-anim[data-anim="a"]').classList.add('active');
+      AppState.currentAnimation = 'a';
+
       if (window.electronAPI) {
         window.electronAPI.send('set-outfit', null);
+        window.electronAPI.send('play-animation', 'a');
       }
     }
   });

@@ -65,6 +65,27 @@ class PetApp {
         this.skeleton.scaleY = scale;
       }
     });
+
+    window.electronAPI.on('toggle-light', (enabled) => {
+      if (!this.animationState) return;
+      if (enabled) {
+        // Play light on track 1 as an overlay — does not interrupt track 0
+        this.animationState.setAnimation(1, 'light', true);
+      } else {
+        // Clear track 1 — removes the light overlay
+        this.animationState.clearTrack(1);
+        // Reset light slots to invisible (setup pose color)
+        if (this.skeleton) {
+          var lightSlots = ['light_a', 'light_b'];
+          for (var i = 0; i < lightSlots.length; i++) {
+            var slot = this.skeleton.findSlot(lightSlots[i]);
+            if (slot) {
+              slot.color.set(1, 1, 1, 0);
+            }
+          }
+        }
+      }
+    });
   }
 
   applyOutfit(prefix) {

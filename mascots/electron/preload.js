@@ -10,7 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'set-expression',
       'set-mouse-events',
       'set-size',
-      'set-locale'
+      'set-locale',
+      'toggle-light'
     ];
     if (validSendChannels.includes(channel)) {
       ipcRenderer.send(channel, ...args);
@@ -22,7 +23,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'set-outfit',
       'set-expression',
       'apply-scale',
-      'locale-changed'
+      'locale-changed',
+      'toggle-light'
     ];
     if (validReceiveChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => callback(...args));

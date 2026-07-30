@@ -2,6 +2,7 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell, screen } = 
 const path = require('path');
 const fs = require('fs');
 const { EyeTrackingService } = require('./eye-tracking-service');
+const { centerWindowInWorkArea } = require('./window-positioning');
 const {
   AlwaysOnTopService,
   readAlwaysOnTopSetting,
@@ -12,6 +13,7 @@ let panelWindow = null;
 let tray = null;
 let eyeTrackingService = null;
 let alwaysOnTopService = null;
+let testModeEnabled = false;
 
 // --- Settings persistence ---
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
@@ -55,6 +57,10 @@ function readEyeTrackingSetting() {
     : true;
 }
 
+function readTestModeSetting() {
+  return loadSettings().testMode === true;
+}
+
 function sendToWindow(window, channel, ...args) {
   if (!window || window.isDestroyed() || window.webContents.isDestroyed()) return;
   window.webContents.send(channel, ...args);
@@ -63,6 +69,7 @@ function sendToWindow(window, channel, ...args) {
 function createEyeTrackingService() {
   return new EyeTrackingService({
     initialEnabled: readEyeTrackingSetting(),
+    initialSuspended: testModeEnabled,
     getCursorPoint: () => screen.getCursorScreenPoint(),
     getPetBounds: () => {
       if (!petWindow || petWindow.isDestroyed()) return null;
@@ -119,6 +126,7 @@ function createPetWindow() {
   if (alwaysOnTopService) alwaysOnTopService.attachWindow(petWindow);
   petWindow.webContents.once('did-finish-load', () => {
     if (eyeTrackingService) eyeTrackingService.setPetAvailable(true);
+    sendToWindow(petWindow, 'test-mode-changed', testModeEnabled);
   });
 
   const savePetPos = debounce(() => {
@@ -130,8 +138,8 @@ function createPetWindow() {
 
   const savePetSize = debounce(() => {
     if (petWindow && !petWindow.isDestroyed()) {
-      const [w] = petWindow.getBounds();
-      saveSettings({ petSize: w });
+      const { width } = petWindow.getBounds();
+      saveSettings({ petSize: width });
     }
   }, 500);
 
@@ -207,6 +215,7 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
+  testModeEnabled = readTestModeSetting();
   eyeTrackingService = createEyeTrackingService();
   alwaysOnTopService = createAlwaysOnTopService();
   createPetWindow();
@@ -263,9 +272,47 @@ ipcMain.on('toggle-light', (event, enabled) => {
   }
 });
 
-ipcMain.on('set-test-mode', (event, enabled) => {
-  if (typeof enabled !== 'boolean') return;
-  sendToWindow(petWindow, 'test-mode-changed', enabled);
+ipcMain.handle('get-test-mode', () => testModeEnabled);
+
+ipcMain.handle('set-test-mode', (event, enabled) => {
+  if (typeof enabled !== 'boolean') {
+    throw new TypeError('test mode state must be a boolean');
+  }
+  if (!eyeTrackingService) {
+    throw new Error('test mode service is not ready');
+  }
+  if (enabled === testModeEnabled) return testModeEnabled;
+
+  const previous = testModeEnabled;
+  eyeTrackingService.setSuspended(enabled);
+  try {
+    saveSettings({ testMode: enabled }, { throwOnError: true });
+  } catch (error) {
+    eyeTrackingService.setSuspended(previous);
+    throw error;
+  }
+
+  testModeEnabled = enabled;
+  sendToWindow(petWindow, 'test-mode-changed', testModeEnabled);
+  sendToWindow(panelWindow, 'test-mode-changed', testModeEnabled);
+  return testModeEnabled;
+});
+
+ipcMain.handle('reset-pet-position', () => {
+  if (!petWindow || petWindow.isDestroyed()) {
+    throw new Error('pet window is not available');
+  }
+
+  const display = panelWindow && !panelWindow.isDestroyed()
+    ? screen.getDisplayMatching(panelWindow.getBounds())
+    : screen.getPrimaryDisplay();
+  const position = centerWindowInWorkArea(
+    petWindow.getBounds(),
+    display.workArea
+  );
+  petWindow.setPosition(position.x, position.y);
+  saveSettings({ petX: position.x, petY: position.y });
+  return position;
 });
 
 ipcMain.handle('get-eye-tracking-enabled', () => {

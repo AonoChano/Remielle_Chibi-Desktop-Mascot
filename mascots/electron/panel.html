@@ -22,7 +22,9 @@
     </aside>
     <main class="content">
       <section id="tab-main" class="tab active">
-        <div class="feature-row eye-tracking-row">
+        <div class="feature-row eye-tracking-row"
+             data-test-mode-policy="suspend"
+             data-test-mode-feature="eye-tracking">
           <span id="eye-tracking-label" class="feature-label" data-i18n="features.eyeTracking">眼神鼠标追踪</span>
           <label class="toggle-switch">
             <input type="checkbox" id="eye-tracking-toggle" role="switch"
@@ -38,6 +40,12 @@
                    aria-labelledby="test-mode-label">
             <span class="toggle-track" aria-hidden="true"></span>
           </label>
+        </div>
+
+        <div class="feature-row reset-position-row">
+          <span class="feature-label" data-i18n="features.resetPositionHint">桌宠位置异常时可将其找回</span>
+          <button id="reset-pet-position" class="command-button"
+                  data-i18n="features.resetPosition">重置至屏幕中央</button>
         </div>
 
         <div id="test-controls" style="display:none;">

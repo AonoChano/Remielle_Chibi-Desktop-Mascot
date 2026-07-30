@@ -10,8 +10,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'set-mouse-events',
       'set-size',
       'set-locale',
-      'toggle-light',
-      'set-test-mode'
+      'toggle-light'
     ];
     if (validSendChannels.includes(channel)) {
       ipcRenderer.send(channel, ...args);
@@ -43,6 +42,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'save-settings',
       'get-eye-tracking-enabled',
       'set-eye-tracking-enabled',
+      'get-test-mode',
+      'set-test-mode',
+      'reset-pet-position',
       'get-always-on-top',
       'set-always-on-top'
     ];

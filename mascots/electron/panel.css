@@ -206,6 +206,34 @@ h2 {
   cursor: wait;
 }
 
+.command-button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(90, 69, 104, 0.22);
+  border-radius: 6px;
+  background: transparent;
+  color: #5a4568;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.command-button:hover {
+  border-color: rgba(233, 30, 99, 0.48);
+  color: #c2185b;
+}
+
+.command-button:focus-visible {
+  outline: 3px solid rgba(233, 30, 99, 0.24);
+  outline-offset: 2px;
+}
+
+.command-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .setting-row {
   background: #fff;
   padding: 16px;
@@ -319,10 +347,19 @@ h2 {
   color: #fff;
 }
 
-/* Test mode */
-body.test-mode-active .formal-feature {
-  opacity: 0.4;
-  pointer-events: none;
+/* Declarative test-mode suspension */
+[data-test-mode-policy="suspend"] {
+  transition: opacity 160ms ease, filter 160ms ease;
+}
+
+[data-test-mode-policy="suspend"].is-test-suspended {
+  opacity: 0.38;
+  filter: grayscale(0.72);
+  cursor: not-allowed;
+}
+
+[data-test-mode-policy="suspend"].is-test-suspended .toggle-switch {
+  cursor: not-allowed;
 }
 
 /* ========== About Page ========== */

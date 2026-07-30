@@ -13,7 +13,11 @@ class PetApp {
     this.behavior = null;
     this.playbackIds = new WeakMap();
     this.testMode = false;
+    this.testModeGate = new TestModePolicy.TestModeFeatureGate({
+      logger: record => console.debug('[pet-behavior]', JSON.stringify(record)),
+    });
     this.eyeTrackingEnabled = true;
+    this.eyeTrackingSuspended = false;
     this.cursorSample = null;
     this.eyeOffset = { x: 0, y: 0 };
     this.eyeBones = [];
@@ -44,6 +48,7 @@ class PetApp {
     this.centerSkeleton();
     this.setupEyeBones();
     this.behavior = new PetBehavior.PetBehaviorController();
+    this.setupTestModeFeatures();
     this.flushBehaviorCommands();
     this.setupIPC();
     this.setupDrag();
@@ -55,10 +60,8 @@ class PetApp {
     window.electronAPI.invoke('load-settings').then(settings => {
       if (!settings) return;
 
-      this.testMode = settings.testMode === true;
-      if (this.testMode && this.behavior) {
-        this.behavior.setTestMode(true);
-        this.flushBehaviorCommands();
+      this.applyTestMode(settings.testMode === true);
+      if (this.testMode) {
         if (settings.currentAnimation && this.animationState) {
           this.animationState.setAnimation(0, settings.currentAnimation, true);
         }
@@ -80,6 +83,37 @@ class PetApp {
     window.electronAPI.invoke('get-eye-tracking-enabled').then(enabled => {
       this.eyeTrackingEnabled = enabled === true;
     });
+  }
+
+  setupTestModeFeatures() {
+    this.testModeGate.register('automatic-behavior', {
+      suspend: () => {
+        this.behavior.setTestMode(true);
+        this.flushBehaviorCommands();
+      },
+      resume: () => {
+        this.behavior.setTestMode(false);
+        this.flushBehaviorCommands();
+      },
+    });
+    this.testModeGate.register('eye-tracking', {
+      suspend: () => {
+        this.eyeTrackingSuspended = true;
+      },
+      resume: () => {
+        this.eyeTrackingSuspended = false;
+      },
+    });
+  }
+
+  applyTestMode(enabled) {
+    const previous = this.testMode;
+    try {
+      this.testMode = this.testModeGate.setEnabled(enabled === true);
+    } catch (error) {
+      this.testMode = previous;
+      console.error('[pet-behavior] Test mode transition failed:', error);
+    }
   }
 
   centerSkeleton() {
@@ -118,10 +152,7 @@ class PetApp {
     });
 
     window.electronAPI.on('test-mode-changed', (enabled) => {
-      this.testMode = enabled === true;
-      if (!this.behavior) return;
-      this.behavior.setTestMode(this.testMode);
-      this.flushBehaviorCommands();
+      this.applyTestMode(enabled);
     });
 
     window.electronAPI.on('cursor-position', sample => {
@@ -204,7 +235,7 @@ class PetApp {
     if (this.eyeBones.length === 0) return;
     const target = EyeTracking.computeEyeTarget({
       ...(this.cursorSample || {}),
-      enabled: this.eyeTrackingEnabled,
+      enabled: this.eyeTrackingEnabled && !this.eyeTrackingSuspended,
       hasSample: this.cursorSample !== null,
     });
     this.eyeOffset = EyeTracking.smoothEyeOffset(this.eyeOffset, target, delta);
@@ -306,7 +337,7 @@ class PetApp {
 
     canvasEl.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (!this.behavior) return;
+      if (!this.behavior || this.testModeGate.isEnabled()) return;
       this.behavior.doubleClick();
       this.flushBehaviorCommands();
     });

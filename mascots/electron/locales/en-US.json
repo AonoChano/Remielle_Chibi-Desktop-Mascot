@@ -14,7 +14,9 @@
     "about": "About"
   },
   "features": {
-    "eyeTracking": "Eye Tracking"
+    "eyeTracking": "Eye Tracking",
+    "resetPosition": "Center Mascot",
+    "resetPositionHint": "Bring the mascot back if it moves off-screen"
   },
   "testMode": {
     "label": "Animation Test Mode"

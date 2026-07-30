@@ -117,15 +117,60 @@ if (window.electronAPI) {
 const testToggle = document.getElementById('test-mode-toggle');
 const testControls = document.getElementById('test-controls');
 
-testToggle.addEventListener('change', () => {
-  const enabled = testToggle.checked;
-  AppState.testMode = enabled;
+function applyTestModePolicy(enabled) {
+  document.querySelectorAll('[data-test-mode-policy="suspend"]').forEach(region => {
+    if (enabled && region.contains(document.activeElement)) {
+      testToggle.focus();
+    }
+    region.inert = enabled;
+    region.setAttribute('aria-disabled', String(enabled));
+    region.classList.toggle('is-test-suspended', enabled);
+  });
+}
+
+function renderTestMode(value) {
+  AppState.testMode = value === true;
+  testToggle.checked = AppState.testMode;
+  applyTestModePolicy(AppState.testMode);
+  const enabled = AppState.testMode;
   testControls.style.display = enabled ? 'block' : 'none';
   document.body.classList.toggle('test-mode-active', enabled);
-  if (window.electronAPI) {
-    window.electronAPI.send('set-test-mode', enabled);
+}
+
+testToggle.addEventListener('change', async () => {
+  const previous = AppState.testMode;
+  const requested = testToggle.checked;
+  testToggle.disabled = true;
+  try {
+    const effective = window.electronAPI && window.electronAPI.invoke
+      ? await window.electronAPI.invoke('set-test-mode', requested)
+      : requested;
+    renderTestMode(effective === true);
+  } catch (error) {
+    renderTestMode(previous);
+    console.warn('[test-mode] Failed to update setting:', error.message);
+  } finally {
+    testToggle.disabled = false;
   }
-  saveSettings();
+});
+
+if (window.electronAPI) {
+  window.electronAPI.on('test-mode-changed', enabled => {
+    renderTestMode(enabled === true);
+  });
+}
+
+const resetPetPositionButton = document.getElementById('reset-pet-position');
+resetPetPositionButton.addEventListener('click', async () => {
+  if (!window.electronAPI || !window.electronAPI.invoke) return;
+  resetPetPositionButton.disabled = true;
+  try {
+    await window.electronAPI.invoke('reset-pet-position');
+  } catch (error) {
+    console.warn('[pet-position] Failed to reset position:', error.message);
+  } finally {
+    resetPetPositionButton.disabled = false;
+  }
 });
 
 // --- Animation buttons ---
@@ -185,10 +230,11 @@ document.querySelectorAll('[data-external]').forEach(el => {
 async function loadAndApplySettings() {
   if (!window.electronAPI || !window.electronAPI.invoke) return;
 
-  const [settings, eyeTrackingEnabled, alwaysOnTop] = await Promise.all([
+  const [settings, eyeTrackingEnabled, alwaysOnTop, testMode] = await Promise.all([
     window.electronAPI.invoke('load-settings'),
     window.electronAPI.invoke('get-eye-tracking-enabled'),
     window.electronAPI.invoke('get-always-on-top'),
+    window.electronAPI.invoke('get-test-mode'),
   ]);
   if (!settings) return;
 
@@ -205,11 +251,7 @@ async function loadAndApplySettings() {
     }
   }
 
-  // Restore test mode
-  if (settings.testMode) {
-    document.getElementById('test-mode-toggle').checked = true;
-    document.getElementById('test-mode-toggle').dispatchEvent(new Event('change'));
-  }
+  renderTestMode(testMode === true);
 
   // Restore light
   if (settings.lightEnabled) {
@@ -230,7 +272,6 @@ function saveSettings() {
   window.electronAPI.invoke('save-settings', {
     size: parseInt(document.getElementById('size-select').value, 10),
     locale: document.getElementById('locale-select').value,
-    testMode: AppState.testMode,
     lightEnabled: AppState.lightEnabled,
     currentAnimation: AppState.currentAnimation,
   });

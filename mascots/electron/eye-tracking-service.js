@@ -3,6 +3,7 @@
 class EyeTrackingService {
   constructor(options) {
     this.enabled = options.initialEnabled;
+    this.suspended = options.initialSuspended === true;
     this.getCursorPoint = options.getCursorPoint;
     this.getPetBounds = options.getPetBounds;
     this.sendCursor = options.sendCursor;
@@ -18,6 +19,22 @@ class EyeTrackingService {
 
   getEnabled() {
     return this.enabled;
+  }
+
+  isSuspended() {
+    return this.suspended;
+  }
+
+  setSuspended(suspended) {
+    if (typeof suspended !== 'boolean') {
+      throw new TypeError('eye tracking suspension must be a boolean');
+    }
+    if (this.destroyed || suspended === this.suspended) {
+      return this.suspended;
+    }
+    this.suspended = suspended;
+    this._syncSampler();
+    return this.suspended;
   }
 
   setEnabled(enabled) {
@@ -50,7 +67,7 @@ class EyeTrackingService {
   }
 
   _syncSampler() {
-    if (this.enabled && this.petAvailable && !this.destroyed) {
+    if (this.enabled && !this.suspended && this.petAvailable && !this.destroyed) {
       this._startSampler();
     } else {
       this._stopSampler();
@@ -72,7 +89,7 @@ class EyeTrackingService {
   }
 
   _sample() {
-    if (this.destroyed || !this.enabled || !this.petAvailable) return;
+    if (this.destroyed || this.suspended || !this.enabled || !this.petAvailable) return;
 
     const cursor = this.getCursorPoint();
     const bounds = this.getPetBounds();

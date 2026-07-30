@@ -95,11 +95,87 @@ test('panel uses acknowledged always-on-top IPC with rollback handling', () => {
   assert.match(preload, /'always-on-top-changed'/);
 });
 
-test('test mode still controls visibility, IPC, persistence, and restoration', () => {
+test('test mode uses acknowledged IPC, controls visibility, and restores effective state', () => {
   const panel = read('panel.js');
+  const preload = read('preload.js');
 
   assert.match(panel, /testControls\.style\.display = enabled \? 'block' : 'none'/);
-  assert.match(panel, /send\('set-test-mode', enabled\)/);
-  assert.match(panel, /testMode: AppState\.testMode/);
-  assert.match(panel, /settings\.testMode[\s\S]*dispatchEvent\(new Event\('change'\)\)/);
+  assert.match(panel, /invoke\('get-test-mode'\)/);
+  assert.match(panel, /invoke\('set-test-mode', requested\)/);
+  assert.match(panel, /renderTestMode\(testMode === true\)/);
+  assert.doesNotMatch(panel, /testMode:\s*AppState\.testMode/);
+  assert.match(preload, /'get-test-mode'/);
+  assert.match(preload, /'set-test-mode'/);
+});
+
+test('test mode suspension is declared by feature and applied generically', () => {
+  const html = read('panel.html');
+  const panel = read('panel.js');
+  const css = read('panel.css');
+
+  assert.match(
+    html,
+    /class="feature-row eye-tracking-row"[^>]*data-test-mode-policy="suspend"[^>]*data-test-mode-feature="eye-tracking"/
+  );
+  assert.doesNotMatch(
+    html,
+    /class="feature-row test-mode-row"[^>]*data-test-mode-policy/
+  );
+  assert.match(panel, /querySelectorAll\('\[data-test-mode-policy="suspend"\]'\)/);
+  assert.match(panel, /region\.inert = enabled/);
+  assert.match(panel, /region\.setAttribute\('aria-disabled', String\(enabled\)\)/);
+  assert.match(panel, /region\.classList\.toggle\('is-test-suspended', enabled\)/);
+  assert.match(css, /\[data-test-mode-policy="suspend"\]\.is-test-suspended/);
+});
+
+test('pet runtime gates behavior and eye tracking with the shared test mode policy', () => {
+  const html = read('pet.html');
+  const pet = read('pet.js');
+
+  assert.ok(html.indexOf('test-mode-feature-gate.js') < html.indexOf('pet.js'));
+  assert.match(pet, /register\('automatic-behavior'/);
+  assert.match(pet, /register\('eye-tracking'/);
+  assert.match(
+    pet,
+    /enabled:\s*this\.eyeTrackingEnabled\s*&&\s*!this\.eyeTrackingSuspended/
+  );
+});
+
+test('main process owns test mode persistence and pauses cursor sampling first', () => {
+  const main = read('main.js');
+
+  assert.match(main, /initialSuspended:\s*testModeEnabled/);
+  assert.match(main, /ipcMain\.handle\('get-test-mode'/);
+  assert.match(main, /ipcMain\.handle\('set-test-mode'/);
+  assert.match(
+    main,
+    /eyeTrackingService\.setSuspended\(enabled\)[\s\S]*saveSettings\(\{ testMode: enabled \}, \{ throwOnError: true \}\)/
+  );
+  assert.match(
+    main,
+    /catch \(error\) \{[\s\S]*eyeTrackingService\.setSuspended\(previous\)[\s\S]*throw error/
+  );
+});
+
+test('mascot page exposes an acknowledged reset-position command', () => {
+  const html = read('panel.html');
+  const panel = read('panel.js');
+  const preload = read('preload.js');
+  const main = read('main.js');
+  const zh = JSON.parse(read('locales/zh-CN.json'));
+  const en = JSON.parse(read('locales/en-US.json'));
+
+  assert.match(html, /id="reset-pet-position"[^>]*data-i18n="features\.resetPosition"/);
+  assert.match(panel, /invoke\('reset-pet-position'\)/);
+  assert.match(preload, /'reset-pet-position'/);
+  assert.match(main, /ipcMain\.handle\('reset-pet-position'/);
+  assert.equal(zh.features.resetPosition, '重置至屏幕中央');
+  assert.equal(en.features.resetPosition, 'Center Mascot');
+});
+
+test('pet size persistence reads BrowserWindow bounds as an object', () => {
+  const main = read('main.js');
+
+  assert.match(main, /const \{ width \} = petWindow\.getBounds\(\)/);
+  assert.doesNotMatch(main, /const \[w\] = petWindow\.getBounds\(\)/);
 });

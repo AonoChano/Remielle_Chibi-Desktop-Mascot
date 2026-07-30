@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 
 const { EyeTrackingService } = require('../eye-tracking-service');
 
-function createFixture(initialEnabled = true) {
+function createFixture(initialEnabled = true, initialSuspended = false) {
   const intervals = [];
   const cleared = [];
   const sent = [];
@@ -11,6 +11,7 @@ function createFixture(initialEnabled = true) {
   const broadcasts = [];
   const service = new EyeTrackingService({
     initialEnabled,
+    initialSuspended,
     getCursorPoint: () => ({ x: 900, y: 500 }),
     getPetBounds: () => ({ x: 100, y: 200, width: 420, height: 320 }),
     sendCursor: sample => sent.push(sample),
@@ -103,6 +104,35 @@ test('disabled startup waits until enabled and service destruction blocks sends'
 
   assert.deepEqual(fixture.cleared, [active]);
   assert.deepEqual(fixture.sent, []);
+});
+
+test('test suspension stops sampling without changing the desired setting', () => {
+  const fixture = createFixture(true);
+  fixture.service.setPetAvailable(true);
+  const active = fixture.intervals[0];
+
+  assert.equal(fixture.service.setSuspended(true), true);
+  active.callback();
+
+  assert.equal(fixture.service.getEnabled(), true);
+  assert.equal(fixture.service.isSuspended(), true);
+  assert.deepEqual(fixture.cleared, [active]);
+  assert.deepEqual(fixture.sent, []);
+  assert.deepEqual(fixture.saved, []);
+
+  fixture.service.setSuspended(false);
+  assert.equal(fixture.service.isSuspended(), false);
+  assert.equal(fixture.intervals.length, 2);
+});
+
+test('persisted test mode prevents sampling during startup', () => {
+  const fixture = createFixture(true, true);
+
+  fixture.service.setPetAvailable(true);
+  assert.equal(fixture.intervals.length, 0);
+
+  fixture.service.setSuspended(false);
+  assert.equal(fixture.intervals.length, 1);
 });
 
 test('missing or invalid Electron data is skipped safely', () => {

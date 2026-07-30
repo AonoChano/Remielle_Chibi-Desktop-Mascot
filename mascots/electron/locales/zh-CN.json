@@ -14,7 +14,9 @@
     "about": "关于"
   },
   "features": {
-    "eyeTracking": "眼神鼠标追踪"
+    "eyeTracking": "眼神鼠标追踪",
+    "resetPosition": "重置至屏幕中央",
+    "resetPositionHint": "桌宠位置异常时可将其找回"
   },
   "testMode": {
     "label": "进行动画控制测试"

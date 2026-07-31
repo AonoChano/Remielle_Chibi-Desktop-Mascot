@@ -38,12 +38,14 @@ body {
 
 .logo-label {
   display: block;
-  font-size: 12px;
+  font-size: 20px;
   letter-spacing: 3px;
   text-transform: uppercase;
   font-weight: 600;
   /* BannerLogo pink gradient — exact logo color stops */
-  background: linear-gradient(135deg, #8B1C3F 0%, #C2185B 30%, #E91E63 55%, #F48FB1 80%, #FCE4EC 100%);
+  background: 
+  radial-gradient(circle at 45% 60%, rgba(166, 241, 255, 0.85) 0%, transparent 35%),
+  linear-gradient(25deg, #7A0C3C 0%, #C2185B 25%, #E91E63 50%, #FF8DA1 75%, #FCE4EC 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -74,7 +76,7 @@ nav {
 .nav-item:hover,
 .nav-item.active {
   background: rgba(233, 30, 99, 0.08);
-  color: #F48FB1;
+  color: #ca3164;
   border-left-color: #E91E63;
 }
 

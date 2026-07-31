@@ -22,11 +22,19 @@ class PetApp {
     this.eyeOffset = { x: 0, y: 0 };
     this.eyeBones = [];
     this.warnedMissingEyeBones = false;
+    this.clickThroughFrameCount = 0;
+    this.lastCheckedMouseX = -1;
+    this.lastCheckedMouseY = -1;
+    this.cachedCanvasRect = null;
   }
 
   loadAssets(canvas) {
     canvas.assetManager.loadText("assets/remi.json");
     canvas.assetManager.loadTextureAtlas("assets/leimi.atlas");
+  }
+
+  error(canvas, errors) {
+    console.error('[pet] Asset loading failed:', errors);
   }
 
   initialize(canvas) {
@@ -53,6 +61,7 @@ class PetApp {
     this.setupIPC();
     this.setupDrag();
     this.restoreSavedState();
+    window.addEventListener('resize', () => { this.cachedCanvasRect = null; });
   }
 
   restoreSavedState() {
@@ -73,15 +82,19 @@ class PetApp {
       // Restore skeleton scale (directly, no IPC needed)
       // Panel saves `size`, main process saves `petSize` — use whichever is available
       var savedSize = settings.size || settings.petSize;
-      if (savedSize && this.skeleton) {
+      if (savedSize && this.skeleton && Number.isFinite(savedSize)) {
         var scale = savedSize / 420;
         this.skeleton.scaleX = scale;
         this.skeleton.scaleY = scale;
       }
+    }).catch(error => {
+      console.warn('[pet] Failed to restore settings:', error.message);
     });
 
     window.electronAPI.invoke('get-eye-tracking-enabled').then(enabled => {
       this.eyeTrackingEnabled = enabled === true;
+    }).catch(error => {
+      console.warn('[pet] Failed to get eye tracking state:', error.message);
     });
   }
 
@@ -284,7 +297,7 @@ class PetApp {
     const gl = this.getGL();
     if (!gl || !canvasEl) return true; // fallback: assume clickable
 
-    const rect = canvasEl.getBoundingClientRect();
+    const rect = this.cachedCanvasRect || canvasEl.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return true;
 
     // Convert CSS coordinates to drawing buffer coordinates
@@ -304,6 +317,20 @@ class PetApp {
   }
 
   updateClickThrough() {
+    this.clickThroughFrameCount++;
+
+    // Skip readPixels when mouse hasn't moved and we're within the re-check interval.
+    // Periodic re-checks (every 4 frames) handle animation moving under a static cursor.
+    const mouseUnchanged = this.lastMouseX === this.lastCheckedMouseX &&
+                           this.lastMouseY === this.lastCheckedMouseY;
+    if (mouseUnchanged && this.clickThroughFrameCount < 4) {
+      return;
+    }
+
+    this.clickThroughFrameCount = 0;
+    this.lastCheckedMouseX = this.lastMouseX;
+    this.lastCheckedMouseY = this.lastMouseY;
+
     if (this.lastMouseX < 0 || this.lastMouseY < 0) {
       this.mouseOnCharacter = false;
     } else {

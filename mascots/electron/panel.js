@@ -45,15 +45,36 @@ async function initI18n() {
   });
 }
 
+// --- Logo image fallback ---
+const logoImg = document.querySelector('.logo-img');
+if (logoImg) {
+  logoImg.addEventListener('error', () => {
+    logoImg.style.display = 'none';
+    const label = logoImg.nextElementSibling;
+    if (label) label.style.display = 'none';
+    const fallback = logoImg.parentElement.querySelector('.logo-fallback');
+    if (fallback) fallback.style.display = 'block';
+  });
+}
+
 // --- Tab navigation ---
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', (e) => {
-    e.preventDefault();
+  const activateTab = () => {
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     item.classList.add('active');
     const tabId = 'tab-' + item.dataset.tab;
     document.getElementById(tabId).classList.add('active');
+  };
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    activateTab();
+  });
+  item.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      activateTab();
+    }
   });
 });
 
@@ -221,7 +242,9 @@ document.querySelectorAll('[data-external]').forEach(el => {
   el.addEventListener('click', (e) => {
     e.preventDefault();
     if (window.electronAPI) {
-      window.electronAPI.invoke('open-external', el.dataset.external);
+      window.electronAPI.invoke('open-external', el.dataset.external).catch(error => {
+        console.warn('[panel] Failed to open external link:', error.message);
+      });
     }
   });
 });
@@ -274,8 +297,12 @@ function saveSettings() {
     locale: document.getElementById('locale-select').value,
     lightEnabled: AppState.lightEnabled,
     currentAnimation: AppState.currentAnimation,
+  }).catch(error => {
+    console.warn('[panel] Failed to save settings:', error.message);
   });
 }
 
 // --- Initialize ---
-initI18n().then(() => loadAndApplySettings());
+initI18n().then(() => loadAndApplySettings()).catch(error => {
+  console.warn('[panel] Initialization failed:', error.message);
+});

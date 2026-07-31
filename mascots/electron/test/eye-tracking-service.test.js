@@ -135,6 +135,24 @@ test('persisted test mode prevents sampling during startup', () => {
   assert.equal(fixture.intervals.length, 1);
 });
 
+test('setEnabled rolls back on persistence failure', () => {
+  const broadcasts = [];
+  const service = new EyeTrackingService({
+    initialEnabled: true,
+    getCursorPoint: () => ({ x: 0, y: 0 }),
+    getPetBounds: () => ({ x: 0, y: 0, width: 420, height: 420 }),
+    sendCursor: () => {},
+    saveSetting: () => { throw new Error('disk full'); },
+    broadcastSetting: value => broadcasts.push(value),
+    setIntervalFn: () => 1,
+    clearIntervalFn: () => {},
+  });
+
+  assert.throws(() => service.setEnabled(false), /disk full/);
+  assert.equal(service.getEnabled(), true);
+  assert.deepEqual(broadcasts, []);
+});
+
 test('missing or invalid Electron data is skipped safely', () => {
   const sent = [];
   let cursor = null;

@@ -29,8 +29,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'always-on-top-changed'
     ];
     if (validReceiveChannels.includes(channel)) {
-      ipcRenderer.on(channel, (event, ...args) => callback(...args));
+      const listener = (event, ...args) => callback(...args);
+      ipcRenderer.on(channel, listener);
+      return () => ipcRenderer.removeListener(channel, listener);
     }
+    return () => {};
   },
   invoke: (channel, ...args) => {
     const validInvokeChannels = [

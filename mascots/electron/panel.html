@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://avatars.githubusercontent.com data:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'">
   <title>Remielle Control Panel</title>
   <link rel="stylesheet" href="panel.css">
 </head>
@@ -9,8 +10,7 @@
   <div class="app">
     <aside class="sidebar">
       <div class="logo">
-        <img class="logo-img" src="assets/BannerLogo.png" alt="Remielle"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='none';this.parentElement.querySelector('.logo-fallback').style.display='block';">
+        <img class="logo-img" src="assets/BannerLogo.png" alt="Remielle">
         <span class="logo-label" data-i18n="app.controlPanel">控制面板</span>
         <span class="logo-fallback" style="display:none;" data-i18n="app.fallbackTitle">小蕾米管理面板</span>
       </div>

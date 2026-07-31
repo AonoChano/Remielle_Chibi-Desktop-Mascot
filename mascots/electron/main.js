@@ -76,7 +76,10 @@ function createEyeTrackingService() {
       return petWindow.getBounds();
     },
     sendCursor: sample => sendToWindow(petWindow, 'cursor-position', sample),
-    saveSetting: enabled => saveSettings({ eyeTrackingEnabled: enabled }),
+    saveSetting: enabled => saveSettings(
+      { eyeTrackingEnabled: enabled },
+      { throwOnError: true }
+    ),
     broadcastSetting: enabled => {
       sendToWindow(petWindow, 'eye-tracking-changed', enabled);
       sendToWindow(panelWindow, 'eye-tracking-changed', enabled);
@@ -151,6 +154,19 @@ function createPetWindow() {
     if (alwaysOnTopService) alwaysOnTopService.detachWindow(petWindow);
     petWindow = null;
   });
+
+  petWindow.webContents.on('render-process-gone', (event, details) => {
+    console.error('[pet] Render process gone:', details.reason);
+    if (eyeTrackingService) eyeTrackingService.setPetAvailable(false);
+    if (alwaysOnTopService && petWindow) alwaysOnTopService.detachWindow(petWindow);
+    if (petWindow && !petWindow.isDestroyed()) {
+      petWindow.destroy();
+    }
+    petWindow = null;
+    setTimeout(() => {
+      if (!app.isQuitting) createPetWindow();
+    }, 1000);
+  });
 }
 
 function createPanelWindow() {
@@ -214,16 +230,34 @@ function createTray() {
   tray.on('click', () => createPanelWindow());
 }
 
+// --- Single instance lock ---
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (panelWindow && !panelWindow.isDestroyed()) {
+      panelWindow.focus();
+    } else {
+      createPanelWindow();
+    }
+  });
+}
+
 app.whenReady().then(() => {
   testModeEnabled = readTestModeSetting();
   eyeTrackingService = createEyeTrackingService();
   alwaysOnTopService = createAlwaysOnTopService();
   createPetWindow();
   createTray();
+}).catch(error => {
+  console.error('[main] Startup failed:', error);
 });
 
 app.on('before-quit', () => {
+  app.isQuitting = true;
   if (eyeTrackingService) eyeTrackingService.destroy();
+  if (tray && !tray.isDestroyed()) tray.destroy();
 });
 
 app.on('window-all-closed', () => {
@@ -238,7 +272,7 @@ app.on('activate', () => {
 
 // IPC
 ipcMain.on('drag-pet', (event, dx, dy) => {
-  if (petWindow) {
+  if (petWindow && Number.isFinite(dx) && Number.isFinite(dy)) {
     const [x, y] = petWindow.getPosition();
     petWindow.setPosition(Math.round(x + dx), Math.round(y + dy));
   }
@@ -342,7 +376,7 @@ ipcMain.handle('set-always-on-top', (event, enabled) => {
 });
 
 ipcMain.on('set-size', (event, size) => {
-  if (petWindow) {
+  if (petWindow && Number.isFinite(size) && size >= 64 && size <= 2048) {
     const [x, y] = petWindow.getPosition();
     const currentBounds = petWindow.getBounds();
     const centerX = x + currentBounds.width / 2;
@@ -411,7 +445,16 @@ ipcMain.handle('get-current-locale', () => {
 
 // --- External links & settings IPC ---
 ipcMain.handle('open-external', async (event, url) => {
-  await shell.openExternal(url);
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      throw new Error(`Unsupported protocol: ${parsed.protocol}`);
+    }
+    await shell.openExternal(url);
+  } catch (error) {
+    console.warn('[open-external] Rejected URL:', url, error.message);
+    throw error;
+  }
 });
 
 ipcMain.handle('load-settings', () => {

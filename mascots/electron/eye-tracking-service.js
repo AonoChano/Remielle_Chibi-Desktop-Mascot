@@ -47,8 +47,14 @@ class EyeTrackingService {
       return this.enabled;
     }
 
+    const previous = this.enabled;
     this.enabled = enabled;
-    this.saveSetting(enabled);
+    try {
+      this.saveSetting(enabled);
+    } catch (error) {
+      this.enabled = previous;
+      throw error;
+    }
     this.broadcastSetting(enabled);
     this._syncSampler();
     return this.enabled;

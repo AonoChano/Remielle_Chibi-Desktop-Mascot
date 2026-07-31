@@ -10,8 +10,11 @@
   'use strict';
 
   const NORMALIZATION_DISTANCE = 1.5;
-  const MAX_X = 24;
-  const MAX_Y = 16;
+  // MAX_X / MAX_Y are in WORLD-space units (approximately screen pixels).
+  // The renderer transforms these to local bone space via the parent bone's
+  // world matrix, correcting for the ~17° parent rotation and 0.15 root scale.
+  const MAX_X = 12;
+  const MAX_Y = 8;
   const SMOOTHING_HALF_LIFE = 0.08;
   const MAX_SMOOTHING_DELTA = 0.25;
 

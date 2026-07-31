@@ -32,7 +32,7 @@ test('normalization reaches exact horizontal and vertical limits', () => {
     centerY: 200,
     width: 420,
     height: 300,
-  }), { x: 24, y: 0 });
+  }), { x: 12, y: 0 });
 
   assert.deepEqual(computeEyeTarget({
     cursorX: 300,
@@ -41,7 +41,7 @@ test('normalization reaches exact horizontal and vertical limits', () => {
     centerY: 200,
     width: 420,
     height: 300,
-  }), { x: 0, y: 16 });
+  }), { x: 0, y: 8 });
 });
 
 test('screen Y is inverted for Spine coordinates', () => {
@@ -67,8 +67,8 @@ test('diagonal values are clamped to a unit circle before axis scaling', () => {
     height: 300,
   });
 
-  almostEqual(target.x, 24 / Math.sqrt(2));
-  almostEqual(target.y, 16 / Math.sqrt(2));
+  almostEqual(target.x, 12 / Math.sqrt(2));
+  almostEqual(target.y, 8 / Math.sqrt(2));
 });
 
 test('non-square windows normalize each axis independently', () => {
@@ -81,7 +81,7 @@ test('non-square windows normalize each axis independently', () => {
     height: 200,
   });
 
-  assert.deepEqual(target, { x: 12, y: 8 });
+  assert.deepEqual(target, { x: 6, y: 4 });
 });
 
 test('disabled, missing, or invalid samples return to center', () => {
@@ -101,20 +101,20 @@ test('disabled, missing, or invalid samples return to center', () => {
 });
 
 test('exponential smoothing is frame-rate independent', () => {
-  const target = { x: 24, y: -16 };
+  const target = { x: 12, y: -8 };
   const oneFrame = smoothEyeOffset({ x: 0, y: 0 }, target, 0.08);
   const halfFrame = smoothEyeOffset({ x: 0, y: 0 }, target, 0.04);
   const twoFrames = smoothEyeOffset(halfFrame, target, 0.04);
 
-  almostEqual(oneFrame.x, 12);
-  almostEqual(oneFrame.y, -8);
+  almostEqual(oneFrame.x, 6);
+  almostEqual(oneFrame.y, -4);
   almostEqual(twoFrames.x, oneFrame.x);
   almostEqual(twoFrames.y, oneFrame.y);
 });
 
 test('smoothing clamps long renderer gaps to 0.25 seconds', () => {
   const current = { x: 0, y: 0 };
-  const target = { x: 24, y: 16 };
+  const target = { x: 12, y: 8 };
 
   assert.deepEqual(
     smoothEyeOffset(current, target, 100),

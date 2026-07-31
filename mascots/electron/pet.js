@@ -240,8 +240,28 @@ class PetApp {
     });
     this.eyeOffset = EyeTracking.smoothEyeOffset(this.eyeOffset, target, delta);
     for (const tracked of this.eyeBones) {
-      tracked.bone.x = tracked.setupX + this.eyeOffset.x;
-      tracked.bone.y = tracked.setupY + this.eyeOffset.y;
+      const bone = tracked.bone;
+      const parent = bone.parent;
+      if (!parent) {
+        bone.x = tracked.setupX + this.eyeOffset.x;
+        bone.y = tracked.setupY + this.eyeOffset.y;
+        continue;
+      }
+      // Transform world-space offset to local bone space using the parent's
+      // world transform matrix (a, b, c, d). This corrects for the ~17° parent
+      // rotation and 0.15 root scale, ensuring the pupil moves in the correct
+      // screen direction at the intended pixel magnitude.
+      const det = parent.a * parent.d - parent.b * parent.c;
+      if (Math.abs(det) < 1e-10) {
+        bone.x = tracked.setupX + this.eyeOffset.x;
+        bone.y = tracked.setupY + this.eyeOffset.y;
+        continue;
+      }
+      const invDet = 1 / det;
+      const localX = (this.eyeOffset.x * parent.d - this.eyeOffset.y * parent.b) * invDet;
+      const localY = (-this.eyeOffset.x * parent.c + this.eyeOffset.y * parent.a) * invDet;
+      bone.x = tracked.setupX + localX;
+      bone.y = tracked.setupY + localY;
     }
   }
 

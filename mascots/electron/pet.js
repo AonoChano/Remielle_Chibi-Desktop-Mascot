@@ -22,6 +22,9 @@ class PetApp {
     this.eyeOffset = { x: 0, y: 0 };
     this.eyeBones = [];
     this.warnedMissingEyeBones = false;
+    this.swirlBones = [];
+    this.swirlRotation = 0;
+    this.swirlActive = false;
     this.clickThroughFrameCount = 0;
     this.lastCheckedMouseX = -1;
     this.lastCheckedMouseY = -1;
@@ -55,6 +58,7 @@ class PetApp {
     this.canvas = canvas;
     this.centerSkeleton();
     this.setupEyeBones();
+    this.setupSwirlBones();
     this.behavior = new PetBehavior.PetBehaviorController();
     this.setupTestModeFeatures();
     this.flushBehaviorCommands();
@@ -244,6 +248,51 @@ class PetApp {
     }
   }
 
+  setupSwirlBones() {
+    if (!this.skeleton) return;
+    // D_眼珠晕_a (left eye swirl) and D_眼珠晕_b2 (right eye swirl) are the
+    // bones that carry the yellow 🌀 attachments shown during the "d" animation.
+    // The skeleton has no rotation keyframes for them, so we spin them in code.
+    const names = ['D_眼珠晕_a', 'D_眼珠晕_b2'];
+    this.swirlBones = names.map(name => {
+      const bone = this.skeleton.findBone(name);
+      if (!bone) return null;
+      return {
+        bone,
+        setupRotation: bone.data.rotation,
+      };
+    }).filter(Boolean);
+  }
+
+  updateSwirlEyes(delta) {
+    if (this.swirlBones.length === 0) return;
+
+    const SWIRL_ANIMATIONS = ['d', 'd_win'];
+    const SWIRL_SPEED = 240; // 360° / 1.5s = 240°/s
+
+    let active = false;
+    if (this.animationState) {
+      const entry = this.animationState.getCurrent(0);
+      if (entry && entry.animation && SWIRL_ANIMATIONS.includes(entry.animation.name)) {
+        active = true;
+      }
+    }
+
+    if (active) {
+      this.swirlRotation = (this.swirlRotation + SWIRL_SPEED * delta) % 360;
+      for (const tracked of this.swirlBones) {
+        tracked.bone.rotation = tracked.setupRotation + this.swirlRotation;
+      }
+    } else if (this.swirlActive) {
+      // Reset to setup pose when leaving the swirl animation
+      this.swirlRotation = 0;
+      for (const tracked of this.swirlBones) {
+        tracked.bone.rotation = tracked.setupRotation;
+      }
+    }
+    this.swirlActive = active;
+  }
+
   updateEyeTracking(delta) {
     if (this.eyeBones.length === 0) return;
     const target = EyeTracking.computeEyeTarget({
@@ -408,6 +457,7 @@ class PetApp {
     }
     if (this.skeleton) {
       this.updateEyeTracking(delta);
+      this.updateSwirlEyes(delta);
       this.skeleton.updateWorldTransform(spine.Physics.update);
     }
   }

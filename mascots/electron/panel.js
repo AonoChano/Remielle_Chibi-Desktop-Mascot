@@ -5,8 +5,6 @@ const AppState = {
   lightEnabled: false,
   eyeTrackingEnabled: true,
   alwaysOnTop: true,
-  animationQueue: [],
-  triggerHandlers: {},
 };
 
 // --- i18n initialization ---
@@ -267,10 +265,11 @@ async function loadAndApplySettings() {
   alwaysOnTopToggle.checked = AppState.alwaysOnTop;
 
   // Restore size
-  if (settings.size) {
+  const savedSize = settings.petSize || settings.size;
+  if (savedSize) {
     const sel = document.getElementById('size-select');
-    if (sel && sel.querySelector(`option[value="${settings.size}"]`)) {
-      sel.value = settings.size;
+    if (sel && sel.querySelector(`option[value="${savedSize}"]`)) {
+      sel.value = savedSize;
     }
   }
 
@@ -293,7 +292,7 @@ function saveSettings() {
   if (!window.electronAPI || !window.electronAPI.invoke) return;
 
   window.electronAPI.invoke('save-settings', {
-    size: parseInt(document.getElementById('size-select').value, 10),
+    petSize: parseInt(document.getElementById('size-select').value, 10),
     locale: document.getElementById('locale-select').value,
     lightEnabled: AppState.lightEnabled,
     currentAnimation: AppState.currentAnimation,

@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
       'drag-pet',
       'open-panel',
       'play-animation',
-      'set-expression',
       'set-mouse-events',
       'set-size',
       'set-locale',
@@ -19,7 +18,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   on: (channel, callback) => {
     const validReceiveChannels = [
       'play-animation',
-      'set-expression',
       'apply-scale',
       'locale-changed',
       'toggle-light',

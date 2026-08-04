@@ -1,3 +1,16 @@
+// --- Configuration constants ---
+const BASE_SIZE = 420;                  // Reference window/pet size (px)
+const SKELETON_PATH = 'assets/remi.json';
+const ATLAS_PATH = 'assets/leimi.atlas';
+const LIGHT_SLOT_NAMES = ['light_a', 'light_b'];
+const LIGHT_ANIMATION = 'light';
+const EYE_BONE_NAMES = ['眼_瞳孔_微动', '眼_瞳孔L_微动'];
+const SWIRL_BONE_NAMES = ['D_眼珠晕_a', 'D_眼珠晕_b2'];
+const SWIRL_ANIMATIONS = ['d', 'd_win'];
+const SWIRL_SPEED = 240;                // 360° / 1.5s = 240°/s
+const CLICK_THROUGH_RECHECK_FRAMES = 4;
+const PIXEL_ALPHA_THRESHOLD = 10;
+
 class PetApp {
   constructor() {
     this.skeleton = null;
@@ -32,8 +45,8 @@ class PetApp {
   }
 
   loadAssets(canvas) {
-    canvas.assetManager.loadText("assets/remi.json");
-    canvas.assetManager.loadTextureAtlas("assets/leimi.atlas");
+    canvas.assetManager.loadText(SKELETON_PATH);
+    canvas.assetManager.loadTextureAtlas(ATLAS_PATH);
   }
 
   error(canvas, errors) {
@@ -41,15 +54,15 @@ class PetApp {
   }
 
   initialize(canvas) {
-    let assetManager = canvas.assetManager;
-    var atlas = assetManager.require("assets/leimi.atlas");
-    var atlasLoader = new spine.AtlasAttachmentLoader(atlas);
-    var skeletonJson = new spine.SkeletonJson(atlasLoader);
+    const assetManager = canvas.assetManager;
+    const atlas = assetManager.require(ATLAS_PATH);
+    const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
+    const skeletonJson = new spine.SkeletonJson(atlasLoader);
     skeletonJson.scale = 1;
-    var skeletonData = skeletonJson.readSkeletonData(assetManager.require("assets/remi.json"));
+    const skeletonData = skeletonJson.readSkeletonData(assetManager.require(SKELETON_PATH));
     this.skeleton = new spine.Skeleton(skeletonData);
 
-    var animationStateData = new spine.AnimationStateData(skeletonData);
+    const animationStateData = new spine.AnimationStateData(skeletonData);
     this.animationState = new spine.AnimationState(animationStateData);
     this.animationState.addListener({
       complete: entry => this.handleAnimationComplete(entry),
@@ -79,15 +92,14 @@ class PetApp {
           this.animationState.setAnimation(0, settings.currentAnimation, true);
         }
         if (settings.lightEnabled && this.animationState) {
-          this.animationState.setAnimation(1, 'light', true);
+          this.animationState.setAnimation(1, LIGHT_ANIMATION, true);
         }
       }
 
       // Restore skeleton scale (directly, no IPC needed)
-      // Panel saves `size`, main process saves `petSize` — use whichever is available
-      var savedSize = settings.size || settings.petSize;
+      const savedSize = settings.petSize || settings.size;
       if (savedSize && this.skeleton && Number.isFinite(savedSize)) {
-        var scale = savedSize / 420;
+        const scale = savedSize / BASE_SIZE;
         this.skeleton.scaleX = scale;
         this.skeleton.scaleY = scale;
       }
@@ -148,10 +160,6 @@ class PetApp {
       }
     });
 
-    window.electronAPI.on('set-expression', (expression) => {
-      this.applyExpression(expression);
-    });
-
     window.electronAPI.on('apply-scale', (scale) => {
       if (this.skeleton) {
         this.skeleton.scaleX = scale;
@@ -162,7 +170,7 @@ class PetApp {
     window.electronAPI.on('toggle-light', (enabled) => {
       if (!this.testMode || !this.animationState) return;
       if (enabled) {
-        this.animationState.setAnimation(1, 'light', true);
+        this.animationState.setAnimation(1, LIGHT_ANIMATION, true);
       } else {
         this.clearLightTrack();
       }
@@ -222,7 +230,7 @@ class PetApp {
 
   resetLightSlots() {
     if (!this.skeleton) return;
-    for (const slotName of ['light_a', 'light_b']) {
+    for (const slotName of LIGHT_SLOT_NAMES) {
       const slot = this.skeleton.findSlot(slotName);
       if (slot) slot.color.set(1, 1, 1, 0);
     }
@@ -230,8 +238,7 @@ class PetApp {
 
   setupEyeBones() {
     if (!this.skeleton) return;
-    const names = ['眼_瞳孔_微动', '眼_瞳孔L_微动'];
-    this.eyeBones = names.map(name => {
+    this.eyeBones = EYE_BONE_NAMES.map(name => {
       const bone = this.skeleton.findBone(name);
       if (!bone) return null;
       return {
@@ -241,7 +248,7 @@ class PetApp {
       };
     }).filter(Boolean);
 
-    if (this.eyeBones.length !== names.length && !this.warnedMissingEyeBones) {
+    if (this.eyeBones.length !== EYE_BONE_NAMES.length && !this.warnedMissingEyeBones) {
       this.warnedMissingEyeBones = true;
       console.warn('[eye-tracking] Required pupil bones are missing; tracking disabled.');
       this.eyeBones = [];
@@ -253,8 +260,7 @@ class PetApp {
     // D_眼珠晕_a (left eye swirl) and D_眼珠晕_b2 (right eye swirl) are the
     // bones that carry the yellow 🌀 attachments shown during the "d" animation.
     // The skeleton has no rotation keyframes for them, so we spin them in code.
-    const names = ['D_眼珠晕_a', 'D_眼珠晕_b2'];
-    this.swirlBones = names.map(name => {
+    this.swirlBones = SWIRL_BONE_NAMES.map(name => {
       const bone = this.skeleton.findBone(name);
       if (!bone) return null;
       return {
@@ -266,9 +272,6 @@ class PetApp {
 
   updateSwirlEyes(delta) {
     if (this.swirlBones.length === 0) return;
-
-    const SWIRL_ANIMATIONS = ['d', 'd_win'];
-    const SWIRL_SPEED = 240; // 360° / 1.5s = 240°/s
 
     let active = false;
     if (this.animationState) {
@@ -327,10 +330,6 @@ class PetApp {
     }
   }
 
-  applyExpression(expression) {
-    console.log('expression', expression);
-  }
-
   // --- Pixel-based click-through detection ---
 
   getGL() {
@@ -359,7 +358,7 @@ class PetApp {
 
     try {
       gl.readPixels(px, canvasEl.height - py - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, this.pixelReadBuffer);
-      return this.pixelReadBuffer[3] > 10;
+      return this.pixelReadBuffer[3] > PIXEL_ALPHA_THRESHOLD;
     } catch (e) {
       return true; // fallback: assume clickable
     }
@@ -372,7 +371,7 @@ class PetApp {
     // Periodic re-checks (every 4 frames) handle animation moving under a static cursor.
     const mouseUnchanged = this.lastMouseX === this.lastCheckedMouseX &&
                            this.lastMouseY === this.lastCheckedMouseY;
-    if (mouseUnchanged && this.clickThroughFrameCount < 4) {
+    if (mouseUnchanged && this.clickThroughFrameCount < CLICK_THROUGH_RECHECK_FRAMES) {
       return;
     }
 

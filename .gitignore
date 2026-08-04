@@ -1,6 +1,5 @@
 # Node.js
 node_modules/
-package-lock.json
 
 # Build outputs
 dist/
@@ -13,6 +12,11 @@ build/
 capture-frames/
 capture-frames-transparent/
 capture-done.flag
+
+# Third-party reference bundles (never commit)
+temp_ref/
+showcase-frames/
+single-frames/
 
 # IDE
 .vscode/

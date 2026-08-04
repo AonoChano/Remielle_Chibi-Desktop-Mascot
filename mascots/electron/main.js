@@ -16,6 +16,7 @@ let alwaysOnTopService = null;
 let testModeEnabled = false;
 
 // --- Settings persistence ---
+const BASE_SIZE = 420; // Reference pet window size (px)
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
 
 function loadSettings() {
@@ -27,6 +28,20 @@ function loadSettings() {
     console.warn('[settings] Failed to load:', e.message);
   }
   return {};
+}
+
+function migrateSettings() {
+  const saved = loadSettings();
+  if (saved.size === undefined) return;
+  if (saved.petSize === undefined) {
+    saved.petSize = saved.size;
+  }
+  delete saved.size;
+  try {
+    fs.writeFileSync(settingsPath, JSON.stringify(saved, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('[settings] Migration write failed:', e.message);
+  }
 }
 
 function saveSettings(partial, options = {}) {
@@ -106,8 +121,8 @@ function createPetWindow() {
   petWindow = new BrowserWindow({
     x: saved.petX,
     y: saved.petY,
-    width: saved.size || saved.petSize || 420,
-    height: saved.size || saved.petSize || 420,
+    width: saved.petSize || saved.size || BASE_SIZE,
+    height: saved.petSize || saved.size || BASE_SIZE,
     transparent: true,
     frame: false,
     hasShadow: false,
@@ -245,6 +260,7 @@ if (!gotSingleInstanceLock) {
 }
 
 app.whenReady().then(() => {
+  migrateSettings();
   testModeEnabled = readTestModeSetting();
   eyeTrackingService = createEyeTrackingService();
   alwaysOnTopService = createAlwaysOnTopService();
@@ -285,12 +301,6 @@ ipcMain.on('open-panel', () => {
 ipcMain.on('play-animation', (event, animName) => {
   if (petWindow) {
     petWindow.webContents.send('play-animation', animName);
-  }
-});
-
-ipcMain.on('set-expression', (event, expression) => {
-  if (petWindow) {
-    petWindow.webContents.send('set-expression', expression);
   }
 });
 
@@ -386,7 +396,7 @@ ipcMain.on('set-size', (event, size) => {
       Math.round(centerX - size / 2),
       Math.round(centerY - size / 2)
     );
-    petWindow.webContents.send('apply-scale', size / 420);
+    petWindow.webContents.send('apply-scale', size / BASE_SIZE);
     saveSettings({ petSize: size });
   }
 });

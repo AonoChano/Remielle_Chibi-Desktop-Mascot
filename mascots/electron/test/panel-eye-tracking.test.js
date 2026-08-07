@@ -56,12 +56,12 @@ test('Chinese and English labels use the confirmed names', () => {
 
 test('panel uses acknowledged eye tracking setting IPC', () => {
   const panel = read('panel.js');
-  const preload = read('preload.js');
+  const channels = read('ipc-channels.js');
 
   assert.match(panel, /invoke\('get-eye-tracking-enabled'\)/);
   assert.match(panel, /invoke\('set-eye-tracking-enabled', enabled\)/);
-  assert.match(preload, /'get-eye-tracking-enabled'/);
-  assert.match(preload, /'set-eye-tracking-enabled'/);
+  assert.match(channels, /'get-eye-tracking-enabled'/);
+  assert.match(channels, /'set-eye-tracking-enabled'/);
 });
 
 test('settings page uses flat accessible rows and a real always-on-top switch', () => {
@@ -85,27 +85,27 @@ test('settings list has measurable compact layout and no card styling', () => {
 
 test('panel uses acknowledged always-on-top IPC with rollback handling', () => {
   const panel = read('panel.js');
-  const preload = read('preload.js');
+  const channels = read('ipc-channels.js');
 
   assert.match(panel, /invoke\('get-always-on-top'\)/);
   assert.match(panel, /invoke\('set-always-on-top', enabled\)/);
   assert.match(panel, /on\('always-on-top-changed'/);
-  assert.match(preload, /'get-always-on-top'/);
-  assert.match(preload, /'set-always-on-top'/);
-  assert.match(preload, /'always-on-top-changed'/);
+  assert.match(channels, /'get-always-on-top'/);
+  assert.match(channels, /'set-always-on-top'/);
+  assert.match(channels, /'always-on-top-changed'/);
 });
 
 test('test mode uses acknowledged IPC, controls visibility, and restores effective state', () => {
   const panel = read('panel.js');
-  const preload = read('preload.js');
+  const channels = read('ipc-channels.js');
 
   assert.match(panel, /testControls\.style\.display = enabled \? 'block' : 'none'/);
   assert.match(panel, /invoke\('get-test-mode'\)/);
   assert.match(panel, /invoke\('set-test-mode', requested\)/);
   assert.match(panel, /renderTestMode\(testMode === true\)/);
   assert.doesNotMatch(panel, /testMode:\s*AppState\.testMode/);
-  assert.match(preload, /'get-test-mode'/);
-  assert.match(preload, /'set-test-mode'/);
+  assert.match(channels, /'get-test-mode'/);
+  assert.match(channels, /'set-test-mode'/);
 });
 
 test('test mode suspension is declared by feature and applied generically', () => {
@@ -160,14 +160,14 @@ test('main process owns test mode persistence and pauses cursor sampling first',
 test('mascot page exposes an acknowledged reset-position command', () => {
   const html = read('panel.html');
   const panel = read('panel.js');
-  const preload = read('preload.js');
+  const channels = read('ipc-channels.js');
   const main = read('main.js');
   const zh = JSON.parse(read('locales/zh-CN.json'));
   const en = JSON.parse(read('locales/en-US.json'));
 
   assert.match(html, /id="reset-pet-position"[^>]*data-i18n="features\.resetPosition"/);
   assert.match(panel, /invoke\('reset-pet-position'\)/);
-  assert.match(preload, /'reset-pet-position'/);
+  assert.match(channels, /'reset-pet-position'/);
   assert.match(main, /ipcMain\.handle\('reset-pet-position'/);
   assert.equal(zh.features.resetPosition, '重置至屏幕中央');
   assert.equal(en.features.resetPosition, 'Center Mascot');

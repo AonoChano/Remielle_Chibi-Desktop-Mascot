@@ -1,12 +1,13 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell, screen } = require('electron');
 const path = require('path');
-const fs = require('fs');
 const { EyeTrackingService } = require('./eye-tracking-service');
 const { centerWindowInWorkArea } = require('./window-positioning');
 const {
   AlwaysOnTopService,
   readAlwaysOnTopSetting,
 } = require('./always-on-top-service');
+const { createSettingsStore, debounce, BASE_SIZE } = require('./settings-store');
+const { createI18nService } = require('./i18n-service');
 
 let petWindow = null;
 let panelWindow = null;
@@ -15,55 +16,10 @@ let eyeTrackingService = null;
 let alwaysOnTopService = null;
 let testModeEnabled = false;
 
-// --- Settings persistence ---
-const BASE_SIZE = 420; // Reference pet window size (px)
-const settingsPath = path.join(app.getPath('userData'), 'settings.json');
+const settingsStore = createSettingsStore(app.getPath('userData'));
+const { load: loadSettings, save: saveSettings, migrate: migrateSettings } = settingsStore;
 
-function loadSettings() {
-  try {
-    if (fs.existsSync(settingsPath)) {
-      return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-    }
-  } catch (e) {
-    console.warn('[settings] Failed to load:', e.message);
-  }
-  return {};
-}
-
-function migrateSettings() {
-  const saved = loadSettings();
-  if (saved.size === undefined) return;
-  if (saved.petSize === undefined) {
-    saved.petSize = saved.size;
-  }
-  delete saved.size;
-  try {
-    fs.writeFileSync(settingsPath, JSON.stringify(saved, null, 2), 'utf8');
-  } catch (e) {
-    console.warn('[settings] Migration write failed:', e.message);
-  }
-}
-
-function saveSettings(partial, options = {}) {
-  try {
-    const existing = loadSettings();
-    const merged = { ...existing, ...partial };
-    fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf8');
-    return true;
-  } catch (e) {
-    console.warn('[settings] Failed to save:', e.message);
-    if (options.throwOnError) throw e;
-    return false;
-  }
-}
-
-function debounce(fn, ms) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), ms);
-  };
-}
+const i18nService = createI18nService(__dirname, settingsStore);
 
 function readEyeTrackingSetting() {
   const saved = loadSettings();
@@ -80,6 +36,8 @@ function sendToWindow(window, channel, ...args) {
   if (!window || window.isDestroyed() || window.webContents.isDestroyed()) return;
   window.webContents.send(channel, ...args);
 }
+
+// --- Service factories ---
 
 function createEyeTrackingService() {
   return new EyeTrackingService({
@@ -114,6 +72,8 @@ function createAlwaysOnTopService() {
     },
   });
 }
+
+// --- Window creation ---
 
 function createPetWindow() {
   const saved = loadSettings();
@@ -245,7 +205,8 @@ function createTray() {
   tray.on('click', () => createPanelWindow());
 }
 
-// --- Single instance lock ---
+// --- App lifecycle ---
+
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
   app.quit();
@@ -286,7 +247,8 @@ app.on('activate', () => {
   }
 });
 
-// IPC
+// --- IPC: send channels ---
+
 ipcMain.on('drag-pet', (event, dx, dy) => {
   if (petWindow && Number.isFinite(dx) && Number.isFinite(dy)) {
     const [x, y] = petWindow.getPosition();
@@ -315,6 +277,24 @@ ipcMain.on('toggle-light', (event, enabled) => {
     petWindow.webContents.send('toggle-light', enabled);
   }
 });
+
+ipcMain.on('set-size', (event, size) => {
+  if (petWindow && Number.isFinite(size) && size >= 64 && size <= 2048) {
+    const [x, y] = petWindow.getPosition();
+    const currentBounds = petWindow.getBounds();
+    const centerX = x + currentBounds.width / 2;
+    const centerY = y + currentBounds.height / 2;
+    petWindow.setSize(size, size);
+    petWindow.setPosition(
+      Math.round(centerX - size / 2),
+      Math.round(centerY - size / 2)
+    );
+    petWindow.webContents.send('apply-scale', size / BASE_SIZE);
+    saveSettings({ petSize: size });
+  }
+});
+
+// --- IPC: invoke channels ---
 
 ipcMain.handle('get-test-mode', () => testModeEnabled);
 
@@ -385,75 +365,22 @@ ipcMain.handle('set-always-on-top', (event, enabled) => {
   return alwaysOnTopService.setEnabled(enabled);
 });
 
-ipcMain.on('set-size', (event, size) => {
-  if (petWindow && Number.isFinite(size) && size >= 64 && size <= 2048) {
-    const [x, y] = petWindow.getPosition();
-    const currentBounds = petWindow.getBounds();
-    const centerX = x + currentBounds.width / 2;
-    const centerY = y + currentBounds.height / 2;
-    petWindow.setSize(size, size);
-    petWindow.setPosition(
-      Math.round(centerX - size / 2),
-      Math.round(centerY - size / 2)
-    );
-    petWindow.webContents.send('apply-scale', size / BASE_SIZE);
-    saveSettings({ petSize: size });
-  }
-});
-
-// --- i18n ---
-let currentLocale = loadSettings().locale || 'zh-CN';
-
-function scanLocales() {
-  const localesDir = path.join(__dirname, 'locales');
-  const locales = {};
-  try {
-    const files = fs.readdirSync(localesDir).filter(f => f.endsWith('.json'));
-    for (const file of files) {
-      try {
-        const content = JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'));
-        if (content._meta && content._meta.locale && content._meta.display_name) {
-          locales[content._meta.locale] = content;
-        }
-      } catch (e) {
-        console.warn(`[i18n] Skipping invalid locale file: ${file} - ${e.message}`);
-      }
-    }
-  } catch (e) {
-    console.warn(`[i18n] Could not scan locales directory: ${e.message}`);
-  }
-  return locales;
-}
-
-const localeCache = scanLocales();
-
-ipcMain.handle('get-locales', () => {
-  const result = [];
-  for (const [code, dict] of Object.entries(localeCache)) {
-    result.push({ code: code, displayName: dict._meta.display_name });
-  }
-  return result;
-});
-
-ipcMain.handle('get-locale-dict', (event, localeCode) => {
-  return localeCache[localeCode] || null;
-});
+// --- IPC: i18n ---
 
 ipcMain.on('set-locale', (event, localeCode) => {
-  if (localeCache[localeCode]) {
-    currentLocale = localeCode;
-    saveSettings({ locale: localeCode });
-    const dict = localeCache[localeCode];
+  const dict = i18nService.setLocale(localeCode);
+  if (dict) {
     if (petWindow) petWindow.webContents.send('locale-changed', localeCode, dict);
     if (panelWindow) panelWindow.webContents.send('locale-changed', localeCode, dict);
   }
 });
 
-ipcMain.handle('get-current-locale', () => {
-  return currentLocale;
-});
+ipcMain.handle('get-locales', () => i18nService.getLocales());
+ipcMain.handle('get-locale-dict', (event, localeCode) => i18nService.getDict(localeCode));
+ipcMain.handle('get-current-locale', () => i18nService.getCurrentLocale());
 
-// --- External links & settings IPC ---
+// --- IPC: external links & settings ---
+
 ipcMain.handle('open-external', async (event, url) => {
   try {
     const parsed = new URL(url);
@@ -467,9 +394,7 @@ ipcMain.handle('open-external', async (event, url) => {
   }
 });
 
-ipcMain.handle('load-settings', () => {
-  return loadSettings();
-});
+ipcMain.handle('load-settings', () => loadSettings());
 
 ipcMain.handle('save-settings', (event, partial) => {
   saveSettings(partial);

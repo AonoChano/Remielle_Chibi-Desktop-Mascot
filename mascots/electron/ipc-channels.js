@@ -5,6 +5,8 @@
 
 const SEND_CHANNELS = Object.freeze([
   'drag-pet',
+  'drag-start',
+  'drag-end',
   'open-panel',
   'play-animation',
   'set-mouse-events',

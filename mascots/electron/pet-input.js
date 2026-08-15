@@ -36,14 +36,13 @@
 
     setup(canvasEl) {
       let isDragging = false;
-      let startX = 0;
-      let startY = 0;
 
       canvasEl.addEventListener('mousedown', (e) => {
         if (e.button === 0) {
           isDragging = true;
-          startX = e.screenX;
-          startY = e.screenY;
+          if (this.electronAPI) {
+            this.electronAPI.send('drag-start');
+          }
         }
       });
 
@@ -54,16 +53,15 @@
 
         if (!isDragging) return;
 
-        const dx = e.screenX - startX;
-        const dy = e.screenY - startY;
         if (this.electronAPI) {
-          this.electronAPI.send('drag-pet', dx, dy);
+          this.electronAPI.send('drag-pet');
         }
-        startX = e.screenX;
-        startY = e.screenY;
       });
 
       window.addEventListener('mouseup', () => {
+        if (isDragging && this.electronAPI) {
+          this.electronAPI.send('drag-end');
+        }
         isDragging = false;
       });
 

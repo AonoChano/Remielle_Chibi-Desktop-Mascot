@@ -7,6 +7,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 // undefined and break IPC (pet dragging, panel i18n, settings, etc.).
 const SEND_CHANNELS = [
   'drag-pet',
+  'drag-start',
+  'drag-end',
   'open-panel',
   'play-animation',
   'set-mouse-events',

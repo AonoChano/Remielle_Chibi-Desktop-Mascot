@@ -249,11 +249,33 @@ app.on('activate', () => {
 
 // --- IPC: send channels ---
 
-ipcMain.on('drag-pet', (event, dx, dy) => {
-  if (petWindow && Number.isFinite(dx) && Number.isFinite(dy)) {
-    const [x, y] = petWindow.getPosition();
-    petWindow.setPosition(Math.round(x + dx), Math.round(y + dy));
-  }
+let dragState = null;
+
+ipcMain.on('drag-start', () => {
+  if (!petWindow || petWindow.isDestroyed()) return;
+  const cursor = screen.getCursorScreenPoint();
+  const [x, y] = petWindow.getPosition();
+  dragState = {
+    startCursorX: cursor.x,
+    startCursorY: cursor.y,
+    startWindowX: x,
+    startWindowY: y,
+  };
+});
+
+ipcMain.on('drag-pet', () => {
+  if (!petWindow || petWindow.isDestroyed() || !dragState) return;
+  const cursor = screen.getCursorScreenPoint();
+  const dx = cursor.x - dragState.startCursorX;
+  const dy = cursor.y - dragState.startCursorY;
+  petWindow.setPosition(
+    Math.round(dragState.startWindowX + dx),
+    Math.round(dragState.startWindowY + dy)
+  );
+});
+
+ipcMain.on('drag-end', () => {
+  dragState = null;
 });
 
 ipcMain.on('open-panel', () => {

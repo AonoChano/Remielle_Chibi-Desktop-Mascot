@@ -32,9 +32,31 @@ test('pending interaction wins over everything', () => {
   assert.equal(computeActivity(state, conv({ pending: [{ kind: 'approval' }] })), ACTIVITY.WAITING);
 });
 
-test('streaming assistant output is writing', () => {
+test('streaming formal text is writing', () => {
   const state = list();
-  assert.equal(computeActivity(state, conv({ partial: { text: 'hi' }, running: true })), ACTIVITY.WRITING);
+  assert.equal(
+    computeActivity(state, conv({ partial: { blocks: [{ kind: 'text', text: 'hi' }] }, running: true })),
+    ACTIVITY.WRITING,
+  );
+});
+
+test('reasoning-only streaming is thinking', () => {
+  const state = list();
+  assert.equal(
+    computeActivity(state, conv({ partial: { blocks: [{ kind: 'reasoning', text: 'let me think' }] } })),
+    ACTIVITY.THINKING,
+  );
+});
+
+test('tool-call streaming without text is thinking', () => {
+  const state = list();
+  assert.equal(
+    computeActivity(
+      state,
+      conv({ partial: { blocks: [{ kind: 'tool-call', callId: 'c1', name: 'read', argsRaw: '{}' }] } }),
+    ),
+    ACTIVITY.THINKING,
+  );
 });
 
 test('running tool calls are thinking', () => {

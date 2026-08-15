@@ -29,8 +29,8 @@ export function subscribeActivity(fn) {
  * Derive the pet activity from the sessions list snapshot and the current
  * session's ConversationSnapshot.
  *
- * Priority: pending interaction (waiting) > streaming output (writing) >
- * running work (thinking) > idle.
+ * Priority: pending interaction (waiting) > streaming FORMAL text (writing) >
+ * running work / reasoning-only streaming (thinking) > idle.
  *
  * @param {object|null} list - SessionListState (`ctx.sessions.list.getSnapshot()`).
  * @param {object|null} conv - ConversationSnapshot (`sessions.binding(current).session.getSnapshot()`).
@@ -47,8 +47,13 @@ export function computeActivity(list, conv) {
     || (row != null && row.pendingInteraction !== undefined);
   if (pending) return ACTIVITY.WAITING;
 
-  // 2. Streaming assistant output — writing.
-  if (conv != null && conv.partial != null) return ACTIVITY.WRITING;
+  // 2. Streaming assistant output.
+  if (conv != null && conv.partial != null) {
+    const blocks = Array.isArray(conv.partial.blocks) ? conv.partial.blocks : [];
+    // Formal text is "writing"; reasoning/tool-call streaming is still thinking.
+    if (blocks.some((block) => block != null && block.kind === 'text')) return ACTIVITY.WRITING;
+    return ACTIVITY.THINKING;
+  }
 
   // 3. Running work — thinking.
   if (conv != null && typeof conv === 'object') {

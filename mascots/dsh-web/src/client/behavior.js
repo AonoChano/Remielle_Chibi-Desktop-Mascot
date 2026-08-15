@@ -12,12 +12,16 @@
  *   - writing  -> drawing loop 'd'    (assistant streaming output)
  *   - waiting  -> pleading loop 'e'   (approval / question pending)
  *
- * Finishing arc: when the agent finishes writing (writing -> idle), the pet
- * plays the put-the-brush-down clip 'd_win' and then the golden-light clip
- * 'light' once (a few seconds of celebration) before returning to idle.
+ * Finishing arc: when the agent's whole conversation flow ends (writing ->
+ * idle), the pet puts the brush down ('d_win'), then APPRECIATES the work
+ * ('c'), then returns to the activity loop. With `lightChance` probability it
+ * additionally overlays the golden-light clip 'light' on a SEPARATE track (1)
+ * over that arc — the character keeps moving underneath; clearing the overlay
+ * resets the light slot colors (see spine.js).
  *
- * Command shape: { type: 'play', id, trackIndex, animationName, loop }.
- * Every command carries a monotonic id; the renderer maps the created
+ * Command shape: { type: 'play', id, trackIndex, animationName, loop } and
+ * { type: 'clear-track', trackIndex }.
+ * Every play command carries a monotonic id; the renderer maps the created
  * AnimationState entry back to that id, and `animationCompleted` ignores
  * completes from entries that were already superseded (stale callbacks).
  */
@@ -30,7 +34,6 @@ export const STATES = Object.freeze({
   WRITING: 'writing',
   WAITING: 'waiting',
   FINISHING: 'finishing',
-  CELEBRATING: 'celebrating',
 });
 
 export const ACTIVITY = Object.freeze({
@@ -51,6 +54,8 @@ export function createBehavior(options = {}) {
   const waiting = options.waiting ?? 'e';
   const light = options.light ?? 'light';
   const idleBeforeAppreciate = options.idleBeforeAppreciate ?? 12;
+  const lightChance = options.lightChance ?? 0.5;
+  const random = options.random ?? Math.random;
 
   let state = STATES.IDLE;
   let activity = ACTIVITY.IDLE;
@@ -92,10 +97,11 @@ export function createBehavior(options = {}) {
     }
   }
 
-  /** The "masterpiece finished" arc: put the brush down, then golden light. */
+  /** Turn end: brush down on track 0, then appreciate; light overlay with `lightChance`. */
   function celebrate() {
     state = STATES.FINISHING;
     play(0, drawDone, false);
+    if (random() < lightChance) play(1, light, false);
   }
 
   function takeCommands() {
@@ -146,8 +152,15 @@ export function createBehavior(options = {}) {
     const track = entry == null ? undefined : entry.trackIndex;
     const name = entry == null ? undefined : entry.animationName;
     const id = entry == null ? undefined : entry.playbackId;
-    if (track !== 0 || id === undefined) return;
+    if (id === undefined) return;
     if (activePlayback.get(track) !== id) return; // stale complete from a replaced entry
+
+    // Overlay track: the golden light finishes -> clear it (resets its slots).
+    if (track === 1) {
+      if (name === light) commands.push({ type: 'clear-track', trackIndex: 1 });
+      return;
+    }
+    if (track !== 0) return;
 
     if (state === STATES.IDLE && name === idle) {
       idleLoops += 1;
@@ -167,11 +180,9 @@ export function createBehavior(options = {}) {
         playActivityFor(activity);
       }
     } else if (state === STATES.FINISHING && name === drawDone) {
-      state = STATES.CELEBRATING;
-      play(0, light, false);
-    } else if (state === STATES.CELEBRATING && name === light) {
-      state = STATES.IDLE;
-      playActivityFor(activity);
+      // Brush down -> appreciate the finished work, then the activity loop.
+      state = STATES.REACTION;
+      play(0, appreciate, false);
     }
     // THINKING/WRITING/WAITING loops complete forever — nothing to do.
   }

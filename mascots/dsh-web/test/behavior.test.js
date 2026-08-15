@@ -184,31 +184,54 @@ test('writing uses the drawing loop while streaming', () => {
   assert.equal(behavior.state, STATES.WRITING);
 });
 
-test('writing -> idle plays d_win then light then idle', () => {
-  const behavior = createBehavior();
+test('writing -> idle: brush down, appreciate the work, then idle (no light on unlucky roll)', () => {
+  const behavior = createBehavior({ random: () => 0.99, lightChance: 0.5 });
   behavior.start();
   behavior.takeCommands();
   behavior.drive(ACTIVITY.WRITING);
   behavior.takeCommands();
-  behavior.drive(ACTIVITY.IDLE); // masterpiece moment
+  behavior.drive(ACTIVITY.IDLE); // whole conversation flow ended
   let cmds = behavior.takeCommands();
   assert.equal(cmds.length, 1);
+  assert.equal(cmds[0].type, 'play');
+  assert.equal(cmds[0].trackIndex, 0);
   assert.equal(cmds[0].animationName, 'd_win');
   assert.equal(cmds[0].loop, false);
   assert.equal(behavior.state, STATES.FINISHING);
-  const finishId = cmds[0].id;
-  behavior.animationCompleted({ animationName: 'd_win', trackIndex: 0, playbackId: finishId });
+
+  behavior.animationCompleted({ animationName: 'd_win', trackIndex: 0, playbackId: cmds[0].id });
   cmds = behavior.takeCommands();
   assert.equal(cmds.length, 1);
-  assert.equal(cmds[0].animationName, 'light');
-  assert.equal(cmds[0].loop, false);
-  assert.equal(behavior.state, STATES.CELEBRATING);
-  const lightId = cmds[0].id;
-  behavior.animationCompleted({ animationName: 'light', trackIndex: 0, playbackId: lightId });
+  assert.equal(cmds[0].trackIndex, 0);
+  assert.equal(cmds[0].animationName, 'c'); // appreciates the finished work
+  assert.equal(behavior.state, STATES.REACTION);
+
+  behavior.animationCompleted({ animationName: 'c', trackIndex: 0, playbackId: cmds[0].id });
   cmds = behavior.takeCommands();
   assert.equal(cmds.length, 1);
   assert.equal(cmds[0].animationName, 'a');
   assert.equal(behavior.state, STATES.IDLE);
+});
+
+test('writing -> idle: lucky roll overlays the golden light on track 1', () => {
+  const behavior = createBehavior({ random: () => 0, lightChance: 0.5 });
+  behavior.start();
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.WRITING);
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.IDLE);
+  const cmds = behavior.takeCommands();
+  assert.equal(cmds.length, 2);
+  assert.equal(cmds[0].trackIndex, 0);
+  assert.equal(cmds[0].animationName, 'd_win');
+  assert.equal(cmds[1].trackIndex, 1);
+  assert.equal(cmds[1].animationName, 'light');
+
+  // The overlay finishes independently -> clear track.
+  behavior.animationCompleted({ animationName: 'light', trackIndex: 1, playbackId: cmds[1].id });
+  const overlay = behavior.takeCommands();
+  assert.equal(overlay.length, 1);
+  assert.deepEqual(overlay[0], { type: 'clear-track', trackIndex: 1 });
 });
 
 test('thinking -> idle returns directly without celebration', () => {
@@ -224,21 +247,47 @@ test('thinking -> idle returns directly without celebration', () => {
   assert.equal(behavior.state, STATES.IDLE);
 });
 
-test('a new activity interrupts the celebration at its end', () => {
-  const behavior = createBehavior();
+test('the light overlay never locks the main track', () => {
+  const behavior = createBehavior({ random: () => 0, lightChance: 0.5 });
   behavior.start();
   behavior.takeCommands();
   behavior.drive(ACTIVITY.WRITING);
   behavior.takeCommands();
   behavior.drive(ACTIVITY.IDLE);
-  const finishId = behavior.takeCommands()[0].id;
-  behavior.animationCompleted({ animationName: 'd_win', trackIndex: 0, playbackId: finishId });
-  const lightId = behavior.takeCommands()[0].id;
-  behavior.drive(ACTIVITY.THINKING); // next turn started mid-celebration — let light finish
-  assert.equal(behavior.takeCommands().length, 0);
-  behavior.animationCompleted({ animationName: 'light', trackIndex: 0, playbackId: lightId });
   const cmds = behavior.takeCommands();
-  assert.equal(cmds.length, 1);
-  assert.equal(cmds[0].animationName, 'b');
+  const finishId = cmds[0].id;
+  const lightId = cmds[1].id;
+
+  // The next turn starts while the arc is still running.
+  behavior.drive(ACTIVITY.THINKING);
+  assert.equal(behavior.takeCommands().length, 0); // let d_win finish
+  behavior.animationCompleted({ animationName: 'd_win', trackIndex: 0, playbackId: finishId });
+  let main = behavior.takeCommands();
+  assert.equal(main.length, 1);
+  assert.equal(main[0].animationName, 'c'); // appreciation runs first
+  behavior.animationCompleted({ animationName: 'c', trackIndex: 0, playbackId: main[0].id });
+  main = behavior.takeCommands();
+  assert.equal(main.length, 1);
+  assert.equal(main[0].trackIndex, 0);
+  assert.equal(main[0].animationName, 'b');
   assert.equal(behavior.state, STATES.THINKING);
+
+  // The overlay then finishes independently -> clear-track.
+  behavior.animationCompleted({ animationName: 'light', trackIndex: 1, playbackId: lightId });
+  const overlay = behavior.takeCommands();
+  assert.equal(overlay.length, 1);
+  assert.deepEqual(overlay[0], { type: 'clear-track', trackIndex: 1 });
+});
+
+test('a stale track-1 complete does not clear the current light', () => {
+  const behavior = createBehavior({ random: () => 0, lightChance: 0.5 });
+  behavior.start();
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.WRITING);
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.IDLE);
+  const cmds = behavior.takeCommands();
+  const lightId = cmds[1].id;
+  behavior.animationCompleted({ animationName: 'light', trackIndex: 1, playbackId: lightId - 1 });
+  assert.equal(behavior.takeCommands().length, 0);
 });

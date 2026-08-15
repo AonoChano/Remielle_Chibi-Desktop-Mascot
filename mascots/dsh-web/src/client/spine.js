@@ -19,6 +19,9 @@ export const BASE_SIZE = 420;
 /** CSS size of the pet host on the page. */
 export const PET_SIZE = 220;
 
+/** Slots the 'light' overlay animation paints; reset when its track clears. */
+const LIGHT_SLOT_NAMES = ['light_a', 'light_b'];
+
 /**
  * @param {object} opts
  * @param {HTMLCanvasElement} opts.canvas
@@ -31,12 +34,24 @@ export function createPet({ canvas, behavior, onError }) {
   const playbackIds = new WeakMap();
   let disposed = false;
 
+  /** Spine keeps an attachment posed after its track clears — fade it out. */
+  function resetLightSlots() {
+    if (skeleton === null) return;
+    for (const slotName of LIGHT_SLOT_NAMES) {
+      const slot = skeleton.findSlot(slotName);
+      if (slot !== null) slot.color.set(1, 1, 1, 0);
+    }
+  }
+
   function flushCommands() {
     if (animationState === null) return;
     for (const cmd of behavior.takeCommands()) {
       if (cmd.type === 'play') {
         const entry = animationState.setAnimation(cmd.trackIndex, cmd.animationName, cmd.loop);
         playbackIds.set(entry, cmd.id);
+      } else if (cmd.type === 'clear-track') {
+        animationState.clearTrack(cmd.trackIndex);
+        if (cmd.trackIndex === 1) resetLightSlots();
       } else if (cmd.type === 'clear-tracks') {
         animationState.clearTracks();
       }

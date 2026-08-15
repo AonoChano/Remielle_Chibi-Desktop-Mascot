@@ -32,7 +32,7 @@ the browser half (a pre-built bundle) registers into the `shell.overlay` slot.
 | :------ | :------ |
 | Spine rendering | `@esotericsoftware/spine-webgl` **bundled inline** — no extra runtime deps |
 | Animations | idle (`a`), cute reaction (`e`), user drawing (`d` → `d_win`), appreciation (`c`) after 12 idle loops |
-| **State-linked** | Reads `ctx.sessions.list` **and** the current session's `ConversationSnapshot`: **thinks** (`b`) while reasoning/tool calls/jobs run, **writes** (`d` loop) while the assistant streams output, **pleads** (`e`) while waiting for approval/questions; finishing a writing phase plays the put-brush-down clip `d_win` then the **golden light** (`light`) for a few seconds |
+| **State-linked** | Reads `ctx.sessions.list` **and** the current session's `ConversationSnapshot`: **thinks** (`b`) while reasoning/tool calls/jobs run, **writes** (`d` loop) while the assistant streams **formal text**, **pleads** (`e`, teary pleading) while waiting for approval / AskUser questions / plan review; when the whole conversation flow ends, the pet puts the brush down (`d_win`) and **appreciates the work** (`c`) — with a 50% chance it also **overlays the golden light** (`light`) on a separate animation track for a few seconds, never locking the character |
 | Drag | Pointer-based, clamped to the viewport |
 | Persistence | Position + hidden state in `localStorage` (`remi-pet.pos` / `remi-pet.hidden`) |
 | Show/hide | `IconSparkle16` + current-state label 「宠物：显示/隐藏」 in the sidebar footer, aligned beside Settings (theme tokens) |

@@ -291,3 +291,29 @@ test('a stale track-1 complete does not clear the current light', () => {
   behavior.animationCompleted({ animationName: 'light', trackIndex: 1, playbackId: lightId - 1 });
   assert.equal(behavior.takeCommands().length, 0);
 });
+
+test('lightChance can be a live getter (config-card friendly)', () => {
+  let chance = 0;
+  const behavior = createBehavior({ random: () => 0, lightChance: () => chance });
+  behavior.start();
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.WRITING);
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.IDLE);
+  const first = behavior.takeCommands();
+  assert.equal(first.length, 1); // chance 0 -> brush-down only
+
+  // Finish the arc, then raise the getter and celebrate again.
+  behavior.animationCompleted({ animationName: 'd_win', trackIndex: 0, playbackId: first[0].id });
+  const appreciateId = behavior.takeCommands()[0].id;
+  behavior.animationCompleted({ animationName: 'c', trackIndex: 0, playbackId: appreciateId });
+  behavior.takeCommands();
+  chance = 1;
+  behavior.drive(ACTIVITY.WRITING);
+  behavior.takeCommands();
+  behavior.drive(ACTIVITY.IDLE);
+  const cmds = behavior.takeCommands();
+  assert.equal(cmds.length, 2); // brush-down + golden light
+  assert.equal(cmds[1].trackIndex, 1);
+  assert.equal(cmds[1].animationName, 'light');
+});

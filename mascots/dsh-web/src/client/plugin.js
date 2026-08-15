@@ -6,19 +6,29 @@
  * factory returns this object. `inject: ['slots']` declares the slots service
  * so the kernel hands it to apply().
  *
- * Beyond the UI seats, apply() tracks the current session:
+ * UI seats:
+ *  - `shell.overlay` — the floating pet;
+ *  - `sidebar.footer.action` — the show/hide toggle;
+ *  - `settings.plugin.item` — the pet's configuration card in
+ *    Settings -> Plugins -> 插件配置 (self-contained, localStorage-backed).
+ *
+ * Beyond the UI, apply() tracks the current session:
  *  - `ctx.sessions.list` — the useSessions standard feed (running flags,
  *    pending interactions, background jobs);
  *  - `ctx.sessions.binding(current).session` — the SessionFace
  *    (ObservableSnapshot<ConversationSnapshot>), which carries the streaming
  *    `partial`, `runningCalls` and `pending` fields that distinguish
  *    thinking / writing / waiting.
- * The derived activity is forwarded into activityStore for the pet view.
+ * The derived activity is forwarded into activityStore for the pet view,
+ * unless the user disabled the state link in the config card.
  */
 import React from 'react';
 import { PetView } from './PetView.js';
 import { ToggleView } from './ToggleView.js';
+import { ConfigCard } from './ConfigCard.js';
 import { computeActivity, setActivity } from './activityStore.js';
+import { ACTIVITY } from './behavior.js';
+import { getSettings, subscribeSettings } from './settings.js';
 
 export const plugin = {
   inject: ['slots'],
@@ -33,6 +43,10 @@ export const plugin = {
         { name: 'sidebar.footer.action', id: 'remi-pet-toggle', order: 90, label: 'Remielle Pet Toggle' },
         () => React.createElement(ToggleView),
       )), 'remi-pet: show/hide toggle');
+      ctx.effect(() => slots.inject('settings.plugin.item', () => slots.register(
+        { name: 'settings.plugin.item', id: 'remi-pet', order: 30, label: '蕾米宠物' },
+        () => React.createElement(ConfigCard),
+      )), 'remi-pet: plugin config card');
     }
 
     const sessions = ctx.get('sessions');
@@ -49,28 +63,30 @@ export const plugin = {
       const sync = () => {
         const list = sessions.list.getSnapshot();
         const current = list == null ? undefined : list.current;
-        if (current === undefined || current === null) {
-          detach();
-          setActivity(computeActivity(list, null));
-          return;
-        }
-        if (tracked === null || tracked.id !== current) {
-          detach();
-          const binding = sessions.binding(current);
-          if (binding !== undefined && binding.session !== undefined) {
-            tracked = {
-              id: current,
-              session: binding.session,
-              unsub: binding.session.subscribe(sync),
-            };
+        let activity = ACTIVITY.IDLE;
+        if (current !== undefined && current !== null) {
+          if (tracked === null || tracked.id !== current) {
+            detach();
+            const binding = sessions.binding(current);
+            if (binding !== undefined && binding.session !== undefined) {
+              tracked = {
+                id: current,
+                session: binding.session,
+                unsub: binding.session.subscribe(sync),
+              };
+            }
           }
+          const conv = tracked === null ? null : tracked.session.getSnapshot();
+          activity = computeActivity(list, conv);
+        } else {
+          detach();
         }
-        const conv = tracked === null ? null : tracked.session.getSnapshot();
-        setActivity(computeActivity(list, conv));
+        setActivity(getSettings().activityEnabled ? activity : ACTIVITY.IDLE);
       };
 
       sync();
       ctx.effect(() => sessions.list.subscribe(sync), 'remi-pet: session activity (list)');
+      ctx.effect(() => subscribeSettings(sync), 'remi-pet: settings -> activity');
       ctx.effect(() => () => detach(), 'remi-pet: session activity (binding)');
     }
   },

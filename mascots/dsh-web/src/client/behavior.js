@@ -57,6 +57,11 @@ export function createBehavior(options = {}) {
   const lightChance = options.lightChance ?? 0.5;
   const random = options.random ?? Math.random;
 
+  /** Resolve the light chance — a number or a getter read at celebrate time. */
+  function currentLightChance() {
+    return typeof lightChance === 'function' ? lightChance() : lightChance;
+  }
+
   let state = STATES.IDLE;
   let activity = ACTIVITY.IDLE;
   let idleLoops = 0;
@@ -101,7 +106,7 @@ export function createBehavior(options = {}) {
   function celebrate() {
     state = STATES.FINISHING;
     play(0, drawDone, false);
-    if (random() < lightChance) play(1, light, false);
+    if (random() < currentLightChance()) play(1, light, false);
   }
 
   function takeCommands() {

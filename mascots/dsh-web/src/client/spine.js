@@ -26,11 +26,13 @@ const LIGHT_SLOT_NAMES = ['light_a', 'light_b'];
  * @param {object} opts
  * @param {HTMLCanvasElement} opts.canvas
  * @param {import('./behavior.js').Behavior} opts.behavior
+ * @param {number} [opts.petSize] - CSS host size in px (skeleton scale = petSize / BASE_SIZE).
  * @param {(errors: Record<string, string>) => void} [opts.onError]
  */
-export function createPet({ canvas, behavior, onError }) {
+export function createPet({ canvas, behavior, onError, petSize = PET_SIZE }) {
   let skeleton = null;
   let animationState = null;
+  let size = petSize;
   const playbackIds = new WeakMap();
   let disposed = false;
 
@@ -41,6 +43,14 @@ export function createPet({ canvas, behavior, onError }) {
       const slot = skeleton.findSlot(slotName);
       if (slot !== null) slot.color.set(1, 1, 1, 0);
     }
+  }
+
+  /** Apply the current size as a uniform skeleton scale. */
+  function applyScale() {
+    if (skeleton === null) return;
+    const scale = size / BASE_SIZE;
+    skeleton.scaleX = scale;
+    skeleton.scaleY = scale;
   }
 
   function flushCommands() {
@@ -79,9 +89,7 @@ export function createPet({ canvas, behavior, onError }) {
       skeleton = new spine.Skeleton(skeletonData);
       skeleton.setToSetupPose();
       skeleton.updateWorldTransform(spine.Physics.update);
-      const scale = PET_SIZE / BASE_SIZE;
-      skeleton.scaleX = scale;
-      skeleton.scaleY = scale;
+      applyScale();
 
       const animationStateData = new spine.AnimationStateData(skeletonData);
       animationState = new spine.AnimationState(animationStateData);
@@ -130,6 +138,11 @@ export function createPet({ canvas, behavior, onError }) {
       if (disposed) return;
       disposed = true;
       instance.dispose();
+    },
+    /** Live-resize the skeleton scale (the host CSS size is the view's job). */
+    setSize(nextSize) {
+      size = nextSize;
+      applyScale();
     },
   };
 }

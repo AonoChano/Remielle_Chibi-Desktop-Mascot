@@ -36,6 +36,7 @@ the browser half (a pre-built bundle) registers into the `shell.overlay` slot.
 | Drag | Pointer-based, clamped to the viewport |
 | Persistence | Position + hidden state in `localStorage` (`remi-pet.pos` / `remi-pet.hidden`) |
 | Show/hide | `IconSparkle16` + current-state label 「宠物：显示/隐藏」 in the sidebar footer, aligned beside Settings (theme tokens) |
+| **Plugin config card** | Settings → Plugins → 插件配置: a collapsible card like the shipped ones (header + in-place body, ⓘ tooltips on every control) — pet size (120–320px), celebration-light probability, agent-state link, position reset, show/hide; all applied immediately |
 | Hide/show reliability | Engine is created/disposed with visibility — hiding disposes the WebGL context, showing rebuilds it (no page refresh needed) |
 | No server changes | Assets served by the plugin's own node half via `/remi-pet/assets/*` |
 | Graceful degradation | WebGL/asset failure shows a small message instead of breaking the page |
@@ -61,13 +62,18 @@ the profile's patch layer. No DSH source changes.
   `@deepseek-ai/cordis`, …). Everything else — including the Spine runtime — is
   **inlined at build time** (see `build.mjs`, which keeps only `react` and
   `@deepseek-ai/dsh-client-ui-primitives` external).
-- **UI seat**: `shell.overlay` — a frame-wide floating layer above every
+- **UI seats**: `shell.overlay` — a frame-wide floating layer above every
   column; additive (list) registration, no replacement risk. The show/hide
-  toggle sits in `sidebar.footer.action` beside Settings.
+  toggle sits in `sidebar.footer.action` beside Settings, and the
+  plugin-configuration card sits in `settings.plugin.item` (Settings → Plugins
+  → 插件配置). The card is self-contained and localStorage-backed — it does
+  not use the host settings namespace, whose exposure is an upstream
+  allowlist.
 - **State feed**: `ctx.sessions.list` (`ObservableSnapshot`) — the same
   `useSessions` standard feed the sidebar reads. The plugin derives the pet
-  activity (idle / working / waiting) from the current session's `running`,
-  `pendingInteraction` and `jobsBySession` fields.
+  activity (idle / thinking / writing / waiting) from the current session's
+  `running`, `pendingInteraction`, `jobsBySession` and the `ConversationSnapshot`
+  (`partial.blocks` kinds, `runningCalls`, `pending`).
 - **Assets**: the node half registers a `webServer` prefix route (`/remi-pet`)
   serving `assets/` from the package directory (exact > longest-prefix >
   fallback match order, so it never collides with `/plugins` or the SPA
@@ -146,12 +152,14 @@ mascots/dsh-web/
 │   ├── plugin.js         # { inject: ['slots'], apply } — slots + sessions feed
 │   ├── PetView.js        # overlay React view: drag, click/dblclick, canvas
 │   ├── ToggleView.js     # sidebar.footer.action row (IconSparkle16 + 宠物)
+│   ├── ConfigCard.js     # settings.plugin.item card (size/light/link/reset)
 │   ├── spine.js          # SpineCanvas app lifecycle (drawSkeleton(…, false)!)
 │   ├── behavior.js       # pure animation state machine incl. activity drive
 │   ├── activityStore.js  # sessions.list -> activity derivation + notify
+│   ├── settings.js       # reactive pet settings (size / light / activity)
 │   ├── css.js            # refcounted style-tag injection
-│   ├── persist.js        # localStorage position/visibility
-│   └── store.js          # hidden-state store shared by the two views
+│   ├── persist.js        # localStorage position/visibility/settings
+│   └── store.js          # hidden-state + position-reset store
 └── test/                 # node --test suites
 ```
 
@@ -160,19 +168,23 @@ mascots/dsh-web/
 - The atlas has **no `pma` tag** → always `renderer.drawSkeleton(skeleton, false)`.
   Passing `true` produces bright edge artifacts on overlapping meshes.
 - The canvas buffer is sized by `renderer.resize(ResizeMode.Expand)` from the
-  CSS size × devicePixelRatio — keep the host at a fixed CSS size
-  (`PET_SIZE`, default 220px) and a scale of `PET_SIZE / BASE_SIZE` (420).
+  CSS size × devicePixelRatio — the host size is configurable (120–320px) and
+  the skeleton scale follows it (`petSize / BASE_SIZE`, base 420).
 - The single-click / double-click race is resolved with a 260ms timer in
   `PetView`; the behavior machine itself is event-driven and framework-free.
 
 ### Configuration
 
-No loader config in v1. User state lives in `localStorage`:
+No loader config in v1. User state lives in `localStorage` (edited from the
+plugin-configuration card and the sidebar toggle):
 
 | Key | Meaning |
 | :-- | :------ |
 | `remi-pet.pos` | `{"x":…,"y":…}` left/top CSS px after the last drag |
 | `remi-pet.hidden` | `"1"`/`"0"` — pet visibility |
+| `remi-pet.size` | Host CSS size in px (120–320) |
+| `remi-pet.lightChance` | Golden-light overlay probability, 0–1 |
+| `remi-pet.activityEnabled` | `"1"`/`"0"` — whether the pet animates with the agent state |
 
 ---
 

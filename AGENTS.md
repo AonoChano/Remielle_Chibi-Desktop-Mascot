@@ -5,7 +5,7 @@
 This is a **character digital asset pack + multi-platform desktop mascot framework** for Remielle Dan, an S-Rank agent from Zenless Zone Zero.
 
 - **Core asset**: Spine 2D chibi animation (`spine/remeille-chibi/`)
-- **Working implementation**: Electron desktop pet (`mascots/electron/`)
+- **Working implementations**: Electron desktop pet (`mascots/electron/`), DeepSeek Harness web pet plugin (`mascots/dsh-web/`)
 - **Planned platforms**: Bongo Cat, Codex CLI, Claude Code, Web, Wallpaper Engine, Unity
 
 ## Harness Workflow
@@ -42,10 +42,11 @@ Remielle_Chibi-Desktop-Mascot/
 │
 └── mascots/
     ├── electron/                ← ✅ Working desktop pet
+    ├── dsh-web/                 ← ✅ Working DeepSeek Harness web pet plugin
     ├── bongo-cat/               ← 📋 Planned
     ├── codex-cli-pet/           ← 📋 Planned
     ├── claude-code-pet/         ← 📋 Planned
-    ├── web/                     ← 📋 Planned
+    ├── web/                     ← 📋 Planned (generic embeddable component)
     ├── wallpaper-engine/        ← 📋 Planned
     └── unity/                   ← 📋 Planned
 ```
@@ -58,6 +59,7 @@ Remielle_Chibi-Desktop-Mascot/
 | Desktop | Electron | ^43.2.0 |
 | Build | electron-builder | (packaging) |
 | Spine Editor | Esoteric Spine | 4.2.x |
+| DSH Web bundle | rollup (spine inlined, external `react` only) | ^4.9.0 |
 
 ## Known Pitfalls
 

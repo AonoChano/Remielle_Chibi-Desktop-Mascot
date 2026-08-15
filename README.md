@@ -201,12 +201,16 @@ All files are included in the repository. To modify, re-export from the original
 | Platform | Directory | Status |
 |:---------|:----------|:-------|
 | <img src="https://img.shields.io/badge/Electron-Desktop%20Pet-2ecc71?style=flat-square" alt=""/> | `mascots/electron/` | ✅ Working |
+| <img src="https://img.shields.io/badge/DSH_Web-Pet%20Plugin-ff69b4?style=flat-square" alt=""/> | `mascots/dsh-web/` | ✅ Working |
 | <img src="https://img.shields.io/badge/Bongo_Cat-Overlay-9b59b6?style=flat-square" alt=""/> | `mascots/bongo-cat/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Codex_CLI-Pet%20Hook-3498db?style=flat-square" alt=""/> | `mascots/codex-cli-pet/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Claude_Code-Pet%20Hook-f1c40f?style=flat-square" alt=""/> | `mascots/claude-code-pet/` | 📋 Planned |
-| <img src="https://img.shields.io/badge/Web-Component-1abc9c?style=flat-square" alt=""/> | `mascots/web/` | 📋 Planned |
+| <img src="https://img.shields.io/badge/Web-Component-1abc9c?style=flat-square" alt=""/> | `mascots/web/` | 📋 Planned *(通用可嵌入 Web 组件)* |
 | <img src="https://img.shields.io/badge/Wallpaper_Engine-Live%20WP-e74c3c?style=flat-square" alt=""/> | `mascots/wallpaper-engine/` | 📋 Planned |
 | <img src="https://img.shields.io/badge/Unity-Runtime-7393c3?style=flat-square" alt=""/> | `mascots/unity/` | 📋 Planned |
+
+> [!NOTE]
+> `mascots/dsh-web/` 是 **DeepSeek Harness 网页（`dsh web`）专用桌宠插件**（双面 Cordis 插件包，接入方式见其 `README.md`）；`mascots/web/` 仍是计划中的**通用可嵌入 Web 组件**，两者定位不同。
 
 </details>
 
@@ -247,10 +251,18 @@ Remielle_Chibi-Desktop-Mascot/
     │   │   ├── leimi.png        ← Texture image
     │   │   └── logo.png         ← Clean portrait for tray/panel icon
     │
+    ├── dsh-web/                   ← DeepSeek Harness 网页桌宠插件 (working)
+    │   ├── package.json          ← 双面 Cordis 插件清单 (dsh.client + exports["./client"])
+    │   ├── build.mjs             ← rollup 打包浏览器半区 bundle
+    │   ├── lib/index.js          ← Node 半区：/remi-pet 资产路由
+    │   ├── assets/               ← remi.json / leimi.atlas / leimi.png
+    │   ├── src/client/           ← 浏览器半区：PetView / behavior / spine 引擎
+    │   └── test/                 ← 行为状态机 + bundle 契约测试
+    │
     ├── bongo-cat/                ← Bongo Cat integration (planned)
     ├── codex-cli-pet/            ← Codex CLI pet hook (planned)
     ├── claude-code-pet/          ← Claude Code pet hook (planned)
-    ├── web/                      ← Web component (planned)
+    ├── web/                      ← 通用可嵌入 Web 组件 (planned)
     ├── wallpaper-engine/         ← Wallpaper Engine (planned)
     └── unity/                    ← Unity runtime (planned)
 ```

@@ -155,13 +155,40 @@ npm start
 <details>
 <summary><b>📦 Spine Assets</b></summary>
 
-Spine runtime assets are located in `mascots/electron/assets/`:
+Spine runtime assets are located in `mascots/electron/assets/` (and mirrored in `mascots/dsh-web/assets/`):
 
 - `remi.json` — Skeleton JSON
 - `leimi.png` — Texture image
 - `leimi.atlas` — Texture atlas descriptor
 
 All files are included in the repository. To modify, re-export from the original `.spine` project via **Spine Editor**.
+
+</details>
+
+<details>
+<summary><b>🌐 DSH Web Pet（可选）— 接入 DeepSeek Harness 网页</b></summary>
+
+把蕾米变成 **DeepSeek Harness Web 页面（`dsh web`）** 上的悬浮桌宠插件，无需改 DSH 源码：
+
+```bash
+# 1. 把包装入 web profile（包内 dist 由 prepare 脚本自动构建）
+dsh plugin --profile web add "<repo>/mascots/dsh-web"
+
+# 2. 在 $DSH_HOME/profiles/web/cordis.patch.yml 追加一行：
+```
+
+```yaml
+- insert:
+    - id: remi-pet
+      name: 'remi-pet-dsh'
+```
+
+```bash
+# 3. 重启 dsh web，蕾米出现在页面右下角
+```
+
+> [!TIP]
+> 支持状态联动：思考/推理时托腮思考、正式输出时疯狂作画、等待审批/提问时卖萌恳求、整轮结束后欣赏作品（有概率金光闪闪）。详见 [`mascots/dsh-web/README.md`](mascots/dsh-web/README.md)。
 
 </details>
 
@@ -192,6 +219,18 @@ All files are included in the repository. To modify, re-export from the original
 - **System tray integration** — 系统托盘图标，右键菜单
 - **Control Panel** — 侧边栏控制面板，实时切换动画和换装
 - **Multi-platform builds** — Windows (NSIS), macOS (DMG), Linux (AppImage)
+
+</details>
+
+<details>
+<summary><b>DSH Web Pet 网页桌宠</b></summary>
+
+- **Drop-in plugin** — 双面 Cordis 插件包，两条命令接入 `dsh web`，不改 DSH 源码
+- **Spine rendering** — `spine-webgl` 内联进客户端 bundle，零额外运行时依赖
+- **State-linked animations** — 与代理状态联动：思考/推理 → 托腮思考（`b`）；正式输出 → 疯狂作画（`d`）；等待审批/提问/提权 → 卖萌恳求（`e`）；整轮结束 → 收笔 + 欣赏作品（`c`），有概率叠金光（`light`，独立轨道不锁动作）
+- **Draggable** — 指针拖拽 + 位置持久化（localStorage）
+- **Show/hide** — 侧栏「⚡ 宠物：显示/隐藏」开关，与设置对齐
+- **Graceful** — WebGL/资产加载失败时降级提示，不影响页面
 
 </details>
 

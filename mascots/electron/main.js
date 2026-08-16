@@ -77,12 +77,16 @@ function createAlwaysOnTopService() {
 
 function createPetWindow() {
   const saved = loadSettings();
+  const rawPetSize = Number(saved.petSize ?? saved.size ?? BASE_SIZE);
+  const petSize = Number.isFinite(rawPetSize) && rawPetSize >= 64 && rawPetSize <= 2048
+    ? Math.round(rawPetSize)
+    : BASE_SIZE;
 
   petWindow = new BrowserWindow({
     x: saved.petX,
     y: saved.petY,
-    width: saved.petSize || saved.size || BASE_SIZE,
-    height: saved.petSize || saved.size || BASE_SIZE,
+    width: petSize,
+    height: petSize,
     transparent: true,
     frame: false,
     hasShadow: false,
@@ -117,7 +121,9 @@ function createPetWindow() {
   const savePetSize = debounce(() => {
     if (petWindow && !petWindow.isDestroyed()) {
       const { width } = petWindow.getBounds();
-      saveSettings({ petSize: width });
+      if (Number.isFinite(width) && width >= 64 && width <= 2048) {
+        saveSettings({ petSize: Math.round(width) });
+      }
     }
   }, 500);
 

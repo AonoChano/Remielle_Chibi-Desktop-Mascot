@@ -4,6 +4,15 @@ const path = require('path');
 const fs = require('fs');
 
 const BASE_SIZE = 420; // Reference pet window size (px)
+const MIN_PET_SIZE = 64;
+const MAX_PET_SIZE = 2048;
+
+function normalizePetSize(value) {
+  const size = Number(value);
+  if (!Number.isFinite(size)) return BASE_SIZE;
+  if (size < MIN_PET_SIZE || size > MAX_PET_SIZE) return BASE_SIZE;
+  return Math.round(size);
+}
 
 function createSettingsStore(userDataPath) {
   const settingsPath = path.join(userDataPath, 'settings.json');
@@ -23,6 +32,9 @@ function createSettingsStore(userDataPath) {
     try {
       const existing = load();
       const merged = { ...existing, ...partial };
+      if (merged.petSize !== undefined) {
+        merged.petSize = normalizePetSize(merged.petSize);
+      }
       fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf8');
       return true;
     } catch (e) {
@@ -34,15 +46,30 @@ function createSettingsStore(userDataPath) {
 
   function migrate() {
     const saved = load();
-    if (saved.size === undefined) return;
-    if (saved.petSize === undefined) {
-      saved.petSize = saved.size;
+    let changed = false;
+
+    if (saved.size !== undefined) {
+      if (saved.petSize === undefined) {
+        saved.petSize = saved.size;
+      }
+      delete saved.size;
+      changed = true;
     }
-    delete saved.size;
-    try {
-      fs.writeFileSync(settingsPath, JSON.stringify(saved, null, 2), 'utf8');
-    } catch (e) {
-      console.warn('[settings] Migration write failed:', e.message);
+
+    if (saved.petSize !== undefined) {
+      const normalized = normalizePetSize(saved.petSize);
+      if (normalized !== saved.petSize) {
+        saved.petSize = normalized;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      try {
+        fs.writeFileSync(settingsPath, JSON.stringify(saved, null, 2), 'utf8');
+      } catch (e) {
+        console.warn('[settings] Migration write failed:', e.message);
+      }
     }
   }
 

@@ -26,6 +26,7 @@
       this.onDoubleClick = options.onDoubleClick || null;
 
       this.currentlyIgnoringMouse = false;
+      this.isDragging = false;
       this.lastMouseX = -1;
       this.lastMouseY = -1;
       this.mouseOnCharacter = true;
@@ -35,11 +36,9 @@
     }
 
     setup(canvasEl) {
-      let isDragging = false;
-
       canvasEl.addEventListener('mousedown', (e) => {
         if (e.button === 0) {
-          isDragging = true;
+          this.isDragging = true;
           if (this.electronAPI) {
             this.electronAPI.send('drag-start');
           }
@@ -51,7 +50,10 @@
         this.lastMouseX = e.clientX - rect.left;
         this.lastMouseY = e.clientY - rect.top;
 
-        if (!isDragging) return;
+        // Only treat it as an active drag while the left button is physically
+        // held. This prevents stray/forwarded mousemove events from continuing
+        // to move the pet after the button has been released.
+        if (!this.isDragging || (e.buttons & 1) !== 1) return;
 
         if (this.electronAPI) {
           this.electronAPI.send('drag-pet');
@@ -59,10 +61,10 @@
       });
 
       window.addEventListener('mouseup', () => {
-        if (isDragging && this.electronAPI) {
+        if (this.isDragging && this.electronAPI) {
           this.electronAPI.send('drag-end');
         }
-        isDragging = false;
+        this.isDragging = false;
       });
 
       canvasEl.addEventListener('dblclick', (e) => {
@@ -82,6 +84,19 @@
     // forwarding through the renderer's framebuffer so clicks on transparent
     // pixels fall through to the desktop.
     updateClickThrough() {
+      // While the user is actively dragging, never switch the window into
+      // click-through mode. Doing so mid-drag can make the window lose mouse
+      // capture and can feed synthetic mousemove events back into the drag.
+      if (this.isDragging) {
+        if (this.currentlyIgnoringMouse) {
+          this.currentlyIgnoringMouse = false;
+          if (this.electronAPI) {
+            this.electronAPI.send('set-mouse-events', false);
+          }
+        }
+        return;
+      }
+
       this.clickThroughFrameCount++;
 
       // Skip readPixels when mouse hasn't moved and we're within the re-check

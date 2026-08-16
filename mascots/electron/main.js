@@ -268,10 +268,12 @@ ipcMain.on('drag-pet', () => {
   const cursor = screen.getCursorScreenPoint();
   const dx = cursor.x - dragState.startCursorX;
   const dy = cursor.y - dragState.startCursorY;
-  petWindow.setPosition(
-    Math.round(dragState.startWindowX + dx),
-    Math.round(dragState.startWindowY + dy)
-  );
+  const targetX = Math.round(dragState.startWindowX + dx);
+  const targetY = Math.round(dragState.startWindowY + dy);
+  const [currentX, currentY] = petWindow.getPosition();
+  if (targetX !== currentX || targetY !== currentY) {
+    petWindow.setPosition(targetX, targetY);
+  }
 });
 
 ipcMain.on('drag-end', () => {

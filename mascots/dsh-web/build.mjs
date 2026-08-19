@@ -48,7 +48,7 @@ try {
 
 const client = [
   '/**',
-  ' * remi-pet-dsh client bundle — built by build.mjs, do not edit.',
+  ' * @aonochano/remi-pet-dsh client bundle — built by build.mjs, do not edit.',
   ...(licenseLines.length > 0 ? [' *', ...licenseLines] : []),
   ' */',
   'window.__ModuleLoader__.load({',

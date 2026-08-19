@@ -23,7 +23,7 @@ async function loadBundle() {
 test('dist/client.js registers one entry through __ModuleLoader__', async () => {
   const entry = await loadBundle();
   assert.ok(entry, 'no entry was registered');
-  assert.equal(entry.id, 'remi-pet-dsh');
+  assert.equal(entry.id, '@aonochano/remi-pet-dsh');
   assert.equal(typeof entry.factory, 'function');
 });
 

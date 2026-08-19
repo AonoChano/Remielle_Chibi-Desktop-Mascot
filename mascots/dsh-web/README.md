@@ -1,4 +1,4 @@
-# 🐾 remi-pet-dsh — Remielle Chibi Pet for the DeepSeek Harness Web Page
+# 🐾 @aonochano/remi-pet-dsh — Remielle Chibi Pet for the DeepSeek Harness Web Page
 
 **Q 版蕾米埃尔 · DeepSeek Harness 网页桌宠插件**
 
@@ -33,7 +33,7 @@ the browser half (a pre-built bundle) registers into the `shell.overlay` slot.
 | Spine rendering | `@esotericsoftware/spine-webgl` **bundled inline** — no extra runtime deps |
 | Animations | idle (`a`), cute reaction (`e`), user drawing (`d` → `d_win`), appreciation (`c`) after 12 idle loops |
 | **State-linked** | Reads `ctx.sessions.list` **and** the current session's `ConversationSnapshot`: **thinks** (`b`) while reasoning/tool calls/jobs run, **writes** (`d` loop) while the assistant streams **formal text**, **pleads** (`e`, teary pleading) while waiting for approval / AskUser questions / plan review; when the whole conversation flow ends, the pet puts the brush down (`d_win`) and **appreciates the work** (`c`) — with a 50% chance it also **overlays the golden light** (`light`) on a separate animation track for a few seconds, never locking the character |
-| Drag | Pointer-based, clamped to the viewport |
+| Drag | Pointer-based, clamped to the viewport; **pixel-accurate click-through** — only pixels the character actually draws intercept clicks (a `gl.readPixels` alpha probe drops pointer-events over transparent areas, so the page underneath stays clickable) |
 | Persistence | Position + hidden state in `localStorage` (`remi-pet.pos` / `remi-pet.hidden`) |
 | Show/hide | `IconSparkle16` + current-state label 「宠物：显示/隐藏」 in the sidebar footer, aligned beside Settings (theme tokens) |
 | **Plugin config card** | Settings → Plugins → 插件配置: a collapsible card like the shipped ones (header + in-place body, ⓘ tooltips on every control) — pet size (120–320px), celebration-light probability, agent-state link, position reset, show/hide; all applied immediately |
@@ -68,7 +68,11 @@ the profile's patch layer. No DSH source changes.
   plugin-configuration card sits in `settings.plugin.item` (Settings → Plugins
   → 插件配置). The card is self-contained and localStorage-backed — it does
   not use the host settings namespace, whose exposure is an upstream
-  allowlist.
+  allowlist. `settings.plugin.item` is a **keyed** slot since dsh 0.1.0-rc.7;
+  the registration probes keyed then list, so a protocol flip degrades to "no
+  card" instead of failing. Every UI seat and the session feed are isolated
+  with try/catch — the plugin never throws through `apply`, so a DSH update
+  cannot take the page down.
 - **State feed**: `ctx.sessions.list` (`ObservableSnapshot`) — the same
   `useSessions` standard feed the sidebar reads. The plugin derives the pet
   activity (idle / thinking / writing / waiting) from the current session's
@@ -86,35 +90,31 @@ the profile's patch layer. No DSH source changes.
 Prerequisites: Node.js ≥ 18, a running `dsh web` profile.
 
 ```bash
-# 1. Clone this repository (or point the next command at a release tarball)
-git clone https://github.com/AonoChano/Remielle_Chibi-Desktop-Mascot.git
-cd Remielle_Chibi-Desktop-Mascot
+# 1. One-command install from npm (no need to clone the repository)
+dsh plugin --profile web add @aonochano/remi-pet-dsh
 
-# 2. Install the pet package into the web profile
-#    (absolute path — the profile directory is elsewhere)
-dsh plugin --profile web add "C:\path\to\Remielle_Chibi-Desktop-Mascot\mascots\dsh-web"
-
-# 3. Add one row to the profile patch layer
+# 2. Add one row to the profile patch layer
 #    $DSH_HOME/profiles/web/cordis.patch.yml
 ```
 
 ```yaml
 - insert:
     - id: remi-pet
-      name: 'remi-pet-dsh'
+      name: '@aonochano/remi-pet-dsh'
 ```
 
 ```bash
-# 4. Restart dsh web — the pet appears bottom-right
+# 3. Restart dsh web — the pet appears bottom-right
 ```
 
 **Notes**
 
-- The install step runs `pnpm add <path>` inside the profile; the profile's
+- The install step runs `pnpm add <pkg>` inside the profile; the profile's
   `pnpm-workspace.yaml` uses a hoisted linker, so the package is linked into
   the profile's `node_modules`.
-- If the package is published to npm, the command becomes
-  `dsh plugin --profile web add remi-pet-dsh`. For offline distribution,
+- Not published yet? Install from a local checkout instead:
+  `dsh plugin --profile web add "<repo>\mascots\dsh-web"` (absolute path, since
+  pnpm runs inside the profile directory). For offline distribution,
   `npm pack` in `mascots/dsh-web` produces an installable tarball.
 - The bundle is built by the `prepare` script on install — `dist/` is not
   committed (repository `.gitignore` ignores `dist/`).
@@ -123,7 +123,7 @@ dsh plugin --profile web add "C:\path\to\Remielle_Chibi-Desktop-Mascot\mascots\d
 
 ```bash
 # remove the row from cordis.patch.yml, then:
-dsh plugin --profile web remove remi-pet-dsh
+dsh plugin --profile web remove @aonochano/remi-pet-dsh
 ```
 
 ---

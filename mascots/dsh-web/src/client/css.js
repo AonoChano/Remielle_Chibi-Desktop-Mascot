@@ -44,8 +44,8 @@ export function mountCss() {
   count += 1;
   if (tag === null && typeof document !== 'undefined') {
     tag = document.createElement('style');
-    tag.setAttribute('data-plugin', 'remi-pet-dsh');
-    tag.setAttribute('data-plugin-css', 'remi-pet-dsh/main');
+    tag.setAttribute('data-plugin', '@aonochano/remi-pet-dsh');
+    tag.setAttribute('data-plugin-css', '@aonochano/remi-pet-dsh/main');
     tag.textContent = CSS;
     document.head.appendChild(tag);
   }

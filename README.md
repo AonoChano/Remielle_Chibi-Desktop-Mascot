@@ -171,8 +171,8 @@ All files are included in the repository. To modify, re-export from the original
 把蕾米变成 **DeepSeek Harness Web 页面（`dsh web`）** 上的悬浮桌宠插件，无需改 DSH 源码：
 
 ```bash
-# 1. 把包装入 web profile（包内 dist 由 prepare 脚本自动构建）
-dsh plugin --profile web add "<repo>/mascots/dsh-web"
+# 1. 一条命令从 npm 安装（无需克隆仓库）
+dsh plugin --profile web add @aonochano/remi-pet-dsh
 
 # 2. 在 $DSH_HOME/profiles/web/cordis.patch.yml 追加一行：
 ```
@@ -180,12 +180,15 @@ dsh plugin --profile web add "<repo>/mascots/dsh-web"
 ```yaml
 - insert:
     - id: remi-pet
-      name: 'remi-pet-dsh'
+      name: '@aonochano/remi-pet-dsh'
 ```
 
 ```bash
 # 3. 重启 dsh web，蕾米出现在页面右下角
 ```
+
+> [!NOTE]
+> 尚未发布到 npm 时，可先用本地路径安装：`dsh plugin --profile web add "<仓库绝对路径>\mascots\dsh-web"`。
 
 > [!TIP]
 > 支持状态联动：思考/推理时托腮思考、正式输出时疯狂作画、等待审批/提问时卖萌恳求、整轮结束后欣赏作品（有概率金光闪闪）。详见 [`mascots/dsh-web/README.md`](mascots/dsh-web/README.md)。

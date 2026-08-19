@@ -1,5 +1,5 @@
 {
-  "name": "remi-pet-dsh",
+  "name": "@aonochano/remi-pet-dsh",
   "version": "0.1.0",
   "description": "Remielle chibi Spine pet for the DeepSeek Harness web page — a dual-face Cordis plugin (node half serves Spine assets, browser half renders the pet into the shell.overlay slot)",
   "type": "module",

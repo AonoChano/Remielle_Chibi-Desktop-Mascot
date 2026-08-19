@@ -8,5 +8,6 @@
 import './behavior.test.js';
 import './activity.test.js';
 import './settings.test.js';
+import './slotProbe.test.js';
 import './bundle.test.js';
 import './route.test.js';

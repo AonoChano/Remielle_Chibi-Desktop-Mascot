@@ -6,11 +6,18 @@
  * factory returns this object. `inject: ['slots']` declares the slots service
  * so the kernel hands it to apply().
  *
- * UI seats:
+ * UI seats (registered in risk order — the pet first, the config card last):
  *  - `shell.overlay` — the floating pet;
  *  - `sidebar.footer.action` — the show/hide toggle;
  *  - `settings.plugin.item` — the pet's configuration card in
- *    Settings -> Plugins -> 插件配置 (self-contained, localStorage-backed).
+ *    Settings -> Plugins -> 插件配置 (keyed since dsh 0.1.0-rc.7; the
+ *    registration probes keyed then list so a protocol flip degrades to "no
+ *    card" instead of failing the fiber).
+ *
+ * Robustness: every seat and the session feed are isolated with try/catch —
+ * a third-party plugin must never throw through apply, because that fails the
+ * loader entry and can block the whole page boot (a DSH release once flipped
+ * the settings.plugin.item protocol and took the main page down with it).
  *
  * Beyond the UI, apply() tracks the current session:
  *  - `ctx.sessions.list` — the useSessions standard feed (running flags,
@@ -26,6 +33,7 @@ import React from 'react';
 import { PetView } from './PetView.js';
 import { ToggleView } from './ToggleView.js';
 import { ConfigCard } from './ConfigCard.js';
+import { registerWithFallback } from './slotProbe.js';
 import { computeActivity, setActivity } from './activityStore.js';
 import { ACTIVITY } from './behavior.js';
 import { getSettings, subscribeSettings } from './settings.js';
@@ -35,18 +43,33 @@ export const plugin = {
   apply(ctx) {
     const slots = ctx.get('slots');
     if (slots !== undefined) {
-      ctx.effect(() => slots.inject('shell.overlay', () => slots.register(
+      const safe = (label, fn) => {
+        try {
+          return fn();
+        } catch (error) {
+          console.error(`[remi-pet] ${label} failed — continuing without it:`, error && error.message ? error.message : error);
+          return undefined;
+        }
+      };
+
+      safe('pet overlay', () => ctx.effect(() => slots.inject('shell.overlay', () => slots.register(
         { name: 'shell.overlay', id: 'remi-pet', order: 100, label: 'Remielle Pet' },
         () => React.createElement(PetView),
-      )), 'remi-pet: pet overlay');
-      ctx.effect(() => slots.inject('sidebar.footer.action', () => slots.register(
+      )), 'remi-pet: pet overlay'));
+
+      safe('show/hide toggle', () => ctx.effect(() => slots.inject('sidebar.footer.action', () => slots.register(
         { name: 'sidebar.footer.action', id: 'remi-pet-toggle', order: 90, label: 'Remielle Pet Toggle' },
         () => React.createElement(ToggleView),
-      )), 'remi-pet: show/hide toggle');
-      ctx.effect(() => slots.inject('settings.plugin.item', () => slots.register(
-        { name: 'settings.plugin.item', id: 'remi-pet', order: 30, label: '蕾米宠物' },
-        () => React.createElement(ConfigCard),
-      )), 'remi-pet: plugin config card');
+      )), 'remi-pet: show/hide toggle'));
+
+      // Config card — the highest-churn seat; protocol-probed, kept last.
+      safe('plugin config card', () => ctx.effect(() => slots.inject('settings.plugin.item', () => registerWithFallback(
+        (options) => slots.register(options, () => React.createElement(ConfigCard)),
+        [
+          { name: 'settings.plugin.item', key: 'remi-pet' }, // keyed (dsh >= rc.7)
+          { name: 'settings.plugin.item', id: 'remi-pet', order: 30, label: '蕾米宠物' }, // list (<= rc.6)
+        ],
+      )), 'remi-pet: plugin config card'));
     }
 
     const sessions = ctx.get('sessions');
@@ -61,27 +84,32 @@ export const plugin = {
       };
 
       const sync = () => {
-        const list = sessions.list.getSnapshot();
-        const current = list == null ? undefined : list.current;
-        let activity = ACTIVITY.IDLE;
-        if (current !== undefined && current !== null) {
-          if (tracked === null || tracked.id !== current) {
-            detach();
-            const binding = sessions.binding(current);
-            if (binding !== undefined && binding.session !== undefined) {
-              tracked = {
-                id: current,
-                session: binding.session,
-                unsub: binding.session.subscribe(sync),
-              };
+        try {
+          const list = sessions.list.getSnapshot();
+          const current = list == null ? undefined : list.current;
+          let activity = ACTIVITY.IDLE;
+          if (current !== undefined && current !== null) {
+            if (tracked === null || tracked.id !== current) {
+              detach();
+              const binding = sessions.binding(current);
+              if (binding !== undefined && binding.session !== undefined) {
+                tracked = {
+                  id: current,
+                  session: binding.session,
+                  unsub: binding.session.subscribe(sync),
+                };
+              }
             }
+            const conv = tracked === null ? null : tracked.session.getSnapshot();
+            activity = computeActivity(list, conv);
+          } else {
+            detach();
           }
-          const conv = tracked === null ? null : tracked.session.getSnapshot();
-          activity = computeActivity(list, conv);
-        } else {
-          detach();
+          setActivity(getSettings().activityEnabled ? activity : ACTIVITY.IDLE);
+        } catch (error) {
+          // Never let our subscriber break the store's notify loop.
+          console.error('[remi-pet] session activity sync failed:', error && error.message ? error.message : error);
         }
-        setActivity(getSettings().activityEnabled ? activity : ACTIVITY.IDLE);
       };
 
       sync();

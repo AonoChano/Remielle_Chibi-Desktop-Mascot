@@ -22,6 +22,9 @@ export const PET_SIZE = 220;
 /** Slots the 'light' overlay animation paints; reset when its track clears. */
 const LIGHT_SLOT_NAMES = ['light_a', 'light_b'];
 
+/** Pixel alpha below this value counts as transparent (click-through). */
+const PIXEL_ALPHA_THRESHOLD = 10;
+
 /**
  * @param {object} opts
  * @param {HTMLCanvasElement} opts.canvas
@@ -130,8 +133,38 @@ export function createPet({ canvas, behavior, onError, petSize = PET_SIZE }) {
 
   const instance = new spine.SpineCanvas(canvas, {
     app,
-    webglConfig: { alpha: true, premultipliedAlpha: false },
+    // preserveDrawingBuffer keeps the last frame readable so the click-through
+    // pixel probe (isOpaqueAt) can read alpha between render frames.
+    webglConfig: { alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true },
   });
+
+  const pixelBuffer = new Uint8Array(4);
+
+  /**
+   * Pixel-accurate click-through probe: whether the character has visible
+   * pixels at a viewport CSS coordinate. Transparent areas report false so the
+   * host can drop pointer-events and let clicks reach the page underneath.
+   * @param {number} cssX - viewport CSS x of the cursor.
+   * @param {number} cssY - viewport CSS y of the cursor.
+   * @returns {boolean} true when the pixel alpha is above the threshold.
+   */
+  function isOpaqueAt(cssX, cssY) {
+    if (skeleton === null) return true; // not loaded yet — keep it interactive
+    const gl = instance.gl;
+    const canvasEl = instance.htmlCanvas;
+    if (gl === null || canvasEl === null) return true;
+    const rect = canvasEl.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return true;
+    const px = Math.round((cssX - rect.left) / rect.width * canvasEl.width);
+    const py = Math.round((cssY - rect.top) / rect.height * canvasEl.height);
+    if (px < 0 || px >= canvasEl.width || py < 0 || py >= canvasEl.height) return false;
+    try {
+      gl.readPixels(px, canvasEl.height - py - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+      return pixelBuffer[3] > PIXEL_ALPHA_THRESHOLD;
+    } catch {
+      return true; // read failed — assume interactive rather than dead
+    }
+  }
 
   return {
     dispose() {
@@ -144,5 +177,6 @@ export function createPet({ canvas, behavior, onError, petSize = PET_SIZE }) {
       size = nextSize;
       applyScale();
     },
+    isOpaqueAt,
   };
 }

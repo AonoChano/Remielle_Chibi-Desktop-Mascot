@@ -118,6 +118,63 @@ export function PetView() {
     };
   }, [hidden]);
 
+  // Pixel-accurate click-through: only where the character actually draws
+  // pixels the host intercepts pointer events. Transparent areas drop
+  // pointer-events so clicks reach the page underneath. The probe runs on
+  // throttled pointermove and on a slow interval (the animation moves under a
+  // static cursor). Pointer mode is applied directly to the host style to
+  // avoid re-render churn.
+  React.useEffect(() => {
+    if (hidden) return undefined;
+    const host = hostRef.current;
+    if (host === null) return undefined;
+    const cursorRefLocal = { x: 0, y: 0, inside: false };
+    let lastCheck = 0;
+
+    const applyMode = (interactive) => {
+      host.style.pointerEvents = interactive ? 'auto' : 'none';
+    };
+
+    const check = (now) => {
+      if (draggingRef.current) {
+        applyMode(true); // a grabbed pet stays draggable even over its gaps
+        return;
+      }
+      const engine = engineRef.current;
+      if (engine === null) {
+        applyMode(false);
+        return;
+      }
+      if (!cursorRefLocal.inside) {
+        applyMode(false);
+        return;
+      }
+      applyMode(engine.isOpaqueAt(cursorRefLocal.x, cursorRefLocal.y));
+    };
+
+    const onMove = (event) => {
+      const rect = host.getBoundingClientRect();
+      cursorRefLocal.inside =
+        event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom;
+      if (!cursorRefLocal.inside) return;
+      cursorRefLocal.x = event.clientX;
+      cursorRefLocal.y = event.clientY;
+      const now = Date.now();
+      if (now - lastCheck < 50) return; // throttle the GPU read
+      lastCheck = now;
+      check(now);
+    };
+
+    const interval = window.setInterval(() => check(Date.now()), 300);
+    window.addEventListener('pointermove', onMove, true);
+    applyMode(false); // nothing is clickable until a probe says otherwise
+    return () => {
+      window.removeEventListener('pointermove', onMove, true);
+      window.clearInterval(interval);
+    };
+  }, [hidden]);
+
   function scheduleSingleClick() {
     if (clickTimerRef.current !== null) clearTimeout(clickTimerRef.current);
     clickTimerRef.current = setTimeout(() => {
